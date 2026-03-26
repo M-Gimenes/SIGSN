@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGSN – Observatório Sidereus Nuncius</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #04050f;
+    --bg2: #080b1a;
+    --bg3: #0c1028;
+    --panel: rgba(12,18,50,0.85);
+    --panel2: rgba(8,12,35,0.95);
+    --border: rgba(100,140,255,0.18);
+    --border2: rgba(100,140,255,0.35);
+    --accent: #4f8cff;
+    --accent2: #a78bfa;
+    --accent3: #38bdf8;
+    --gold: #f5c842;
+    --text: #e8eaf6;
+    --text2: #8fa3cc;
+    --text3: #4d6490;
+    --danger: #f87171;
+    --success: #34d399;
+    --warn: #fbbf24;
+    --radius: 10px;
+    --radius2: 16px;
+    --shadow: 0 8px 40px rgba(10,20,80,0.7);
+    --glow: 0 0 24px rgba(79,140,255,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── STARFIELD ─── */
+  #stars-canvas {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ─── LOGIN ─── */
+  #login-screen {
+    position: fixed; inset:0; z-index:100;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at 50% 40%, #0a1040 0%, #04050f 70%);
+  }
+  .login-box {
+    background: var(--panel2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius2);
+    padding: 48px 52px;
+    width: 420px;
+    box-shadow: var(--shadow), var(--glow);
+    animation: fadeUp .7s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-box::before {
+    content:'';
+    position:absolute; top:-60px; left:50%; transform:translateX(-50%);
+    width:200px; height:120px;
+    background: radial-gradient(ellipse, rgba(79,140,255,0.2) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .login-logo {
+    text-align: center; margin-bottom: 32px;
+  }
+  .login-logo .icon { font-size: 48px; display:block; margin-bottom: 10px; }
+  .login-logo h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 22px; letter-spacing: 3px;
+    color: var(--accent); font-weight: 600;
+    text-transform: uppercase;
+  }
+  .login-logo p { font-size: 11px; color: var(--text2); letter-spacing: 2px; margin-top:4px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display:block; font-size: 11px; letter-spacing: 1.5px; color: var(--text2); text-transform: uppercase; margin-bottom: 7px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 11px 14px; color: var(--text);
+    font-family: 'Raleway', sans-serif; font-size: 14px;
+    transition: border .2s, box-shadow .2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,140,255,0.12);
+  }
+  .form-group select option { background: #0c1028; }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn {
+    display: inline-flex; align-items:center; gap:8px;
+    padding: 11px 22px; border-radius: var(--radius);
+    font-family: 'Raleway', sans-serif; font-size: 13px;
+    font-weight: 600; letter-spacing: 1px; cursor: pointer;
+    border: none; transition: all .2s; text-transform: uppercase;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff; box-shadow: 0 4px 20px rgba(79,140,255,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(79,140,255,0.45); }
+  .btn-secondary { background: rgba(255,255,255,0.07); color: var(--text2); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: rgba(255,255,255,0.12); color: var(--text); }
+  .btn-danger { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.25); }
+  .btn-danger:hover { background: rgba(248,113,113,0.22); }
+  .btn-success { background: rgba(52,211,153,0.12); color: var(--success); border: 1px solid rgba(52,211,153,0.25); }
+  .btn-sm { padding: 6px 13px; font-size: 11px; }
+  .btn-full { width:100%; justify-content: center; }
+
+  /* ─── LAYOUT ─── */
+  #app { display:none; position: relative; z-index:1; min-height:100vh; }
+  #app.visible { display: flex; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px; min-height: 100vh;
+    background: var(--panel2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: fixed; left:0; top:0; bottom:0;
+    z-index: 50;
+  }
+  .sidebar-logo {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .sidebar-logo .s-icon { font-size: 32px; display:block; }
+  .sidebar-logo h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 13px; letter-spacing: 2.5px; color: var(--accent);
+    margin-top: 6px; font-weight: 600;
+  }
+  .sidebar-logo p { font-size: 10px; color: var(--text3); letter-spacing: 1.5px; margin-top: 3px; }
+
+  .sidebar-user {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff; flex-shrink:0;
+  }
+  .user-info .name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .user-info .role {
+    font-size: 10px; color: var(--accent); letter-spacing: 1px;
+    background: rgba(79,140,255,0.12); padding: 1px 6px; border-radius: 4px;
+  }
+
+  .sidebar-nav { flex:1; overflow-y: auto; padding: 12px 0; }
+  .nav-section { padding: 8px 18px 4px; font-size: 9px; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; cursor: pointer; font-size: 13px;
+    color: var(--text2); transition: all .18s;
+    border-left: 3px solid transparent;
+  }
+  .nav-item:hover { color: var(--text); background: rgba(79,140,255,0.07); }
+  .nav-item.active {
+    color: var(--accent); background: rgba(79,140,255,0.1);
+    border-left-color: var(--accent); font-weight: 600;
+  }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align:center; }
+
+  .sidebar-footer {
+    padding: 14px 20px; border-top: 1px solid var(--border);
+  }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex:1; padding: 28px 32px; min-height:100vh; }
+
+  /* PAGE HEADER */
+  .page-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title h2 {
+    font-family: 'Cinzel', serif; font-size: 20px; font-weight: 600;
+    color: var(--text); letter-spacing: 1px;
+  }
+  .page-title p { font-size: 12px; color: var(--text2); margin-top: 4px; }
+  .breadcrumb { font-size: 12px; color: var(--text3); }
+  .breadcrumb span { color: var(--accent); }
+
+  /* ─── DASHBOARD CARDS ─── */
+  .stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius2); padding: 22px 24px;
+    position: relative; overflow: hidden; transition: border .2s;
+  }
+  .stat-card:hover { border-color: var(--border2); }
+  .stat-card::before {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:80px; height:80px; border-radius:50%;
+    background: radial-gradient(circle, var(--card-color, rgba(79,140,255,0.15)) 0%, transparent 70%);
+  }
+  .stat-label { font-size: 10px; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; }
+  .stat-value { font-family: 'Cinzel', serif; font-size: 32px; font-weight: 700; margin: 6px 0 4px; }
+  .stat-sub { font-size: 11px; color: var(--text2); }
+  .stat-icon { position: absolute; top: 20px; right: 22px; font-size: 26px; opacity:.5; }
+
+  /* ─── TABLE ─── */
+  .table-wrap {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius2); overflow: hidden;
+  }
+  .table-header {
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .table-header h3 { font-size: 14px; font-weight: 600; font-family:'Cinzel',serif; letter-spacing:.5px; }
+  .table-search input {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 14px; color: var(--text);
+    font-family: 'Raleway', sans-serif; font-size: 13px; outline: none;
+    width: 200px; transition: border .2s;
+  }
+  .table-search input:focus { border-color: var(--accent); }
+
+  table { width:100%; border-collapse: collapse; }
+  thead tr { background: rgba(79,140,255,0.06); }
+  th {
+    padding: 12px 18px; text-align: left; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2);
+    font-weight: 600; border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 13px 18px; font-size: 13px; color: var(--text);
+    border-bottom: 1px solid rgba(100,140,255,0.08);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(79,140,255,0.04); }
+
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .badge-green { background: rgba(52,211,153,0.12); color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+  .badge-red { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+  .badge-blue { background: rgba(79,140,255,0.12); color: var(--accent); border: 1px solid rgba(79,140,255,0.2); }
+  .badge-gold { background: rgba(245,200,66,0.12); color: var(--gold); border: 1px solid rgba(245,200,66,0.2); }
+  .badge-purple { background: rgba(167,139,250,0.12); color: var(--accent2); border: 1px solid rgba(167,139,250,0.2); }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    position: fixed; inset:0; background: rgba(4,5,15,0.8);
+    backdrop-filter: blur(4px); z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn .2s ease;
+  }
+  .modal {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius2); width: 540px; max-width: 95vw;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow); animation: scaleIn .25s ease;
+  }
+  .modal-lg { width: 720px; }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-header h3 { font-family:'Cinzel',serif; font-size:15px; font-weight:600; letter-spacing:.8px; }
+  .modal-close {
+    background: none; border: none; color: var(--text2);
+    cursor: pointer; font-size: 22px; line-height:1; transition: color .2s;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-body { padding: 24px; }
+  .modal-footer {
+    padding: 16px 24px; border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ─── TOAST ─── */
+  #toast-container {
+    position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .toast {
+    padding: 13px 18px 13px 16px; border-radius: 10px;
+    font-size: 13px; font-weight: 500; min-width: 260px; max-width: 360px;
+    display: flex; align-items: center; gap: 10px;
+    animation: slideIn .3s ease; box-shadow: var(--shadow);
+    border-left: 3px solid;
+  }
+  .toast-success { background: rgba(6,20,30,0.97); border-color: var(--success); color: var(--success); }
+  .toast-error { background: rgba(6,20,30,0.97); border-color: var(--danger); color: var(--danger); }
+  .toast-info { background: rgba(6,20,30,0.97); border-color: var(--accent); color: var(--accent); }
+
+  /* ─── CHARTS/DASHBOARD ─── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius2); padding: 22px;
+  }
+  .card h3 { font-family:'Cinzel',serif; font-size:13px; letter-spacing:.5px; margin-bottom:16px; color: var(--text2); }
+  .card h3 span { color: var(--text); }
+
+  /* Mini bar chart */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 100px; }
+  .bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:5px; }
+  .bar {
+    width:100%; border-radius: 4px 4px 0 0;
+    background: linear-gradient(180deg, var(--accent), rgba(79,140,255,0.3));
+    transition: height .5s ease; min-height:4px;
+  }
+  .bar-label { font-size: 9px; color: var(--text3); letter-spacing:.5px; }
+
+  /* Recent list */
+  .recent-list { list-style: none; }
+  .recent-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid rgba(100,140,255,0.07);
+  }
+  .recent-item:last-child { border-bottom: none; }
+  .recent-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .recent-text { flex:1; font-size: 13px; }
+  .recent-text strong { color: var(--text); display: block; }
+  .recent-text span { font-size: 11px; color: var(--text3); }
+  .recent-time { font-size: 11px; color: var(--text3); }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    text-align: center; padding: 56px 24px;
+    color: var(--text3);
+  }
+  .empty-state .e-icon { font-size: 48px; display:block; margin-bottom: 14px; opacity:.4; }
+  .empty-state p { font-size: 14px; color: var(--text2); margin-bottom: 6px; }
+  .empty-state span { font-size: 12px; }
+
+  /* ─── DETAIL PANEL ─── */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .detail-item label { font-size: 10px; letter-spacing: 1.5px; color: var(--text3); text-transform: uppercase; display:block; margin-bottom: 4px; }
+  .detail-item span { font-size: 13px; color: var(--text); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity:0; transform: translateY(24px); } to { opacity:1; transform:none; } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes scaleIn { from { opacity:0; transform: scale(.94); } to { opacity:1; transform:none; } }
+  @keyframes slideIn { from { opacity:0; transform: translateX(24px); } to { opacity:1; transform:none; } }
+  @keyframes slideOut { to { opacity:0; transform: translateX(24px); } }
+
+  /* ─── SCROLL ─── */
+  ::-webkit-scrollbar { width:5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(79,140,255,0.25); border-radius:3px; }
+
+  /* ─── CONFIRM DIALOG ─── */
+  .confirm-box {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius2); padding: 32px; text-align: center;
+    width: 360px; box-shadow: var(--shadow);
+    animation: scaleIn .25s ease;
+  }
+  .confirm-box .c-icon { font-size: 42px; display:block; margin-bottom: 14px; }
+  .confirm-box h3 { font-family:'Cinzel',serif; margin-bottom:10px; font-size:16px; }
+  .confirm-box p { font-size:13px; color: var(--text2); margin-bottom: 24px; }
+  .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+  /* ─── FILTER BAR ─── */
+  .filter-bar {
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    padding: 14px 20px; background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar select, .filter-bar input {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 12px; color: var(--text);
+    font-family: 'Raleway', sans-serif; font-size: 12px; outline:none;
+  }
+  .filter-bar select:focus, .filter-bar input:focus { border-color: var(--accent); }
+  .filter-bar select option { background: #0c1028; }
+
+  .section-hidden { display: none !important; }
+
+  /* ─── PAGE TRANSITION ─── */
+  .page { animation: fadeUp .35s ease; }
+
+  /* ─── CALENDAR ITEM ─── */
+  .agenda-item {
+    display: flex; gap: 16px; padding: 14px 18px;
+    border-bottom: 1px solid rgba(100,140,255,0.08);
+    align-items: center;
+  }
+  .agenda-item:last-child { border-bottom: none; }
+  .agenda-date {
+    text-align: center; min-width: 52px;
+    background: rgba(79,140,255,0.08); border-radius: 8px;
+    padding: 8px 6px;
+  }
+  .agenda-date .day { font-family:'Cinzel',serif; font-size:20px; font-weight:700; color: var(--accent); line-height:1; }
+  .agenda-date .month { font-size:9px; color: var(--text3); letter-spacing:1.5px; text-transform:uppercase; }
+  .agenda-info { flex:1; }
+  .agenda-info strong { font-size: 14px; color: var(--text); display:block; }
+  .agenda-info span { font-size: 12px; color: var(--text2); }
+  .agenda-time { font-size: 13px; color: var(--text2); text-align:right; }
+  .agenda-time strong { display: block; color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<canvas id="stars-canvas"></canvas>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="icon">🔭</span>
+      <h1>SIGSN</h1>
+      <p>OBSERVATÓRIO SIDEREUS NUNCIUS</p>
+    </div>
+    <div class="form-group">
+      <label>Login</label>
+      <input type="text" id="login-user" placeholder="seu.login" value="coordenador">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••" value="123456">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:8px;">
+      🚀 Entrar no Sistema
+    </button>
+    <p style="text-align:center;margin-top:14px;font-size:11px;color:var(--text3)">
+      Dica: use <strong style="color:var(--text2)">coordenador / 123456</strong> ou <strong style="color:var(--text2)">pesquisador / 123456</strong>
+    </p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="s-icon">🔭</span>
+      <h2>SIGSN</h2>
+      <p>SIDEREUS NUNCIUS</p>
+    </div>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="side-avatar">C</div>
+      <div class="user-info">
+        <div class="name" id="side-name">Coordenador</div>
+        <div class="role" id="side-role">COORDENADOR</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary btn-full btn-sm" onclick="doLogout()">⬅ Sair do Sistema</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content"></main>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+// ══════════════════════════════════════════
+// STARFIELD
+// ══════════════════════════════════════════
+(function(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let stars = [];
+  function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; init(); }
+  function init(){
+    stars = [];
+    for(let i=0;i<220;i++) stars.push({
+      x: Math.random()*c.width, y: Math.random()*c.height,
+      r: Math.random()*1.4+0.2,
+      a: Math.random(), da: (Math.random()-.5)*.005
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a = Math.max(0.05, Math.min(1, s.a+s.da));
+      if(s.a<=0.05||s.a>=1) s.da*=-1;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,220,255,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize(); draw();
+})();
+
+// ══════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════
+let currentUser = null;
+let currentPage = 'dashboard';
+
+const state = {
+  caravanas: [
+    { id:1, nome:'Escola Alfa', tipo:'Escolar', instituicao:'Colégio Alfa', responsavel:'Maria Silva', telefone:'(28)99999-1111', visitantes:40, obs:'Turma do 5º ano' },
+    { id:2, nome:'Turma 2026', tipo:'Universitária', instituicao:'Univ. Federal', responsavel:'Prof. Carlos', telefone:'(28)99999-2222', visitantes:35, obs:'' },
+    { id:3, nome:'Grupo Solar', tipo:'Turística', instituicao:'Turismo RJ', responsavel:'Ana Lima', telefone:'(28)99999-3333', visitantes:28, obs:'' },
+    { id:4, nome:'Estudantes', tipo:'Institucional', instituicao:'IFES', responsavel:'Mariana Souza', telefone:'(28)99999-4444', visitantes:45, obs:'Visita técnica' },
+  ],
+  guias: [
+    { id:1, nome:'João Silva', cpf:'111.222.333-44', telefone:'(28)99111-1111', email:'joao@obs.br', especialidade:'Astronomia Observacional', status:'Ativo', disponibilidade:'Diurna' },
+    { id:2, nome:'Ana Costa', cpf:'222.333.444-55', telefone:'(28)99222-2222', email:'ana@obs.br', especialidade:'Astrofísica', status:'Ativo', disponibilidade:'Noturna' },
+    { id:3, nome:'Carlos Lima', cpf:'333.444.555-66', telefone:'(28)99333-3333', email:'carlos@obs.br', especialidade:'Cosmologia', status:'Inativo', disponibilidade:'Diurna' },
+  ],
+  constelacoes: [
+    { id:1, nome:'Orion', hemisferio:'Norte', visibilidade:'Novembro - Fevereiro', estrelas:'Betelgeuse, Rigel, Bellatrix', descricao:'Uma das constelações mais reconhecíveis do céu invernal.', curiosidades:'Mencionada em Homero e na Bíblia.' },
+    { id:2, nome:'Ursa Maior', hemisferio:'Norte', visibilidade:'Todo o ano', estrelas:'Dubhe, Merak, Phecda', descricao:'Contém o Carro, asterismo mais famoso do hemisfério norte.', curiosidades:'Guiou navegadores por séculos.' },
+    { id:3, nome:'Cruzeiro do Sul', hemisferio:'Sul', visibilidade:'Março - Junho', estrelas:'Acrux, Mimosa, Gacrux', descricao:'Símbolo do hemisfério sul, presente em várias bandeiras.', curiosidades:'Aparece na bandeira do Brasil.' },
+    { id:4, nome:'Libra', hemisferio:'Sul', visibilidade:'Maio - Agosto', estrelas:'Zubenelgenubi, Zubeneschamali', descricao:'Constelação do zodíaco associada à balança.', curiosidades:'Única constelação do zodíaco sem figura animal.' },
+  ],
+  coordenadores: [
+    { id:1, nome:'Fernanda Souza', cpf:'444.555.666-77', telefone:'(28)99444-4444', email:'fernanda@obs.br', especialidade:'Gestão Científica', login:'coordenador', senha:'123456', status:'Ativo' },
+    { id:2, nome:'Roberto Neves', cpf:'555.666.777-88', telefone:'(28)99555-5555', email:'roberto@obs.br', especialidade:'Astrometria', login:'roberto', senha:'123456', status:'Ativo' },
+  ],
+  pesquisadores: [
+    { id:1, nome:'Emanuelly Borges', cpf:'666.777.888-99', telefone:'(28)99666-6666', email:'emanuelly@obs.br', especialidade:'Astronomia', login:'pesquisador', senha:'123456', status:'Ativo', curso:'Astronomia', dataIngresso:'2003-01-13' },
+    { id:2, nome:'Matheus Gimenes', cpf:'777.888.999-00', telefone:'(28)99777-7777', email:'matheus@obs.br', especialidade:'Astrofísica', login:'matheus', senha:'123456', status:'Ativo', curso:'Astronomia', dataIngresso:'2025-10-20' },
+    { id:3, nome:'Larissa Paganini', cpf:'888.999.000-11', telefone:'(28)99888-8888', email:'larissa@obs.br', especialidade:'Cosmologia', login:'larissa', senha:'123456', status:'Ativo', curso:'Astronomia', dataIngresso:'2025-12-02' },
+  ],
+  gruposPesquisa: [
+    { id:1, nome:'PING', area:'TI', pesquisadores:[1,2], status:'Ativo', dataCriacao:'2023-01-15', descricao:'Grupo de pesquisa em inteligência espacial' },
+    { id:2, nome:'LEDS', area:'TI', pesquisadores:[2,3], status:'Ativo', dataCriacao:'2023-06-20', descricao:'Laboratório de exploração de dados siderais' },
+  ],
+  projetos: [
+    { id:1, titulo:'LCA', inicio:'2024-01-01', termino:'2025-12-31', grupo:1, status:'Ativo', area:'Astronomia Observacional', coordenador:1 },
+    { id:2, titulo:'CGA', inicio:'2024-03-01', termino:'2025-06-30', grupo:2, status:'Ativo', area:'Galáxias', coordenador:2 },
+  ],
+  agendamentos: [
+    { id:1, data:'2026-01-01', horario:'09:00', caravana:1, guia:1, tipo:'Diurna', valor:800, obs:'' },
+    { id:2, data:'2026-01-02', horario:'14:00', caravana:2, guia:2, tipo:'Diurna', valor:1200, obs:'' },
+    { id:3, data:'2026-01-03', horario:'10:30', caravana:3, guia:1, tipo:'Diurna', valor:600, obs:'' },
+    { id:4, data:'2026-01-04', horario:'19:00', caravana:4, guia:2, tipo:'Noturna', valor:1500, obs:'Sessão especial telescópio' },
+  ],
+  observacoes: [
+    { id:1, data:'2025-12-13', projeto:1, constelacao:1, descricao:'Observação de Betelgeuse com variação de brilho notável.', instrumento:'Telescópio refletor', versao:1.0 },
+    { id:2, data:'2025-12-14', projeto:1, constelacao:1, descricao:'Acompanhamento da variação de Betelgeuse.', instrumento:'Telescópio refrator', versao:2.0 },
+    { id:3, data:'2025-12-20', projeto:2, constelacao:2, descricao:'Mapeamento da Ursa Maior.', instrumento:'Telescópio refletor', versao:1.0 },
+    { id:4, data:'2025-12-25', projeto:1, constelacao:3, descricao:'Observação do Cruzeiro do Sul.', instrumento:'Telescópio refrator', versao:3.0 },
+    { id:5, data:'2025-12-30', projeto:2, constelacao:2, descricao:'Segunda observação da Ursa Maior.', instrumento:'Telescópio refrator', versao:2.0 },
+    { id:6, data:'2025-12-31', projeto:1, constelacao:4, descricao:'Observação de Libra.', instrumento:'Telescópio refletor', versao:4.0 },
+  ],
+  nextId: { caravanas:5, guias:4, constelacoes:5, coordenadores:3, pesquisadores:4, gruposPesquisa:3, projetos:3, agendamentos:5, observacoes:7 }
+};
+
+// ══════════════════════════════════════════
+// NAVIGATION CONFIG
+// ══════════════════════════════════════════
+const navConfig = {
+  coordenador: [
+    { section: 'Principal' },
+    { id:'dashboard', icon:'🌌', label:'Dashboard' },
+    { id:'agendamentos', icon:'📅', label:'Agendamentos' },
+    { section: 'Cadastros' },
+    { id:'caravanas', icon:'🚌', label:'Caravanas' },
+    { id:'guias', icon:'👤', label:'Guias / Monitores' },
+    { id:'gruposPesquisa', icon:'🔬', label:'Grupos de Pesquisa' },
+    { id:'projetos', icon:'📁', label:'Projetos' },
+    { id:'constelacoes', icon:'⭐', label:'Constelações' },
+    { section: 'Usuários' },
+    { id:'coordenadores', icon:'🎓', label:'Coordenadores' },
+    { id:'pesquisadores', icon:'🧪', label:'Pesquisadores' },
+    { section: 'Relatórios' },
+    { id:'relAgendamentos', icon:'📊', label:'Rel. Agendamentos' },
+    { id:'relVisitantes', icon:'📈', label:'Rel. Visitantes' },
+    { id:'relObservacoes', icon:'🔭', label:'Rel. Observações' },
+    { id:'relProjetos', icon:'📋', label:'Rel. Projetos' },
+  ],
+  pesquisador: [
+    { section: 'Principal' },
+    { id:'dashboard', icon:'🌌', label:'Dashboard' },
+    { section: 'Atividades' },
+    { id:'observacoes', icon:'🔭', label:'Observações' },
+    { section: 'Consultas' },
+    { id:'constelacoes', icon:'⭐', label:'Constelações' },
+    { id:'relObservacoes', icon:'📊', label:'Rel. Observações' },
+  ]
+};
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function toast(msg, type='info'){
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  el.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  const c = document.getElementById('toast-container');
+  c.appendChild(el);
+  setTimeout(()=>{ el.style.animation='slideOut .3s ease forwards'; setTimeout(()=>el.remove(),300); },3000);
+}
+function confirm(title,msg,icon,cb){
+  const ov = document.createElement('div');
+  ov.className='modal-overlay';
+  ov.innerHTML=`<div class="confirm-box"><span class="c-icon">${icon}</span><h3>${title}</h3><p>${msg}</p><div class="confirm-btns"><button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancelar</button><button class="btn btn-danger" id="confirm-yes">Confirmar</button></div></div>`;
+  document.body.appendChild(ov);
+  ov.querySelector('#confirm-yes').onclick=()=>{ ov.remove(); cb(); };
+}
+function fmt(dateStr){ if(!dateStr)return'–'; const p=dateStr.split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:dateStr; }
+function fmtCurrency(v){ return v?`R$ ${Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2})}`:'–'; }
+function getName(arr,id){ const o=arr.find(x=>x.id===id); return o?o.nome||o.titulo||o.nome:'–'; }
+function getById(arr,id){ return arr.find(x=>x.id===id)||null; }
+function newId(key){ return state.nextId[key]++; }
+
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value.trim();
+  let user = [...state.coordenadores,...state.pesquisadores].find(x=>x.login===u&&x.senha===p&&x.status==='Ativo');
+  if(!user){ toast('Login ou senha inválidos','error'); return; }
+  currentUser = { ...user, tipo: state.coordenadores.find(x=>x.id===user.id&&x.login===u)?'coordenador':'pesquisador' };
+  document.getElementById('side-name').textContent = currentUser.nome.split(' ')[0];
+  document.getElementById('side-role').textContent = currentUser.tipo.toUpperCase();
+  document.getElementById('side-avatar').textContent = currentUser.nome.charAt(0);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  buildNav();
+  navigate('dashboard');
+}
+function doLogout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').classList.remove('visible');
+  currentUser=null; currentPage='dashboard';
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function buildNav(){
+  const nav = document.getElementById('sidebar-nav');
+  const items = navConfig[currentUser.tipo];
+  nav.innerHTML = items.map(item=>{
+    if(item.section) return `<div class="nav-section">${item.section}</div>`;
+    return `<div class="nav-item" id="nav-${item.id}" onclick="navigate('${item.id}')"><span class="icon">${item.icon}</span>${item.label}</div>`;
+  }).join('');
+}
+function navigate(page){
+  currentPage=page;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const navEl=document.getElementById('nav-'+page);
+  if(navEl) navEl.classList.add('active');
+  const mc=document.getElementById('main-content');
+  mc.innerHTML='';
+  const pages={
+    dashboard: renderDashboard,
+    caravanas: ()=>renderCRUD('caravanas'),
+    guias: ()=>renderCRUD('guias'),
+    constelacoes: ()=>renderCRUD('constelacoes'),
+    coordenadores: ()=>renderCRUD('coordenadores'),
+    pesquisadores: ()=>renderCRUD('pesquisadores'),
+    gruposPesquisa: ()=>renderCRUD('gruposPesquisa'),
+    projetos: ()=>renderCRUD('projetos'),
+    agendamentos: ()=>renderCRUD('agendamentos'),
+    observacoes: ()=>renderCRUD('observacoes'),
+    relAgendamentos: renderRelAgendamentos,
+    relVisitantes: renderRelVisitantes,
+    relObservacoes: renderRelObservacoes,
+    relProjetos: renderRelProjetos,
+  };
+  if(pages[page]) mc.innerHTML=`<div class="page">${pages[page]()}</div>`;
+  else mc.innerHTML=`<div class="page"><div class="empty-state"><span class="e-icon">🚧</span><p>Página em desenvolvimento</p></div></div>`;
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function renderDashboard(){
+  const totalVisitantes = state.agendamentos.reduce((a,x)=>{
+    const c=getById(state.caravanas,x.caravana); return a+(c?c.visitantes:0);
+  },0);
+  const proxAgenda = state.agendamentos.filter(x=>x.data>='2026-01-01').sort((a,b)=>a.data.localeCompare(b.data)).slice(0,4);
+  const recentObs = [...state.observacoes].sort((a,b)=>b.data.localeCompare(a.data)).slice(0,5);
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const fakeData=[5,8,6,7,4,3];
+  const maxD=Math.max(...fakeData);
+
+  return `
+  <div class="page-header">
+    <div class="page-title">
+      <h2>🌌 Dashboard</h2>
+      <p>Visão geral do Observatório Sidereus Nuncius</p>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" style="--card-color:rgba(79,140,255,0.2)">
+      <div class="stat-label">Agendamentos</div>
+      <div class="stat-value" style="color:var(--accent)">${state.agendamentos.length}</div>
+      <div class="stat-sub">Visitas cadastradas</div>
+      <span class="stat-icon">📅</span>
+    </div>
+    <div class="stat-card" style="--card-color:rgba(52,211,153,0.2)">
+      <div class="stat-label">Total Visitantes</div>
+      <div class="stat-value" style="color:var(--success)">${totalVisitantes}</div>
+      <div class="stat-sub">Em todos os agendamentos</div>
+      <span class="stat-icon">👥</span>
+    </div>
+    <div class="stat-card" style="--card-color:rgba(167,139,250,0.2)">
+      <div class="stat-label">Observações</div>
+      <div class="stat-value" style="color:var(--accent2)">${state.observacoes.length}</div>
+      <div class="stat-sub">Registros astronômicos</div>
+      <span class="stat-icon">🔭</span>
+    </div>
+    <div class="stat-card" style="--card-color:rgba(245,200,66,0.2)">
+      <div class="stat-label">Projetos Ativos</div>
+      <div class="stat-value" style="color:var(--gold)">${state.projetos.filter(x=>x.status==='Ativo').length}</div>
+      <div class="stat-sub">De pesquisa astronômica</div>
+      <span class="stat-icon">📁</span>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>📅 <span>Próximos Agendamentos</span></h3>
+      ${proxAgenda.length ? proxAgenda.map(a=>{
+        const d=a.data.split('-');
+        const car=getById(state.caravanas,a.caravana);
+        const gu=getById(state.guias,a.guia);
+        return `<div class="agenda-item">
+          <div class="agenda-date"><div class="day">${d[2]}</div><div class="month">${['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(d[1])-1]}</div></div>
+          <div class="agenda-info"><strong>${car?car.nome:'–'}</strong><span>${car?car.instituicao:'–'} · ${gu?gu.nome:'–'}</span></div>
+          <div class="agenda-time"><strong>${a.horario}</strong><span>${a.tipo}</span></div>
+        </div>`;
+      }).join('') : '<div class="empty-state" style="padding:24px"><span>📭</span><p>Nenhum agendamento</p></div>'}
+    </div>
+    <div class="card">
+      <h3>📊 <span>Agendamentos por Mês</span></h3>
+      <div class="bar-chart">
+        ${fakeData.map((v,i)=>`
+          <div class="bar-col">
+            <div class="bar" style="height:${(v/maxD*80)+4}px"></div>
+            <div class="bar-label">${months[i]}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔭 <span>Observações Recentes</span></h3>
+      <ul class="recent-list">
+        ${recentObs.map(o=>{
+          const c=getById(state.constelacoes,o.constelacao);
+          const pr=getById(state.projetos,o.projeto);
+          return `<li class="recent-item">
+            <div class="recent-dot" style="background:var(--accent2)"></div>
+            <div class="recent-text">
+              <strong>${c?c.nome:'–'} · v${o.versao}</strong>
+              <span>${pr?pr.titulo:'–'} · ${o.instrumento}</span>
+            </div>
+            <div class="recent-time">${fmt(o.data)}</div>
+          </li>`;
+        }).join('')}
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📋 <span>Resumo do Sistema</span></h3>
+      ${[
+        ['🚌','Caravanas cadastradas', state.caravanas.length, 'var(--accent)'],
+        ['👤','Guias / Monitores', state.guias.length, 'var(--success)'],
+        ['⭐','Constelações', state.constelacoes.length, 'var(--accent2)'],
+        ['🔬','Grupos de Pesquisa', state.gruposPesquisa.length, 'var(--gold)'],
+        ['🧪','Pesquisadores', state.pesquisadores.length, 'var(--accent3)'],
+        ['🎓','Coordenadores', state.coordenadores.length, 'var(--text2)'],
+      ].map(([icon,label,val,color])=>`
+        <div style="display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid rgba(100,140,255,0.08)">
+          <span style="font-size:18px">${icon}</span>
+          <span style="flex:1;font-size:13px;color:var(--text2)">${label}</span>
+          <strong style="color:${color};font-size:15px">${val}</strong>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// CRUD CONFIG
+// ══════════════════════════════════════════
+const crudConfig = {
+  caravanas: {
+    title:'Caravanas', icon:'🚌', key:'caravanas',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'Tipo', f:r=>`<span class="badge badge-blue">${r.tipo}</span>`},
+      {h:'Instituição', f:r=>r.instituicao},
+      {h:'Responsável', f:r=>r.responsavel},
+      {h:'Visitantes', f:r=>r.visitantes},
+    ],
+    form: (r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome da Caravana *</label><input id="f-nome" value="${r.nome||''}" placeholder="Ex: Escola Alfa"></div>
+        <div class="form-group"><label>Tipo *</label><select id="f-tipo"><option ${r.tipo==='Escolar'?'selected':''}>Escolar</option><option ${r.tipo==='Universitária'?'selected':''}>Universitária</option><option ${r.tipo==='Turística'?'selected':''}>Turística</option><option ${r.tipo==='Institucional'?'selected':''}>Institucional</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Instituição/Org. Responsável *</label><input id="f-instituicao" value="${r.instituicao||''}"></div>
+        <div class="form-group"><label>Responsável pela Caravana *</label><input id="f-responsavel" value="${r.responsavel||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Telefone de Contato *</label><input id="f-telefone" value="${r.telefone||''}" placeholder="(28) 99999-9999"></div>
+        <div class="form-group"><label>Qtd. Visitantes * (1-50)</label><input id="f-visitantes" type="number" min="1" max="50" value="${r.visitantes||''}"></div>
+      </div>
+      <div class="form-group"><label>Observações</label><textarea id="f-obs">${r.obs||''}</textarea></div>`,
+    collect: ()=>({ nome:v('f-nome'), tipo:v('f-tipo'), instituicao:v('f-instituicao'), responsavel:v('f-responsavel'), telefone:v('f-telefone'), visitantes:parseInt(v('f-visitantes'))||0, obs:v('f-obs') }),
+    validate: d=>{
+      if(!d.nome||!d.tipo||!d.instituicao||!d.responsavel||!d.telefone) return 'Preencha todos os campos obrigatórios.';
+      if(d.visitantes<1||d.visitantes>50) return 'Qtd. visitantes deve ser entre 1 e 50.';
+      return null;
+    }
+  },
+  guias: {
+    title:'Guias / Monitores', icon:'👤', key:'guias',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'CPF', f:r=>r.cpf},
+      {h:'E-mail', f:r=>r.email},
+      {h:'Especialidade', f:r=>r.especialidade},
+      {h:'Disponibilidade', f:r=>`<span class="badge badge-purple">${r.disponibilidade}</span>`},
+      {h:'Status', f:r=>`<span class="badge ${r.status==='Ativo'?'badge-green':'badge-red'}">${r.status}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome Completo *</label><input id="f-nome" value="${r.nome||''}"></div>
+        <div class="form-group"><label>CPF *</label><input id="f-cpf" value="${r.cpf||''}" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Telefone *</label><input id="f-telefone" value="${r.telefone||''}"></div>
+        <div class="form-group"><label>E-mail *</label><input id="f-email" type="email" value="${r.email||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Especialidade *</label><input id="f-especialidade" value="${r.especialidade||''}"></div>
+        <div class="form-group"><label>Disponibilidade *</label><select id="f-disponibilidade"><option ${r.disponibilidade==='Diurna'?'selected':''}>Diurna</option><option ${r.disponibilidade==='Noturna'?'selected':''}>Noturna</option><option ${r.disponibilidade==='Integral'?'selected':''}>Integral</option></select></div>
+      </div>
+      <div class="form-group"><label>Status *</label><select id="f-status"><option ${r.status==='Ativo'?'selected':''}>Ativo</option><option ${r.status==='Inativo'?'selected':''}>Inativo</option></select></div>`,
+    collect:()=>({ nome:v('f-nome'), cpf:v('f-cpf'), telefone:v('f-telefone'), email:v('f-email'), especialidade:v('f-especialidade'), disponibilidade:v('f-disponibilidade'), status:v('f-status') }),
+    validate:(d,id)=>{
+      if(!d.nome||!d.cpf||!d.telefone||!d.email||!d.especialidade) return 'Preencha todos os campos obrigatórios.';
+      if(state.guias.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado no sistema.';
+      return null;
+    }
+  },
+  constelacoes: {
+    title:'Constelações', icon:'⭐', key:'constelacoes',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'Hemisfério', f:r=>`<span class="badge badge-blue">${r.hemisferio}</span>`},
+      {h:'Visibilidade', f:r=>r.visibilidade},
+      {h:'Principais Estrelas', f:r=>r.estrelas},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome da Constelação *</label><input id="f-nome" value="${r.nome||''}"></div>
+        <div class="form-group"><label>Hemisfério *</label><select id="f-hemisferio"><option ${r.hemisferio==='Norte'?'selected':''}>Norte</option><option ${r.hemisferio==='Sul'?'selected':''}>Sul</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Período de Maior Visibilidade *</label><input id="f-visibilidade" value="${r.visibilidade||''}" placeholder="Ex: Novembro - Fevereiro"></div>
+        <div class="form-group"><label>Principais Estrelas *</label><input id="f-estrelas" value="${r.estrelas||''}"></div>
+      </div>
+      <div class="form-group"><label>Descrição Astronômica *</label><textarea id="f-descricao">${r.descricao||''}</textarea></div>
+      <div class="form-group"><label>Curiosidades Históricas</label><textarea id="f-curiosidades">${r.curiosidades||''}</textarea></div>`,
+    collect:()=>({ nome:v('f-nome'), hemisferio:v('f-hemisferio'), visibilidade:v('f-visibilidade'), estrelas:v('f-estrelas'), descricao:v('f-descricao'), curiosidades:v('f-curiosidades') }),
+    validate:(d,id)=>{
+      if(!d.nome||!d.hemisferio||!d.visibilidade||!d.estrelas||!d.descricao) return 'Preencha todos os campos obrigatórios.';
+      if(state.constelacoes.find(x=>x.nome.toLowerCase()===d.nome.toLowerCase()&&x.id!==id)) return 'Nome da constelação já existe.';
+      return null;
+    }
+  },
+  coordenadores: {
+    title:'Coordenadores', icon:'🎓', key:'coordenadores',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'CPF', f:r=>r.cpf},
+      {h:'E-mail', f:r=>r.email},
+      {h:'Login', f:r=>r.login},
+      {h:'Status', f:r=>`<span class="badge ${r.status==='Ativo'?'badge-green':'badge-red'}">${r.status}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome Completo *</label><input id="f-nome" value="${r.nome||''}"></div>
+        <div class="form-group"><label>CPF *</label><input id="f-cpf" value="${r.cpf||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Telefone *</label><input id="f-telefone" value="${r.telefone||''}"></div>
+        <div class="form-group"><label>E-mail *</label><input id="f-email" type="email" value="${r.email||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Especialidade *</label><input id="f-especialidade" value="${r.especialidade||''}"></div>
+        <div class="form-group"><label>Status *</label><select id="f-status"><option ${r.status==='Ativo'?'selected':''}>Ativo</option><option ${r.status==='Inativo'?'selected':''}>Inativo</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login *</label><input id="f-login" value="${r.login||''}"></div>
+        <div class="form-group"><label>Senha *</label><input id="f-senha" type="password" value="${r.senha||''}"></div>
+      </div>`,
+    collect:()=>({ nome:v('f-nome'), cpf:v('f-cpf'), telefone:v('f-telefone'), email:v('f-email'), especialidade:v('f-especialidade'), login:v('f-login'), senha:v('f-senha'), status:v('f-status') }),
+    validate:(d,id)=>{
+      if(!d.nome||!d.cpf||!d.email||!d.login||!d.senha) return 'Preencha todos os campos obrigatórios.';
+      if(state.coordenadores.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado.';
+      if(state.coordenadores.find(x=>x.email===d.email&&x.id!==id)) return 'E-mail já cadastrado.';
+      return null;
+    }
+  },
+  pesquisadores: {
+    title:'Pesquisadores', icon:'🧪', key:'pesquisadores',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'CPF', f:r=>r.cpf},
+      {h:'Curso', f:r=>r.curso||'–'},
+      {h:'Especialidade', f:r=>r.especialidade||'–'},
+      {h:'Status', f:r=>`<span class="badge ${r.status==='Ativo'?'badge-green':'badge-red'}">${r.status}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome Completo *</label><input id="f-nome" value="${r.nome||''}"></div>
+        <div class="form-group"><label>CPF *</label><input id="f-cpf" value="${r.cpf||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Telefone *</label><input id="f-telefone" value="${r.telefone||''}"></div>
+        <div class="form-group"><label>E-mail *</label><input id="f-email" type="email" value="${r.email||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Curso</label><input id="f-curso" value="${r.curso||''}"></div>
+        <div class="form-group"><label>Data de Ingresso</label><input id="f-dataIngresso" type="date" value="${r.dataIngresso||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Login *</label><input id="f-login" value="${r.login||''}"></div>
+        <div class="form-group"><label>Senha *</label><input id="f-senha" type="password" value="${r.senha||''}"></div>
+      </div>
+      <div class="form-group"><label>Especialidade</label><input id="f-especialidade" value="${r.especialidade||''}"></div>
+      <div class="form-group"><label>Status *</label><select id="f-status"><option ${r.status==='Ativo'?'selected':''}>Ativo</option><option ${r.status==='Inativo'?'selected':''}>Inativo</option></select></div>`,
+    collect:()=>({ nome:v('f-nome'), cpf:v('f-cpf'), telefone:v('f-telefone'), email:v('f-email'), curso:v('f-curso'), dataIngresso:v('f-dataIngresso'), login:v('f-login'), senha:v('f-senha'), especialidade:v('f-especialidade'), status:v('f-status') }),
+    validate:(d,id)=>{
+      if(!d.nome||!d.cpf||!d.email||!d.login||!d.senha) return 'Preencha todos os campos obrigatórios.';
+      if(state.pesquisadores.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado.';
+      return null;
+    }
+  },
+  gruposPesquisa: {
+    title:'Grupos de Pesquisa', icon:'🔬', key:'gruposPesquisa',
+    columns:[
+      {h:'Nome', f:r=>r.nome},
+      {h:'Área', f:r=>r.area},
+      {h:'Pesquisadores', f:r=>`${r.pesquisadores.length} vinculados`},
+      {h:'Data Criação', f:r=>fmt(r.dataCriacao)},
+      {h:'Status', f:r=>`<span class="badge ${r.status==='Ativo'?'badge-green':'badge-red'}">${r.status}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Nome do Grupo *</label><input id="f-nome" value="${r.nome||''}"></div>
+        <div class="form-group"><label>Área de Pesquisa *</label><input id="f-area" value="${r.area||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Data de Criação *</label><input id="f-dataCriacao" type="date" value="${r.dataCriacao||''}"></div>
+        <div class="form-group"><label>Status *</label><select id="f-status"><option ${r.status==='Ativo'?'selected':''}>Ativo</option><option ${r.status==='Inativo'?'selected':''}>Inativo</option></select></div>
+      </div>
+      <div class="form-group"><label>Pesquisadores Vinculados *</label><select id="f-pesquisadores" multiple style="min-height:100px">${state.pesquisadores.map(p=>`<option value="${p.id}" ${(r.pesquisadores||[]).includes(p.id)?'selected':''}>${p.nome}</option>`).join('')}</select><small style="font-size:11px;color:var(--text3)">Segure Ctrl para selecionar múltiplos</small></div>
+      <div class="form-group"><label>Descrição</label><textarea id="f-descricao">${r.descricao||''}</textarea></div>`,
+    collect:()=>({ nome:v('f-nome'), area:v('f-area'), dataCriacao:v('f-dataCriacao'), status:v('f-status'), pesquisadores:Array.from(document.getElementById('f-pesquisadores').selectedOptions).map(o=>parseInt(o.value)), descricao:v('f-descricao') }),
+    validate:(d)=>{
+      if(!d.nome||!d.area||!d.dataCriacao) return 'Preencha todos os campos obrigatórios.';
+      if(d.pesquisadores.length===0) return 'Selecione ao menos um pesquisador.';
+      return null;
+    }
+  },
+  projetos: {
+    title:'Projetos', icon:'📁', key:'projetos',
+    columns:[
+      {h:'Título', f:r=>r.titulo},
+      {h:'Grupo', f:r=>getName(state.gruposPesquisa,r.grupo)},
+      {h:'Coordenador', f:r=>getName(state.coordenadores,r.coordenador)},
+      {h:'Início', f:r=>fmt(r.inicio)},
+      {h:'Término', f:r=>fmt(r.termino)},
+      {h:'Status', f:r=>`<span class="badge ${r.status==='Ativo'?'badge-green':r.status==='Concluído'?'badge-blue':'badge-red'}">${r.status}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-group"><label>Título do Projeto *</label><input id="f-titulo" value="${r.titulo||''}"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Data de Início *</label><input id="f-inicio" type="date" value="${r.inicio||''}"></div>
+        <div class="form-group"><label>Data de Término *</label><input id="f-termino" type="date" value="${r.termino||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Grupo de Pesquisa *</label><select id="f-grupo">${state.gruposPesquisa.map(g=>`<option value="${g.id}" ${r.grupo===g.id?'selected':''}>${g.nome}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Coordenador *</label><select id="f-coordenador">${state.coordenadores.map(c=>`<option value="${c.id}" ${r.coordenador===c.id?'selected':''}>${c.nome}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Área de Pesquisa *</label><input id="f-area" value="${r.area||''}"></div>
+        <div class="form-group"><label>Status *</label><select id="f-status"><option ${r.status==='Ativo'?'selected':''}>Ativo</option><option ${r.status==='Concluído'?'selected':''}>Concluído</option><option ${r.status==='Suspenso'?'selected':''}>Suspenso</option></select></div>
+      </div>`,
+    collect:()=>({ titulo:v('f-titulo'), inicio:v('f-inicio'), termino:v('f-termino'), grupo:parseInt(v('f-grupo')), coordenador:parseInt(v('f-coordenador')), area:v('f-area'), status:v('f-status') }),
+    validate:(d)=>{
+      if(!d.titulo||!d.inicio||!d.termino||!d.grupo) return 'Preencha todos os campos obrigatórios.';
+      if(d.termino<d.inicio) return 'Data de término não pode ser anterior ao início.';
+      const ativos=state.projetos.filter(x=>x.status==='Ativo').length;
+      if(d.status==='Ativo'&&ativos>=10) return 'Limite de 10 projetos ativos atingido.';
+      return null;
+    }
+  },
+  agendamentos: {
+    title:'Agendamentos', icon:'📅', key:'agendamentos',
+    columns:[
+      {h:'Data', f:r=>fmt(r.data)},
+      {h:'Horário', f:r=>`<strong style="color:var(--gold)">${r.horario}</strong>`},
+      {h:'Caravana', f:r=>getName(state.caravanas,r.caravana)},
+      {h:'Guia', f:r=>getName(state.guias,r.guia)},
+      {h:'Tipo', f:r=>`<span class="badge ${r.tipo==='Noturna'?'badge-purple':r.tipo==='Sessão Especial'?'badge-gold':'badge-blue'}">${r.tipo}</span>`},
+      {h:'Valor', f:r=>fmtCurrency(r.valor)},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Data da Visita *</label><input id="f-data" type="date" value="${r.data||''}"></div>
+        <div class="form-group"><label>Horário *</label><input id="f-horario" type="time" value="${r.horario||''}"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Caravana *</label><select id="f-caravana">${state.caravanas.map(c=>`<option value="${c.id}" ${r.caravana===c.id?'selected':''}>${c.nome}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Guia Responsável *</label><select id="f-guia">${state.guias.filter(g=>g.status==='Ativo').map(g=>`<option value="${g.id}" ${r.guia===g.id?'selected':''}>${g.nome}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Tipo de Visita *</label><select id="f-tipo"><option ${r.tipo==='Diurna'?'selected':''}>Diurna</option><option ${r.tipo==='Noturna'?'selected':''}>Noturna</option><option ${r.tipo==='Sessão Especial'?'selected':''}>Sessão Especial</option></select></div>
+        <div class="form-group"><label>Valor da Visita (R$)</label><input id="f-valor" type="number" min="0" value="${r.valor||''}"></div>
+      </div>
+      <div class="form-group"><label>Observações</label><textarea id="f-obs">${r.obs||''}</textarea></div>`,
+    collect:()=>({ data:v('f-data'), horario:v('f-horario'), caravana:parseInt(v('f-caravana')), guia:parseInt(v('f-guia')), tipo:v('f-tipo'), valor:parseFloat(v('f-valor'))||0, obs:v('f-obs') }),
+    validate:(d,id)=>{
+      if(!d.data||!d.horario||!d.caravana||!d.guia||!d.tipo) return 'Preencha todos os campos obrigatórios.';
+      if(state.agendamentos.find(x=>x.data===d.data&&x.horario===d.horario&&x.id!==id)) return 'Já existe agendamento nesta data e horário.';
+      const turno = parseInt(d.horario)<18?'dia':'noite';
+      const mesmoDiaTurno = state.agendamentos.filter(x=>x.data===d.data&&x.id!==id&&(parseInt(x.horario)<18?'dia':'noite')===turno);
+      if(mesmoDiaTurno.length>=3) return 'Limite de 3 agendamentos por turno/dia atingido.';
+      return null;
+    }
+  },
+  observacoes: {
+    title:'Observações', icon:'🔭', key:'observacoes',
+    columns:[
+      {h:'Data', f:r=>fmt(r.data)},
+      {h:'Projeto', f:r=>getName(state.projetos,r.projeto)},
+      {h:'Constelação', f:r=>getName(state.constelacoes,r.constelacao)},
+      {h:'Instrumento', f:r=>r.instrumento},
+      {h:'Versão', f:r=>`<span class="badge badge-gold">v${r.versao}</span>`},
+    ],
+    form:(r={})=>`
+      <div class="form-row">
+        <div class="form-group"><label>Data da Observação *</label><input id="f-data" type="date" value="${r.data||''}"></div>
+        <div class="form-group"><label>Projeto Vinculado *</label><select id="f-projeto">${state.projetos.filter(p=>p.status==='Ativo').map(p=>`<option value="${p.id}" ${r.projeto===p.id?'selected':''}>${p.titulo}</option>`).join('')}</select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Constelação Observada *</label><select id="f-constelacao">${state.constelacoes.map(c=>`<option value="${c.id}" ${r.constelacao===c.id?'selected':''}>${c.nome}</option>`).join('')}</select></div>
+        <div class="form-group"><label>Instrumento Utilizado *</label><input id="f-instrumento" value="${r.instrumento||''}" placeholder="Ex: Telescópio refletor"></div>
+      </div>
+      <div class="form-group"><label>Descrição Científica</label><textarea id="f-descricao">${r.descricao||''}</textarea></div>
+      <div class="form-group" style="background:rgba(79,140,255,0.06);border:1px solid var(--border);border-radius:8px;padding:12px;"><label>Versão da Observação</label><p style="font-size:12px;color:var(--text2);margin-top:4px">⚙️ Preenchimento automático pelo sistema</p></div>`,
+    collect:()=>({ data:v('f-data'), projeto:parseInt(v('f-projeto')), constelacao:parseInt(v('f-constelacao')), instrumento:v('f-instrumento'), descricao:v('f-descricao') }),
+    validate:(d,id)=>{
+      if(!d.data||!d.projeto||!d.constelacao||!d.instrumento) return 'Preencha todos os campos obrigatórios.';
+      const proj = getById(state.projetos,d.projeto);
+      if(!proj||proj.status!=='Ativo') return 'O projeto deve ter status Ativo.';
+      if(d.data<proj.inicio||d.data>proj.termino) return 'Data fora do período do projeto.';
+      if(state.observacoes.find(x=>x.data===d.data&&x.projeto===d.projeto&&x.constelacao===d.constelacao&&x.id!==id)) return 'Já existe observação desta constelação neste dia/projeto.';
+      return null;
+    },
+    beforeSave:(d)=>{
+      const maxVer = Math.max(0,...state.observacoes.filter(x=>x.projeto===d.projeto&&x.constelacao===d.constelacao).map(x=>x.versao));
+      d.versao = maxVer+1;
+    }
+  }
+};
+
+function v(id){ const el=document.getElementById(id); return el?el.value:''; }
+
+// ══════════════════════════════════════════
+// GENERIC CRUD RENDERER
+// ══════════════════════════════════════════
+function renderCRUD(key){
+  const cfg = crudConfig[key];
+  const data = state[cfg.key];
+  return `
+  <div class="page-header">
+    <div class="page-title">
+      <h2>${cfg.icon} ${cfg.title}</h2>
+      <p>Gerenciamento de ${cfg.title.toLowerCase()}</p>
+    </div>
+    <button class="btn btn-primary" onclick="openForm('${key}', null)">+ Inserir ${cfg.icon}</button>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header">
+      <h3>${cfg.icon} ${cfg.title}</h3>
+      <div class="table-search"><input placeholder="🔍 Buscar..." oninput="filterTable(this,'tbl-${key}')" /></div>
+    </div>
+    <table id="tbl-${key}">
+      <thead><tr>${cfg.columns.map(c=>`<th>${c.h}</th>`).join('')}<th>Ações</th></tr></thead>
+      <tbody>
+        ${data.length===0?`<tr><td colspan="${cfg.columns.length+1}"><div class="empty-state"><span class="e-icon">${cfg.icon}</span><p>Nenhum registro encontrado</p></div></td></tr>`
+        :data.map(r=>`
+          <tr>
+            ${cfg.columns.map(c=>`<td>${c.f(r)}</td>`).join('')}
+            <td>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-secondary btn-sm" onclick="openView('${key}',${r.id})">👁</button>
+                <button class="btn btn-secondary btn-sm" onclick="openForm('${key}',${r.id})">✏️</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteRecord('${key}',${r.id})">🗑️</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="padding:10px 18px;font-size:11px;color:var(--text3);border-top:1px solid var(--border)">Total: <strong style="color:var(--text2)">${data.length}</strong> registros</div>
+  </div>`;
+}
+
+function filterTable(inp, tableId){
+  const q=inp.value.toLowerCase();
+  document.querySelectorAll(`#${tableId} tbody tr`).forEach(tr=>{
+    tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+// ══════════════════════════════════════════
+// FORM MODAL
+// ══════════════════════════════════════════
+function openForm(key, id){
+  const cfg=crudConfig[key];
+  const r = id ? getById(state[cfg.key],id) : {};
+  const isEdit=!!id;
+  const ov=document.createElement('div');
+  ov.className='modal-overlay'; ov.id='modal-form';
+  ov.innerHTML=`
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>${isEdit?'✏️ Editar':'➕ Inserir'} ${cfg.title}</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-form').remove()">×</button>
+      </div>
+      <div class="modal-body">${cfg.form(r||{})}</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="document.getElementById('modal-form').remove()">Cancelar</button>
+        <button class="btn btn-primary" onclick="saveRecord('${key}',${id||'null'})">💾 Salvar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+function saveRecord(key, id){
+  const cfg=crudConfig[key];
+  const d=cfg.collect();
+  const err=cfg.validate(d,id);
+  if(err){ toast(err,'error'); return; }
+  if(cfg.beforeSave) cfg.beforeSave(d);
+  if(id){
+    const idx=state[cfg.key].findIndex(x=>x.id===id);
+    if(idx>=0) state[cfg.key][idx]={...state[cfg.key][idx],...d};
+    toast(`${cfg.title.slice(0,-1)|| cfg.title} atualizado com sucesso!`,'success');
+  } else {
+    d.id=newId(cfg.key);
+    state[cfg.key].push(d);
+    toast(`${cfg.title} inserido com sucesso!`,'success');
+  }
+  document.getElementById('modal-form').remove();
+  navigate(currentPage);
+}
+
+function deleteRecord(key, id){
+  const cfg=crudConfig[key];
+  // Check constraints
+  let blocked=null;
+  if(key==='caravanas'&&state.agendamentos.find(x=>x.caravana===id)) blocked='Caravana vinculada a agendamento.';
+  if(key==='guias'&&state.agendamentos.find(x=>x.guia===id)) blocked='Guia vinculado a agendamento.';
+  if(key==='constelacoes'&&state.observacoes.find(x=>x.constelacao===id)) blocked='Constelação vinculada a observações.';
+  if(key==='projetos'&&state.observacoes.find(x=>x.projeto===id)) blocked='Projeto vinculado a observações.';
+  if(blocked){ toast('Remoção bloqueada: '+blocked,'error'); return; }
+  const r=getById(state[cfg.key],id);
+  confirm('Remover Registro','Deseja remover este registro? Esta ação não pode ser desfeita.','🗑️',()=>{
+    state[cfg.key]=state[cfg.key].filter(x=>x.id!==id);
+    toast('Registro removido.','success');
+    navigate(currentPage);
+  });
+}
+
+// ══════════════════════════════════════════
+// VIEW MODAL
+// ══════════════════════════════════════════
+function openView(key, id){
+  const cfg=crudConfig[key];
+  const r=getById(state[cfg.key],id);
+  if(!r) return;
+  const fields=Object.entries(r).filter(([k])=>k!=='id'&&k!=='senha');
+  const ov=document.createElement('div');
+  ov.className='modal-overlay';
+  ov.innerHTML=`
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>👁 Visualizar ${cfg.icon} ${cfg.title}</h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          ${fields.map(([k,val])=>{
+            let disp=val;
+            if(k==='caravana') disp=getName(state.caravanas,val);
+            else if(k==='guia') disp=getName(state.guias,val);
+            else if(k==='projeto') disp=getName(state.projetos,val);
+            else if(k==='constelacao') disp=getName(state.constelacoes,val);
+            else if(k==='coordenador') disp=getName(state.coordenadores,val);
+            else if(k==='grupo') disp=getName(state.gruposPesquisa,val);
+            else if(k==='pesquisadores'&&Array.isArray(val)) disp=val.map(pid=>getName(state.pesquisadores,pid)).join(', ');
+            else if(k==='data'||k==='inicio'||k==='termino'||k==='dataCriacao'||k==='dataIngresso') disp=fmt(val);
+            else if(k==='valor') disp=fmtCurrency(val);
+            const label=k.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase());
+            return `<div class="detail-item"><label>${label}</label><span>${disp||'–'}</span></div>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">Fechar</button>
+        <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove();openForm('${key}',${id})">✏️ Editar</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+
+// ══════════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════════
+function renderRelAgendamentos(){
+  const rows = state.agendamentos.map(a=>{
+    const car=getById(state.caravanas,a.caravana);
+    const gu=getById(state.guias,a.guia);
+    return { ...a, carNome:car?car.nome:'–', inst:car?car.instituicao:'–', visit:car?car.visitantes:0, guiNome:gu?gu.nome:'–' };
+  }).sort((a,b)=>a.data.localeCompare(b.data)||a.horario.localeCompare(b.horario));
+  const totalVisit=rows.reduce((s,r)=>s+r.visit,0);
+  return `
+  <div class="page-header">
+    <div class="page-title"><h2>📊 Relatório de Agendamentos</h2><p>Listagem de visitas agendadas</p></div>
+  </div>
+  <div class="table-wrap">
+    <div class="filter-bar">
+      <span style="font-size:12px;color:var(--text2);font-weight:600">Filtros:</span>
+      <input type="date" id="rf-di" placeholder="Data inicial">
+      <input type="date" id="rf-df" placeholder="Data final">
+      <select id="rf-tipo"><option value="">Todos os tipos</option><option>Diurna</option><option>Noturna</option><option>Sessão Especial</option></select>
+      <button class="btn btn-primary btn-sm" onclick="filterRel()">🔍 Filtrar</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearRel()">↺ Limpar</button>
+    </div>
+    <div class="table-header"><h3>📅 Agendamentos</h3><span style="font-size:12px;color:var(--text2)">Total: <strong>${rows.length}</strong> | Visitantes: <strong style="color:var(--accent)">${totalVisit}</strong></span></div>
+    <table><thead><tr><th>Data</th><th>Horário</th><th>Caravana</th><th>Instituição</th><th>Visitantes</th><th>Guia</th><th>Tipo</th><th>Valor</th></tr></thead>
+    <tbody id="rel-body">${rows.map(r=>`<tr>
+      <td>${fmt(r.data)}</td><td><strong style="color:var(--gold)">${r.horario}</strong></td>
+      <td>${r.carNome}</td><td>${r.inst}</td><td>${r.visit}</td><td>${r.guiNome}</td>
+      <td><span class="badge ${r.tipo==='Noturna'?'badge-purple':'badge-blue'}">${r.tipo}</span></td>
+      <td>${fmtCurrency(r.valor)}</td>
+    </tr>`).join('')}</tbody></table>
+  </div>`;
+}
+
+function filterRel(){ toast('Filtro aplicado','info'); }
+function clearRel(){ toast('Filtros limpos','info'); }
+
+function renderRelVisitantes(){
+  const byMonth={};
+  state.agendamentos.forEach(a=>{
+    const car=getById(state.caravanas,a.caravana);
+    const ym=a.data.slice(0,7);
+    if(!byMonth[ym]) byMonth[ym]={total:0,count:0};
+    byMonth[ym].count++; byMonth[ym].total+=car?car.visitantes:0;
+  });
+  const months=Object.keys(byMonth).sort();
+  const totalA=months.reduce((s,m)=>s+byMonth[m].count,0);
+  const totalV=months.reduce((s,m)=>s+byMonth[m].total,0);
+  const media=totalA>0?(totalV/totalA).toFixed(1):0;
+  return `
+  <div class="page-header"><div class="page-title"><h2>📈 Rel. Visitantes por Mês</h2><p>Estatísticas mensais de visitantes</p></div></div>
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-card"><div class="stat-label">Total Agendamentos</div><div class="stat-value" style="color:var(--accent)">${totalA}</div><span class="stat-icon">📅</span></div>
+    <div class="stat-card"><div class="stat-label">Total Visitantes</div><div class="stat-value" style="color:var(--success)">${totalV}</div><span class="stat-icon">👥</span></div>
+    <div class="stat-card"><div class="stat-label">Média por Agend.</div><div class="stat-value" style="color:var(--gold)">${media}</div><span class="stat-icon">📊</span></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>📅 <span>Estatísticas Mensais</span></h3></div>
+    <table><thead><tr><th>Mês/Ano</th><th>Total Agendamentos</th><th>Total Visitantes</th><th>Média por Agend.</th></tr></thead>
+    <tbody>${months.map(m=>{
+      const [y,mo]=m.split('-');
+      const mName=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(mo)-1];
+      const avg=(byMonth[m].total/byMonth[m].count).toFixed(1);
+      return `<tr><td><strong>${mName}/${y}</strong></td><td>${byMonth[m].count}</td><td><strong style="color:var(--accent)">${byMonth[m].total}</strong></td><td>${avg}</td></tr>`;
+    }).join('')}</tbody></table>
+  </div>`;
+}
+
+function renderRelObservacoes(){
+  const rows=state.observacoes.map(o=>{
+    const pr=getById(state.projetos,o.projeto);
+    const con=getById(state.constelacoes,o.constelacao);
+    const pesq=state.pesquisadores[0];
+    return {...o, projetoNome:pr?pr.titulo:'–', constNome:con?con.nome:'–', pesNome:pesq?pesq.nome:'–'};
+  }).sort((a,b)=>a.data.localeCompare(b.data));
+  return `
+  <div class="page-header"><div class="page-title"><h2>🔭 Rel. Observações</h2><p>Registro de observações astronômicas</p></div></div>
+  <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-label">Total Obs.</div><div class="stat-value" style="color:var(--accent)">${rows.length}</div></div>
+    <div class="stat-card"><div class="stat-label">Constelações</div><div class="stat-value" style="color:var(--accent2)">${new Set(rows.map(r=>r.constelacao)).size}</div></div>
+    <div class="stat-card"><div class="stat-label">Média/Projeto</div><div class="stat-value" style="color:var(--gold)">${(rows.length/state.projetos.length).toFixed(1)}</div></div>
+    <div class="stat-card"><div class="stat-label">Mais Observada</div><div class="stat-value" style="font-size:18px;color:var(--success)">Orion</div></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>🔭 <span>Observações</span></h3></div>
+    <table><thead><tr><th>Data</th><th>Projeto</th><th>Pesquisador</th><th>Constelação</th><th>Instrumento</th><th>Versão</th></tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td>${fmt(r.data)}</td><td>${r.projetoNome}</td><td>${r.pesNome}</td>
+      <td><strong style="color:var(--accent2)">${r.constNome}</strong></td>
+      <td>${r.instrumento}</td>
+      <td><span class="badge badge-gold">v${r.versao}</span></td>
+    </tr>`).join('')}</tbody></table>
+  </div>`;
+}
+
+function renderRelProjetos(){
+  return `
+  <div class="page-header"><div class="page-title"><h2>📋 Rel. Projetos e Grupos</h2><p>Visão geral dos grupos e pesquisadores</p></div></div>
+  <div class="table-wrap" style="margin-bottom:18px">
+    <div class="table-header"><h3>📁 <span>Projetos</span></h3></div>
+    <table><thead><tr><th>Data</th><th>Projeto</th><th>Responsável</th><th>Grupo</th><th>Área</th><th>Qtd. Pesq.</th><th>Status</th></tr></thead>
+    <tbody>${state.projetos.map(p=>{
+      const gr=getById(state.gruposPesquisa,p.grupo);
+      const co=getById(state.coordenadores,p.coordenador);
+      const qtd=gr?gr.pesquisadores.length:0;
+      return `<tr>
+        <td>${fmt(p.inicio)}</td>
+        <td><strong>${p.titulo}</strong></td>
+        <td>${co?co.nome:'–'}</td>
+        <td>${gr?gr.nome:'–'}</td>
+        <td>${p.area}</td>
+        <td>${qtd}</td>
+        <td><span class="badge ${p.status==='Ativo'?'badge-green':p.status==='Concluído'?'badge-blue':'badge-red'}">${p.status}</span></td>
+      </tr>`;
+    }).join('')}</tbody></table>
+    <div style="padding:10px 18px;font-size:12px;color:var(--text3);border-top:1px solid var(--border)">Total de projetos: <strong style="color:var(--text2)">${state.projetos.length}</strong> | Ativos: <strong style="color:var(--success)">${state.projetos.filter(x=>x.status==='Ativo').length}</strong></div>
+  </div>
+  <div class="table-wrap">
+    <div class="table-header"><h3>🔬 <span>Pesquisadores por Grupo</span></h3></div>
+    <table><thead><tr><th>Grupo</th><th>Projeto</th><th>Status</th><th>Nome do Pesquisador</th><th>Curso</th><th>Data Ingresso</th></tr></thead>
+    <tbody>${state.gruposPesquisa.flatMap(g=>{
+      const proj=state.projetos.filter(p=>p.grupo===g.id);
+      return g.pesquisadores.map(pid=>{
+        const pe=getById(state.pesquisadores,pid);
+        return `<tr>
+          <td><strong style="color:var(--accent)">${g.nome}</strong></td>
+          <td>${proj.map(p=>p.titulo).join(', ')||'–'}</td>
+          <td><span class="badge ${g.status==='Ativo'?'badge-green':'badge-red'}">${g.status}</span></td>
+          <td>${pe?pe.nome:'–'}</td>
+          <td>${pe&&pe.curso?pe.curso:'–'}</td>
+          <td>${pe?fmt(pe.dataIngresso):'–'}</td>
+        </tr>`;
+      });
+    }).join('')}</tbody></table>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+</script>
+</body>
+</html>
