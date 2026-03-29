@@ -37,7 +37,3 @@ docker compose down
 
 **Licença e referências**
 - Ver `backend/LICENSE.md` para informações sobre licença (o backend original usa MIT).
-
-Se quiser, eu posso:
-- ajustar este README com mais detalhes técnicos (endpoints, exemplos de requisições),
-- adicionar um pequeno guia de contribuição ou instruções para popular a base de dados.
