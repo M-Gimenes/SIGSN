@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+// Emanuelly - Processo
 class Observacao extends Model {
   static init(sequelize) {
     super.init(
