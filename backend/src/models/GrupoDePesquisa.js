@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
-
+// Emanuelly - Cadastro
 class GrupoDePesquisa extends Model {
   static init(sequelize) {
     super.init(
