@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+//Larissa - Processo
 class Agendamento extends Model {
   static init(sequelize) {
     super.init(

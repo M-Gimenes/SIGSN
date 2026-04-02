@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+
 class GrupoDePesquisa extends Model {
   static init(sequelize) {
     super.init(
