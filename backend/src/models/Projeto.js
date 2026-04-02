@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+//Matheus - Processo
 class Projeto extends Model {
   static init(sequelize) {
     super.init(

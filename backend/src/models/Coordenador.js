@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { Pessoa } from './Pessoa.js';
 
+//Matheus - Cadastro
 class Coordenador extends Pessoa {
   static init(sequelize) {
     super.init(

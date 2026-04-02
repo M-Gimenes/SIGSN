@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+//Matheus
 class Pessoa extends Model {
   // Classe base abstrata. Nao cria tabela no banco.
   static atributosBase() {

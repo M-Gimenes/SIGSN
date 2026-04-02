@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+//Larissa - Cadastro
 class Caravana extends Model {
   static init(sequelize) {
     super.init(
