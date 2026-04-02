@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
+// Emanuelly - Cadastro
 class Constelacao extends Model {
   static init(sequelize) {
     super.init(
