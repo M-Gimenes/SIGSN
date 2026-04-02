@@ -33,9 +33,15 @@ class Projeto extends Model {
           },
         },
         status: {
-          type: DataTypes.BOOLEAN,
+          type: DataTypes.STRING,
           allowNull: false,
-          defaultValue: true,
+          defaultValue: 'ativo',
+          validate: {
+            isIn: {
+              args: [['ativo', 'concluido', 'suspenso']],
+              msg: 'Status do Projeto deve ser ativo, concluido ou suspenso.',
+            },
+          },
         },
         areaDePesquisa: {
           type: DataTypes.STRING,
