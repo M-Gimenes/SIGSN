@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
-//Larissa - Cadastro
+// Larissa - Cadastro
 class Caravana extends Model {
   static init(sequelize) {
     super.init(
@@ -18,35 +18,40 @@ class Caravana extends Model {
           allowNull: false,
           validate: {
             notEmpty: { msg: 'Tipo da Caravana deve ser preenchido.' },
+            isIn: {
+              args: [['Escolar', 'Universitária', 'Turística', 'Institucional']],
+              msg: 'Tipo da Caravana deve ser Escolar, Universitária, Turística ou Institucional.',
+            },
           },
         },
         instituicao: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Instituicao da Caravana deve ser preenchida.' },
+            notEmpty: { msg: 'Instituição/Organização responsável deve ser preenchida.' },
           },
         },
         responsavel: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Responsavel da Caravana deve ser preenchido.' },
+            notEmpty: { msg: 'Responsável pela Caravana deve ser preenchido.' },
           },
         },
         telefone: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Telefone da Caravana deve ser preenchido.' },
+            notEmpty: { msg: 'Telefone de contato deve ser preenchido.' },
           },
         },
         quantidadeVisitantes: {
           type: DataTypes.INTEGER,
           allowNull: false,
           validate: {
+            isInt: { msg: 'Quantidade de visitantes deve ser um número inteiro.' },
             min: { args: [1], msg: 'Quantidade de visitantes deve ser maior que zero.' },
-            max: { args: [50], msg: 'Quantidade de visitantes nao pode ultrapassar 50.' },
+            max: { args: [50], msg: 'Quantidade de visitantes não pode ultrapassar 50.' },
           },
         },
         observacoes: {
@@ -59,7 +64,11 @@ class Caravana extends Model {
   }
 
   static associate(models) {
-    this.hasOne(models.agendamento, { as: 'agendamento', onDelete: 'RESTRICT', onUpdate: 'CASCADE' });
+    this.hasOne(models.agendamento, {
+      as: 'agendamento',
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
+    });
   }
 }
 
