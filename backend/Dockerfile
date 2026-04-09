@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 3333
 
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npm run swagger && npm run dev"]
