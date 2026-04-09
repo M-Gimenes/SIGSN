@@ -35,11 +35,9 @@ Agendamento.associate(sequelize.models);
 
 syncDatabase();
 
-function syncDatabase() {
-  (async () => {
-    await sequelize.sync({ force: true });
-    await seedDatabase();
-  })();
+async function syncDatabase() {
+  await sequelize.sync({ force: true });
+  await seedDatabase();
 }
 
 async function seedDatabase() {
@@ -70,7 +68,7 @@ async function seedDatabase() {
       telefone: '(28) 99993-0003',
       email: 'coord3@sigsn.com',
       status: true,
-      especialidade: 'Astrofisica',
+      especialidade: 'Astrofísica',
       login: 'coord3',
       senha: '123456',
     },
@@ -80,7 +78,7 @@ async function seedDatabase() {
       telefone: '(28) 99994-0004',
       email: 'coord4@sigsn.com',
       status: true,
-      especialidade: 'Instrumentacao',
+      especialidade: 'Instrumentação',
       login: 'coord4',
       senha: '123456',
     },
@@ -113,7 +111,7 @@ async function seedDatabase() {
       telefone: '(28) 98883-0003',
       email: 'pesq3@sigsn.com',
       status: true,
-      especialidade: 'Mecanica Celeste',
+      especialidade: 'Mecânica Celeste',
       login: 'pesq3',
       senha: '123456',
     },
@@ -136,8 +134,8 @@ async function seedDatabase() {
       telefone: '(28) 97771-0001',
       email: 'guia1@sigsn.com',
       status: true,
-      especialidade: 'Planetario',
-      disponibilidade: 'Seg a Sex - Manha',
+      especialidade: 'Planetário',
+      disponibilidade: 'Seg a Sex - Manhã',
     },
     {
       nome: 'Guia 2',
@@ -145,7 +143,7 @@ async function seedDatabase() {
       telefone: '(28) 97772-0002',
       email: 'guia2@sigsn.com',
       status: true,
-      especialidade: 'Telescopios',
+      especialidade: 'Telescópios',
       disponibilidade: 'Seg a Sex - Tarde',
     },
     {
@@ -154,7 +152,7 @@ async function seedDatabase() {
       telefone: '(28) 97773-0003',
       email: 'guia3@sigsn.com',
       status: true,
-      especialidade: 'Visitas escolares',
+      especialidade: 'Visitas Escolares',
       disponibilidade: 'Noites de quarta',
     },
     {
@@ -163,7 +161,7 @@ async function seedDatabase() {
       telefone: '(28) 97774-0004',
       email: 'guia4@sigsn.com',
       status: true,
-      especialidade: 'Sessoes especiais',
+      especialidade: 'Sessões Especiais',
       disponibilidade: 'Finais de semana',
     },
   ]);
@@ -171,7 +169,7 @@ async function seedDatabase() {
   const grupos = await GrupoDePesquisa.bulkCreate([
     {
       nome: 'Grupo Orion',
-      areaDePesquisa: 'Evolucao estelar',
+      areaDePesquisa: 'Evolução estelar',
       dataCriacao: '2025-01-10',
       descricao: 'Grupo focado em estrelas jovens.',
       status: true,
@@ -180,42 +178,30 @@ async function seedDatabase() {
       nome: 'Grupo Lyra',
       areaDePesquisa: 'Exoplanetas',
       dataCriacao: '2025-02-14',
-      descricao: 'Busca e analise de exoplanetas.',
+      descricao: 'Busca e análise de exoplanetas.',
       status: true,
     },
     {
       nome: 'Grupo Draco',
-      areaDePesquisa: 'Galaxias',
+      areaDePesquisa: 'Galáxias',
       dataCriacao: '2025-03-20',
-      descricao: 'Mapeamento de galaxias proximas.',
+      descricao: 'Mapeamento de galáxias próximas.',
       status: true,
     },
     {
       nome: 'Grupo Pegasus',
       areaDePesquisa: 'Nebulosas',
       dataCriacao: '2025-04-01',
-      descricao: 'Estudo de nebulosas de emissao.',
+      descricao: 'Estudo de nebulosas de emissão.',
       status: true,
     },
   ]);
 
   await sequelize.models.grupo_pesquisador.bulkCreate([
-    {
-      pesquisadorId: pesquisadores[0].id,
-      grupoDePesquisaId: grupos[0].id,
-    },
-    {
-      pesquisadorId: pesquisadores[1].id,
-      grupoDePesquisaId: grupos[1].id,
-    },
-    {
-      pesquisadorId: pesquisadores[2].id,
-      grupoDePesquisaId: grupos[2].id,
-    },
-    {
-      pesquisadorId: pesquisadores[3].id,
-      grupoDePesquisaId: grupos[3].id,
-    },
+    { pesquisadorId: pesquisadores[0].id, grupoDePesquisaId: grupos[0].id },
+    { pesquisadorId: pesquisadores[1].id, grupoDePesquisaId: grupos[1].id },
+    { pesquisadorId: pesquisadores[2].id, grupoDePesquisaId: grupos[2].id },
+    { pesquisadorId: pesquisadores[3].id, grupoDePesquisaId: grupos[3].id },
   ]);
 
   const projetos = await Projeto.bulkCreate([
@@ -224,7 +210,7 @@ async function seedDatabase() {
       dataInicio: '2025-05-01',
       dataTermino: '2025-10-30',
       status: 'ativo',
-      areaDePesquisa: 'Estrelas variaveis',
+      areaDePesquisa: 'Estrelas variáveis',
       grupoDePesquisaId: grupos[0].id,
       coordenadorId: coordenadores[0].id,
     },
@@ -242,7 +228,7 @@ async function seedDatabase() {
       dataInicio: '2025-07-01',
       dataTermino: '2025-12-31',
       status: 'ativo',
-      areaDePesquisa: 'Objetos de ceu profundo',
+      areaDePesquisa: 'Objetos de céu profundo',
       grupoDePesquisaId: grupos[2].id,
       coordenadorId: coordenadores[2].id,
     },
@@ -251,7 +237,7 @@ async function seedDatabase() {
       dataInicio: '2025-08-01',
       dataTermino: '2026-01-31',
       status: 'ativo',
-      areaDePesquisa: 'Superficie lunar',
+      areaDePesquisa: 'Superfície lunar',
       grupoDePesquisaId: grupos[3].id,
       coordenadorId: coordenadores[3].id,
     },
@@ -261,25 +247,25 @@ async function seedDatabase() {
     {
       nome: 'Orion',
       hemisferio: 'Sul',
-      periodoVisibilidade: 'Novembro a Marco',
+      periodoVisibilidade: 'Novembro a Março',
       principaisEstrelas: 'Betelgeuse, Rigel',
-      descricao: 'Constelacao de referencia no ceu de verao.',
-      curiosidades: 'Contem uma das nebulosas mais observadas.',
+      descricao: 'Constelação de referência no céu de verão.',
+      curiosidades: 'Contém uma das nebulosas mais observadas.',
     },
     {
       nome: 'Cassiopeia',
       hemisferio: 'Norte',
       periodoVisibilidade: 'Agosto a Fevereiro',
       principaisEstrelas: 'Schedar, Caph',
-      descricao: 'Constelacao em forma de W.',
-      curiosidades: 'Facil de identificar em ceu limpo.',
+      descricao: 'Constelação em forma de W.',
+      curiosidades: 'Fácil de identificar em céu limpo.',
     },
     {
       nome: 'Scorpius',
       hemisferio: 'Sul',
       periodoVisibilidade: 'Maio a Setembro',
       principaisEstrelas: 'Antares, Shaula',
-      descricao: 'Uma das mais brilhantes do ceu.',
+      descricao: 'Uma das mais brilhantes do céu.',
       curiosidades: 'Muito usada em visitas noturnas.',
     },
     {
@@ -288,39 +274,39 @@ async function seedDatabase() {
       periodoVisibilidade: 'Abril a Junho',
       principaisEstrelas: 'Acrux, Mimosa',
       descricao: 'Conhecida como Cruzeiro do Sul.',
-      curiosidades: 'Utilizada para orientacao no hemisferio sul.',
+      curiosidades: 'Utilizada para orientação no hemisfério sul.',
     },
   ]);
 
   await Observacao.bulkCreate([
     {
       dataObservacao: '2025-09-10',
-      descricao: 'Registro inicial da constelacao.',
-      instrumentoUtilizado: 'Telescopio refrator 120mm',
+      descricao: 'Registro inicial da constelação.',
+      instrumentoUtilizado: 'Telescópio refrator 120mm',
       versaoObservacao: 1,
       projetoId: projetos[0].id,
       constelacaoId: constelacoes[0].id,
     },
     {
       dataObservacao: '2025-09-11',
-      descricao: 'Condicoes atmosfericas estaveis.',
-      instrumentoUtilizado: 'Telescopio refletor 200mm',
+      descricao: 'Condições atmosféricas estáveis.',
+      instrumentoUtilizado: 'Telescópio refletor 200mm',
       versaoObservacao: 1,
       projetoId: projetos[1].id,
       constelacaoId: constelacoes[1].id,
     },
     {
       dataObservacao: '2025-09-12',
-      descricao: 'Nova sequencia de imagens capturadas.',
-      instrumentoUtilizado: 'Camera CCD',
+      descricao: 'Nova sequência de imagens capturadas.',
+      instrumentoUtilizado: 'Câmera CCD',
       versaoObservacao: 1,
       projetoId: projetos[2].id,
       constelacaoId: constelacoes[2].id,
     },
     {
       dataObservacao: '2025-09-13',
-      descricao: 'Atualizacao de catalogo com novas medidas.',
-      instrumentoUtilizado: 'Binoculo astronomico 25x100',
+      descricao: 'Atualização de catálogo com novas medidas.',
+      instrumentoUtilizado: 'Binóculo astronômico 25x100',
       versaoObservacao: 1,
       projetoId: projetos[3].id,
       constelacaoId: constelacoes[3].id,
@@ -339,17 +325,17 @@ async function seedDatabase() {
     },
     {
       nome: 'Caravana Cosmos',
-      tipoCaravana: 'Universitaria',
+      tipoCaravana: 'Universitária',
       instituicao: 'Universidade B',
-      responsavel: 'Joao Souza',
+      responsavel: 'João Souza',
       telefone: '(28) 96662-0002',
       quantidadeVisitantes: 25,
-      observacoes: 'Grupo de alunos de fisica.',
+      observacoes: 'Grupo de alunos de física.',
     },
     {
       nome: 'Caravana Estelar',
-      tipoCaravana: 'Turistica',
-      instituicao: 'Agencia ViaCeu',
+      tipoCaravana: 'Turística',
+      instituicao: 'Agência ViaCéu',
       responsavel: 'Ana Costa',
       telefone: '(28) 96663-0003',
       quantidadeVisitantes: 40,
@@ -362,7 +348,7 @@ async function seedDatabase() {
       responsavel: 'Paulo Lima',
       telefone: '(28) 96664-0004',
       quantidadeVisitantes: 20,
-      observacoes: 'Visita tecnica.',
+      observacoes: 'Visita técnica.',
     },
   ]);
 
@@ -371,36 +357,32 @@ async function seedDatabase() {
       dataVisita: '2026-04-01 09:00:00',
       tipoVisita: 'Diurna',
       valorVisita: 300.0,
-      observacoes: 'Primeiro horario da manha.',
+      observacoes: 'Primeiro horário da manhã.',
       guiaId: guias[0].id,
-      coordenadorId: coordenadores[0].id,
       caravanaId: caravanas[0].id,
     },
     {
       dataVisita: '2026-04-02 14:00:00',
       tipoVisita: 'Diurna',
       valorVisita: 280.0,
-      observacoes: 'Visita academica.',
+      observacoes: 'Visita acadêmica.',
       guiaId: guias[1].id,
-      coordenadorId: coordenadores[1].id,
       caravanaId: caravanas[1].id,
     },
     {
       dataVisita: '2026-04-03 19:30:00',
       tipoVisita: 'Noturna',
       valorVisita: 450.0,
-      observacoes: 'Observacao a olho nu e telescopio.',
+      observacoes: 'Observação a olho nu e telescópio.',
       guiaId: guias[2].id,
-      coordenadorId: coordenadores[2].id,
       caravanaId: caravanas[2].id,
     },
     {
       dataVisita: '2026-04-04 20:00:00',
-      tipoVisita: 'Sessao Especial',
+      tipoVisita: 'Sessão Especial',
       valorVisita: 500.0,
-      observacoes: 'Sessao com conteudo exclusivo.',
+      observacoes: 'Sessão com conteúdo exclusivo.',
       guiaId: guias[3].id,
-      coordenadorId: coordenadores[3].id,
       caravanaId: caravanas[3].id,
     },
   ]);

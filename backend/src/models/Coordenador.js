@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { Pessoa } from './Pessoa.js';
 
-//Matheus - Cadastro
+// Matheus - Cadastro
 class Coordenador extends Pessoa {
   static init(sequelize) {
     super.init(
@@ -28,6 +28,11 @@ class Coordenador extends Pessoa {
   }
 
   static associate(models) {
+    this.hasMany(models.projeto, {
+      as: 'projetos',
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
+    });
   }
 }
 

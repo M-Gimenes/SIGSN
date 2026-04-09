@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
-//Larissa - Processo
+// Larissa - Processo
 class Agendamento extends Model {
   static init(sequelize) {
     super.init(
@@ -9,21 +9,25 @@ class Agendamento extends Model {
           type: DataTypes.DATE,
           allowNull: false,
           validate: {
-            isDate: { msg: 'Data da Visita deve ser valida.' },
+            isDate: { msg: 'Data da visita deve ser válida.' },
           },
         },
         tipoVisita: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Tipo de Visita deve ser preenchido.' },
+            notEmpty: { msg: 'Tipo de visita deve ser preenchido.' },
+            isIn: {
+              args: [['Diurna', 'Noturna', 'Sessão Especial']],
+              msg: 'Tipo de visita deve ser Diurna, Noturna ou Sessão Especial.',
+            },
           },
         },
         valorVisita: {
           type: DataTypes.DOUBLE,
           allowNull: true,
           validate: {
-            isFloat: { msg: 'Valor da Visita deve ser numerico.' },
+            isFloat: { msg: 'Valor da visita deve ser numérico.' },
           },
         },
         observacoes: {
@@ -39,7 +43,7 @@ class Agendamento extends Model {
           {
             unique: true,
             fields: ['data_visita'],
-            name: 'agendamento_data_horario_unq',
+            name: 'agendamento_data_visita_unq',
           },
         ],
       }
@@ -52,15 +56,7 @@ class Agendamento extends Model {
       foreignKey: {
         name: 'guiaId',
         allowNull: false,
-        validate: { notNull: { msg: 'Guia do Agendamento deve ser preenchido.' } },
-      },
-    });
-    this.belongsTo(models.coordenador, {
-      as: 'coordenador',
-      foreignKey: {
-        name: 'coordenadorId',
-        allowNull: false,
-        validate: { notNull: { msg: 'Coordenador do Agendamento deve ser preenchido.' } },
+        validate: { notNull: { msg: 'Guia do agendamento deve ser preenchido.' } },
       },
     });
     this.belongsTo(models.caravana, {
@@ -69,7 +65,7 @@ class Agendamento extends Model {
         name: 'caravanaId',
         allowNull: false,
         unique: true,
-        validate: { notNull: { msg: 'Caravana do Agendamento deve ser preenchida.' } },
+        validate: { notNull: { msg: 'Caravana do agendamento deve ser preenchida.' } },
       },
     });
   }

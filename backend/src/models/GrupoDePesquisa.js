@@ -17,14 +17,14 @@ class GrupoDePesquisa extends Model {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Area de Pesquisa do Grupo deve ser preenchida.' },
+            notEmpty: { msg: 'Área de pesquisa do grupo deve ser preenchida.' },
           },
         },
         dataCriacao: {
           type: DataTypes.DATEONLY,
           allowNull: false,
           validate: {
-            isDate: { msg: 'Data de Criacao do Grupo deve ser valida.' },
+            isDate: { msg: 'Data de criação do grupo deve ser válida.' },
           },
         },
         descricao: {
@@ -46,6 +46,11 @@ class GrupoDePesquisa extends Model {
       as: 'pesquisadores',
       through: 'grupo_pesquisador',
       onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
+    this.hasMany(models.projeto, {
+      as: 'projetos',
+      onDelete: 'RESTRICT',
       onUpdate: 'CASCADE',
     });
   }

@@ -10,36 +10,41 @@ class Constelacao extends Model {
           allowNull: false,
           unique: true,
           validate: {
-            notEmpty: { msg: 'Nome da Constelacao deve ser preenchido.' },
-            len: { args: [3, 50], msg: 'Nome da Constelacao deve ter entre 3 e 50 caracteres.' },
+            notEmpty: { msg: 'Nome da Constelação deve ser preenchido.' },
+            len: { args: [2, 50], msg: 'Nome da Constelação deve ter entre 2 e 50 caracteres.' },
           },
         },
         hemisferio: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Hemisferio da Constelacao deve ser preenchido.' },
-            len: { args: [3, 20], msg: 'Hemisfério deve ter entre 3 e 20 caracteres.' },
+            notEmpty: { msg: 'Hemisfério da Constelação deve ser preenchido.' },
+            isIn: {
+              args: [['Norte', 'Sul']],
+              msg: 'Hemisfério deve ser Norte ou Sul.',
+            },
           },
         },
         periodoVisibilidade: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Periodo de Visibilidade deve ser preenchido.' },
-            len: { args: [3, 50], msg: 'Nome da Constelacao deve ter entre 3 e 50 caracteres.' },
+            notEmpty: { msg: 'Período de visibilidade deve ser preenchido.' },
           },
         },
         principaisEstrelas: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Principais Estrelas da Constelacao devem ser preenchidas.' },
+            notEmpty: { msg: 'Principais estrelas devem ser preenchidas.' },
           },
         },
         descricao: {
           type: DataTypes.TEXT,
-          allowNull: true,
+          allowNull: false,
+          validate: {
+            notEmpty: { msg: 'Descrição astronômica deve ser preenchida.' },
+          },
         },
         curiosidades: {
           type: DataTypes.TEXT,
@@ -51,6 +56,11 @@ class Constelacao extends Model {
   }
 
   static associate(models) {
+    this.hasMany(models.observacao, {
+      as: 'observacoes',
+      onDelete: 'RESTRICT',
+      onUpdate: 'CASCADE',
+    });
   }
 }
 

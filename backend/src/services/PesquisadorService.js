@@ -1,9 +1,16 @@
 import { Pesquisador } from '../models/Pesquisador.js';
+import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 
-const include = { all: true, nested: true };
+const include = [
+  {
+    model: GrupoDePesquisa,
+    as: 'gruposDePesquisa',
+    through: { attributes: [] },
+  },
+];
 
 class PesquisadorService {
-  static async findAll(req) {
+  static async findAll() {
     return Pesquisador.findAll({ include });
   }
 
@@ -31,8 +38,16 @@ class PesquisadorService {
     const { id } = req.params;
     const obj = await Pesquisador.findByPk(id);
     if (!obj) throw new Error('Pesquisador não encontrado.');
+
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    Object.assign(obj, { nome, cpf, telefone, email, status, especialidade, login, senha });
+    if (nome !== undefined) obj.nome = nome;
+    if (cpf !== undefined) obj.cpf = cpf;
+    if (telefone !== undefined) obj.telefone = telefone;
+    if (email !== undefined) obj.email = email;
+    if (status !== undefined) obj.status = status;
+    if (especialidade !== undefined) obj.especialidade = especialidade;
+    if (login !== undefined) obj.login = login;
+    if (senha !== undefined) obj.senha = senha;
     await obj.save();
     return Pesquisador.findByPk(obj.id, { include });
   }

@@ -1,8 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 
-//Matheus
+// Matheus - Classe base abstrata. Não cria tabela no banco.
 class Pessoa extends Model {
-  // Classe base abstrata. Nao cria tabela no banco.
   static atributosBase() {
     return {
       nome: {
@@ -18,10 +17,6 @@ class Pessoa extends Model {
         unique: true,
         validate: {
           notEmpty: { msg: 'CPF deve ser preenchido.' },
-          is: {
-            args: [/^\d{3}\.\d{3}\.\d{3}-\d{2}$/],
-            msg: 'CPF deve estar no formato 000.000.000-00.',
-          },
         },
       },
       telefone: {
@@ -37,7 +32,7 @@ class Pessoa extends Model {
         unique: true,
         validate: {
           notEmpty: { msg: 'E-mail deve ser preenchido.' },
-          isEmail: { msg: 'E-mail invalido.' },
+          isEmail: { msg: 'E-mail inválido.' },
         },
       },
       status: {
@@ -47,7 +42,10 @@ class Pessoa extends Model {
       },
       especialidade: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: false,
+        validate: {
+          notEmpty: { msg: 'Especialidade deve ser preenchida.' },
+        },
       },
     };
   }

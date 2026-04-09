@@ -2,22 +2,21 @@ import { UniqueConstraintError } from 'sequelize';
 import sequelize from '../config/database-connection.js';
 import { Agendamento } from '../models/Agendamento.js';
 import { Guia } from '../models/Guia.js';
-import { Coordenador } from '../models/Coordenador.js';
 import { Caravana } from '../models/Caravana.js';
 import { formatLocalDateYYYYMMDD, getTurnoFromDate } from '../utils/agendamentoTurno.js';
 
-const MAX_AGENDAMENTOS_POR_TURNO_DIA = 3;
+const MAX_AGENDAMENTOS_POR_TURNO = 3;
 
 const include = [
   { model: Guia, as: 'guia' },
-  { model: Coordenador, as: 'coordenador' },
   { model: Caravana, as: 'caravana' },
 ];
 
 /**
- * Doc RF27–RF30: (1) não repetir data+horário; (2) no máx. 3 agendamentos na mesma data no mesmo turno.
+ * RF27–RF30: máx. 3 agendamentos na mesma data e turno.
+ * Deve ser chamada dentro de uma transação para evitar race conditions.
  */
-async function assertLimiteTurno(dataVisita, excludeId) {
+async function assertLimiteTurno(dataVisita, excludeId, transaction) {
   const visitDate = new Date(dataVisita);
   const dayStr = formatLocalDateYYYYMMDD(visitDate);
   const turno = getTurnoFromDate(visitDate);
@@ -25,6 +24,7 @@ async function assertLimiteTurno(dataVisita, excludeId) {
   const noDia = await Agendamento.findAll({
     attributes: ['id', 'dataVisita'],
     where: sequelize.where(sequelize.fn('date', sequelize.col('data_visita')), dayStr),
+    transaction,
   });
 
   const count = noDia.filter((row) => {
@@ -32,16 +32,16 @@ async function assertLimiteTurno(dataVisita, excludeId) {
     return getTurnoFromDate(row.dataVisita) === turno;
   }).length;
 
-  if (count >= MAX_AGENDAMENTOS_POR_TURNO_DIA) {
+  if (count >= MAX_AGENDAMENTOS_POR_TURNO) {
     throw new Error(
-      `Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO_DIA} agendamentos para a mesma data no mesmo turno.`
+      `Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`
     );
   }
 }
 
 class AgendamentoService {
-  static async findAll(req) {
-    return Agendamento.findAll({ include });
+  static async findAll() {
+    return Agendamento.findAll({ include, order: [['dataVisita', 'ASC']] });
   }
 
   static async findByPk(req) {
@@ -50,76 +50,57 @@ class AgendamentoService {
   }
 
   static async create(req) {
-    const {
-      dataVisita,
-      tipoVisita,
-      valorVisita,
-      observacoes,
-      guiaId,
-      coordenadorId,
-      caravanaId,
-    } = req.body;
+    const { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
 
-    await assertLimiteTurno(dataVisita, null);
+    return sequelize.transaction(async (t) => {
+      await assertLimiteTurno(dataVisita, null, t);
 
-    try {
-      const obj = await Agendamento.create({
-        dataVisita,
-        tipoVisita,
-        valorVisita,
-        observacoes,
-        guiaId,
-        coordenadorId,
-        caravanaId,
-      });
-      return Agendamento.findByPk(obj.id, { include });
-    } catch (error) {
-      if (error instanceof UniqueConstraintError) {
-        throw new Error(
-          'Não é permitido o agendamento: já existe outro cadastrado para a mesma data e horário de visita.'
+      try {
+        const obj = await Agendamento.create(
+          { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId },
+          { transaction: t }
         );
+        return Agendamento.findByPk(obj.id, { include, transaction: t });
+      } catch (error) {
+        if (error instanceof UniqueConstraintError) {
+          throw new Error(
+            'Já existe um agendamento cadastrado para a mesma data e horário de visita.'
+          );
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const obj = await Agendamento.findByPk(id);
-    if (!obj) throw new Error('Agendamento não encontrado.');
+    const { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
 
-    const {
-      dataVisita,
-      tipoVisita,
-      valorVisita,
-      observacoes,
-      guiaId,
-      coordenadorId,
-      caravanaId,
-    } = req.body;
+    return sequelize.transaction(async (t) => {
+      const obj = await Agendamento.findByPk(id, { transaction: t });
+      if (!obj) throw new Error('Agendamento não encontrado.');
 
-    const nextData = dataVisita !== undefined ? dataVisita : obj.dataVisita;
+      const nextDataVisita = dataVisita !== undefined ? dataVisita : obj.dataVisita;
+      await assertLimiteTurno(nextDataVisita, id, t);
 
-    await assertLimiteTurno(nextData, id);
-
-    try {
-      if (dataVisita !== undefined) obj.dataVisita = dataVisita;
-      if (tipoVisita !== undefined) obj.tipoVisita = tipoVisita;
-      if (valorVisita !== undefined) obj.valorVisita = valorVisita;
-      if (observacoes !== undefined) obj.observacoes = observacoes;
-      if (guiaId !== undefined) obj.guiaId = guiaId;
-      if (coordenadorId !== undefined) obj.coordenadorId = coordenadorId;
-      if (caravanaId !== undefined) obj.caravanaId = caravanaId;
-      await obj.save();
-      return Agendamento.findByPk(obj.id, { include });
-    } catch (error) {
-      if (error instanceof UniqueConstraintError) {
-        throw new Error(
-          'Não é permitido o agendamento: já existe outro cadastrado para a mesma data e horário de visita.'
-        );
+      try {
+        if (dataVisita !== undefined) obj.dataVisita = dataVisita;
+        if (tipoVisita !== undefined) obj.tipoVisita = tipoVisita;
+        if (valorVisita !== undefined) obj.valorVisita = valorVisita;
+        if (observacoes !== undefined) obj.observacoes = observacoes;
+        if (guiaId !== undefined) obj.guiaId = guiaId;
+        if (caravanaId !== undefined) obj.caravanaId = caravanaId;
+        await obj.save({ transaction: t });
+        return Agendamento.findByPk(obj.id, { include, transaction: t });
+      } catch (error) {
+        if (error instanceof UniqueConstraintError) {
+          throw new Error(
+            'Já existe um agendamento cadastrado para a mesma data e horário de visita.'
+          );
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
   static async delete(req) {

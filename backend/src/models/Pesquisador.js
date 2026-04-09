@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { Pessoa } from './Pessoa.js';
 
-//Matheus - Cadastro
+// Matheus - Cadastro
 class Pesquisador extends Pessoa {
   static init(sequelize) {
     super.init(
@@ -28,6 +28,12 @@ class Pesquisador extends Pessoa {
   }
 
   static associate(models) {
+    this.belongsToMany(models.grupoDePesquisa, {
+      as: 'gruposDePesquisa',
+      through: 'grupo_pesquisador',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    });
   }
 }
 

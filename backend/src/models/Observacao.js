@@ -9,29 +9,30 @@ class Observacao extends Model {
           type: DataTypes.DATEONLY,
           allowNull: false,
           validate: {
-            isDate: { msg: 'Data da Observacao deve ser valida.' },
+            isDate: { msg: 'Data da observação deve ser válida.' },
           },
         },
         descricao: {
           type: DataTypes.TEXT,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Descricao da Observacao deve ser preenchida.' },
+            notEmpty: { msg: 'Descrição científica da observação deve ser preenchida.' },
           },
         },
         instrumentoUtilizado: {
           type: DataTypes.STRING,
           allowNull: false,
           validate: {
-            notEmpty: { msg: 'Instrumento Utilizado deve ser preenchido.' },
+            notEmpty: { msg: 'Instrumento utilizado deve ser preenchido.' },
           },
         },
         versaoObservacao: {
-          type: DataTypes.DOUBLE,
+          type: DataTypes.INTEGER,
           allowNull: false,
           defaultValue: 1,
           validate: {
-            isFloat: { msg: 'Versao da Observacao deve ser numerica.' },
+            isInt: { msg: 'Versão da observação deve ser um número inteiro.' },
+            min: { args: [1], msg: 'Versão da observação deve ser maior que zero.' },
           },
         },
       },
@@ -56,7 +57,7 @@ class Observacao extends Model {
       foreignKey: {
         name: 'projetoId',
         allowNull: false,
-        validate: { notNull: { msg: 'Projeto da Observacao deve ser preenchido.' } },
+        validate: { notNull: { msg: 'Projeto da observação deve ser preenchido.' } },
       },
     });
     this.belongsTo(models.constelacao, {
@@ -64,7 +65,7 @@ class Observacao extends Model {
       foreignKey: {
         name: 'constelacaoId',
         allowNull: false,
-        validate: { notNull: { msg: 'Constelacao da Observacao deve ser preenchida.' } },
+        validate: { notNull: { msg: 'Constelação da observação deve ser preenchida.' } },
       },
     });
   }
