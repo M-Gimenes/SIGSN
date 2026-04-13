@@ -1,8 +1,11 @@
+import { Op } from 'sequelize';
 import sequelize from '../config/database-connection.js';
 import { Agendamento } from '../models/Agendamento.js';
 import { Guia } from '../models/Guia.js';
 import { Caravana } from '../models/Caravana.js';
-import { formatLocalDateYYYYMMDD, getTurnoFromDate, isGuiaDisponivel } from '../utils/agendamentoTurno.js';
+import { formatLocalDateYYYYMMDD, getTurnoFromDate } from '../utils/agendamentoTurno.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 
 const MAX_AGENDAMENTOS_POR_TURNO = 3;
 
@@ -11,29 +14,39 @@ const include = [
   { model: Caravana, as: 'caravana' },
 ];
 
-/**
- * RF27–RF30:
- * - Guia deve existir e ter disponibilidade compatível com o horário.
- * - Máx. 3 agendamentos na mesma data e turno.
- */
-async function assertRegrasNegocio({ dataVisita, guiaId }, excludeId, transaction) {
-  const guia = await Guia.findByPk(guiaId, { transaction });
-  if (!guia) throw new Error('Guia não encontrado.');
-  if (!isGuiaDisponivel(guia.disponibilidade, dataVisita)) {
-    throw new Error(
-      `O guia "${guia.nome}" não tem disponibilidade compatível com o horário selecionado.`
-    );
-  }
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados, excludeId, transaction) {
+  const [campoErros, regraErros] = await Promise.all([
+    validarCampos(Agendamento, dados),
+    errosDeNegocio(dados, excludeId, transaction),
+  ]);
+
+  const todos = [...campoErros, ...regraErros];
+  if (todos.length > 0) throw new ValidationError(todos);
+}
+
+async function errosDeNegocio({ dataVisita, guiaId }, excludeId, transaction) {
+  const erros = [];
 
   const visitDate = new Date(dataVisita);
   const dayStr = formatLocalDateYYYYMMDD(visitDate);
   const turno = getTurnoFromDate(visitDate);
 
-  const agendamentosNoDia = await Agendamento.findAll({
-    attributes: ['id', 'dataVisita'],
-    where: sequelize.where(sequelize.fn('date', sequelize.col('data_visita')), dayStr),
-    transaction,
-  });
+  const [guia, agendamentosNoDia] = await Promise.all([
+    Guia.findByPk(guiaId, { transaction }),
+    Agendamento.findAll({
+      attributes: ['id', 'dataVisita'],
+      where: sequelize.where(sequelize.fn('date', sequelize.col('data_visita')), dayStr),
+      transaction,
+    }),
+  ]);
+
+  if (!guia) {
+    erros.push('Guia não encontrado.');
+  } else if (guia.disponibilidade !== turno) {
+    erros.push(`O guia "${guia.nome}" não tem disponibilidade compatível com o horário selecionado.`);
+  }
 
   const totalNoTurno = agendamentosNoDia.filter((row) => {
     if (excludeId != null && Number(row.id) === Number(excludeId)) return false;
@@ -41,11 +54,13 @@ async function assertRegrasNegocio({ dataVisita, guiaId }, excludeId, transactio
   }).length;
 
   if (totalNoTurno >= MAX_AGENDAMENTOS_POR_TURNO) {
-    throw new Error(
-      `Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`
-    );
+    erros.push(`Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`);
   }
+
+  return erros;
 }
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class AgendamentoService {
   static async findAll() {
@@ -58,13 +73,17 @@ class AgendamentoService {
   }
 
   static async create(req) {
-    const { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
+    const { dataVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
 
     return sequelize.transaction(async (transaction) => {
-      await assertRegrasNegocio({ dataVisita, guiaId }, null, transaction);
+      await assertValido(
+        { dataVisita, valorVisita, observacoes, guiaId, caravanaId },
+        null,
+        transaction
+      );
 
       const agendamento = await Agendamento.create(
-        { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId },
+        { dataVisita, valorVisita, observacoes, guiaId, caravanaId },
         { transaction }
       );
       return Agendamento.findByPk(agendamento.id, { include, transaction });
@@ -77,18 +96,19 @@ class AgendamentoService {
 
     return sequelize.transaction(async (transaction) => {
       const agendamento = await Agendamento.findByPk(id, { transaction });
-      if (!agendamento) throw new Error('Agendamento não encontrado.');
+      if (!agendamento) throw new ValidationError('Agendamento não encontrado.');
 
-      const nextDataVisita = dataVisita !== undefined ? dataVisita : agendamento.dataVisita;
-      const nextGuiaId = guiaId !== undefined ? guiaId : agendamento.guiaId;
+      const dados = {
+        dataVisita:  dataVisita  ?? agendamento.dataVisita,
+        valorVisita: valorVisita ?? agendamento.valorVisita,
+        observacoes: observacoes ?? agendamento.observacoes,
+        guiaId:      guiaId      ?? agendamento.guiaId,
+        caravanaId:  caravanaId  ?? agendamento.caravanaId,
+      };
 
-      await assertRegrasNegocio({ dataVisita: nextDataVisita, guiaId: nextGuiaId }, Number(id), transaction);
+      await assertValido(dados, Number(id), transaction);
 
-      if (dataVisita !== undefined) agendamento.dataVisita = dataVisita;
-      if (valorVisita !== undefined) agendamento.valorVisita = valorVisita;
-      if (observacoes !== undefined) agendamento.observacoes = observacoes;
-      if (guiaId !== undefined) agendamento.guiaId = guiaId;
-      if (caravanaId !== undefined) agendamento.caravanaId = caravanaId;
+      Object.assign(agendamento, dados);
       await agendamento.save({ transaction });
       return Agendamento.findByPk(agendamento.id, { include, transaction });
     });
@@ -97,7 +117,7 @@ class AgendamentoService {
   static async delete(req) {
     const { id } = req.params;
     const agendamento = await Agendamento.findByPk(id);
-    if (!agendamento) throw new Error('Agendamento não encontrado.');
+    if (!agendamento) throw new ValidationError('Agendamento não encontrado.');
     await agendamento.destroy();
     return agendamento;
   }

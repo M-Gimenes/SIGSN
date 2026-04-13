@@ -1,4 +1,15 @@
 import { Coordenador } from '../models/Coordenador.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(Coordenador, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class CoordenadorService {
   static async findAll() {
@@ -12,23 +23,33 @@ class CoordenadorService {
 
   static async create(req) {
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    return Coordenador.create({ nome, cpf, telefone, email, status, especialidade, login, senha });
+    const dados = { nome, cpf, telefone, email, status, especialidade, login, senha };
+
+    await assertValido(dados);
+    return Coordenador.create(dados);
   }
 
   static async update(req) {
     const { id } = req.params;
-    const coordenador = await Coordenador.findByPk(id);
-    if (!coordenador) throw new Error('Coordenador não encontrado.');
-
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    if (nome !== undefined) coordenador.nome = nome;
-    if (cpf !== undefined) coordenador.cpf = cpf;
-    if (telefone !== undefined) coordenador.telefone = telefone;
-    if (email !== undefined) coordenador.email = email;
-    if (status !== undefined) coordenador.status = status;
-    if (especialidade !== undefined) coordenador.especialidade = especialidade;
-    if (login !== undefined) coordenador.login = login;
-    if (senha !== undefined) coordenador.senha = senha;
+
+    const coordenador = await Coordenador.findByPk(id);
+    if (!coordenador) throw new ValidationError('Coordenador não encontrado.');
+
+    const dados = {
+      nome:          nome          ?? coordenador.nome,
+      cpf:           cpf           ?? coordenador.cpf,
+      telefone:      telefone      ?? coordenador.telefone,
+      email:         email         ?? coordenador.email,
+      status:        status        ?? coordenador.status,
+      especialidade: especialidade ?? coordenador.especialidade,
+      login:         login         ?? coordenador.login,
+      senha:         senha         ?? coordenador.senha,
+    };
+
+    await assertValido(dados);
+
+    Object.assign(coordenador, dados);
     await coordenador.save();
     return coordenador;
   }
@@ -36,7 +57,7 @@ class CoordenadorService {
   static async delete(req) {
     const { id } = req.params;
     const coordenador = await Coordenador.findByPk(id);
-    if (!coordenador) throw new Error('Coordenador não encontrado.');
+    if (!coordenador) throw new ValidationError('Coordenador não encontrado.');
     await coordenador.destroy();
     return coordenador;
   }

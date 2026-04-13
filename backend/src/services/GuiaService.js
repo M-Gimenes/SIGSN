@@ -1,6 +1,17 @@
 import { Op } from 'sequelize';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { Guia } from '../models/Guia.js';
 import { Agendamento } from '../models/Agendamento.js';
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(Guia, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class GuiaService {
   static async findAll() {
@@ -14,22 +25,32 @@ class GuiaService {
 
   static async create(req) {
     const { nome, cpf, telefone, email, status, especialidade, disponibilidade } = req.body;
-    return Guia.create({ nome, cpf, telefone, email, status, especialidade, disponibilidade });
+    const dados = { nome, cpf, telefone, email, status, especialidade, disponibilidade };
+
+    await assertValido(dados);
+    return Guia.create(dados);
   }
 
   static async update(req) {
     const { id } = req.params;
-    const guia = await Guia.findByPk(id);
-    if (!guia) throw new Error('Guia não encontrado.');
-
     const { nome, cpf, telefone, email, status, especialidade, disponibilidade } = req.body;
-    if (nome !== undefined) guia.nome = nome;
-    if (cpf !== undefined) guia.cpf = cpf;
-    if (telefone !== undefined) guia.telefone = telefone;
-    if (email !== undefined) guia.email = email;
-    if (status !== undefined) guia.status = status;
-    if (especialidade !== undefined) guia.especialidade = especialidade;
-    if (disponibilidade !== undefined) guia.disponibilidade = disponibilidade;
+
+    const guia = await Guia.findByPk(id);
+    if (!guia) throw new ValidationError('Guia não encontrado.');
+
+    const dados = {
+      nome:            nome            ?? guia.nome,
+      cpf:             cpf             ?? guia.cpf,
+      telefone:        telefone        ?? guia.telefone,
+      email:           email           ?? guia.email,
+      status:          status          ?? guia.status,
+      especialidade:   especialidade   ?? guia.especialidade,
+      disponibilidade: disponibilidade ?? guia.disponibilidade,
+    };
+
+    await assertValido(dados);
+
+    Object.assign(guia, dados);
     await guia.save();
     return guia;
   }
@@ -37,9 +58,8 @@ class GuiaService {
   static async delete(req) {
     const { id } = req.params;
     const guia = await Guia.findByPk(id);
-    if (!guia) throw new Error('Guia não encontrado.');
+    if (!guia) throw new ValidationError('Guia não encontrado.');
 
-    // RF07: não pode remover se vinculado a agendamento futuro
     const agendamentoFuturo = await Agendamento.findOne({
       attributes: ['id'],
       where: {
@@ -48,7 +68,7 @@ class GuiaService {
       },
     });
     if (agendamentoFuturo) {
-      throw new Error('Não é possível remover o guia: está vinculado a um agendamento futuro.');
+      throw new ValidationError('Não é possível remover o guia: está vinculado a um agendamento futuro.');
     }
 
     await guia.destroy();

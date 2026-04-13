@@ -1,7 +1,18 @@
 import { Constelacao } from '../models/Constelacao.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { Observacao } from '../models/Observacao.js';
 
 const include = [{ model: Observacao, as: 'observacoes' }];
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(Constelacao, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class ConstelacaoService {
   static async findAll() {
@@ -14,48 +25,48 @@ class ConstelacaoService {
   }
 
   static async create(req) {
-    const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } =
-      req.body;
-    const constelacao = await Constelacao.create({
-      nome,
-      hemisferio,
-      periodoVisibilidade,
-      principaisEstrelas,
-      descricao,
-      curiosidades,
-    });
+    const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } = req.body;
+    const dados = { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades };
+
+    await assertValido(dados);
+    const constelacao = await Constelacao.create(dados);
     return Constelacao.findByPk(constelacao.id, { include });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const constelacao = await Constelacao.findByPk(id);
-    if (!constelacao) throw new Error('Constelação não encontrada.');
+    const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } = req.body;
 
-    const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } =
-      req.body;
-    if (nome !== undefined) constelacao.nome = nome;
-    if (hemisferio !== undefined) constelacao.hemisferio = hemisferio;
-    if (periodoVisibilidade !== undefined) constelacao.periodoVisibilidade = periodoVisibilidade;
-    if (principaisEstrelas !== undefined) constelacao.principaisEstrelas = principaisEstrelas;
-    if (descricao !== undefined) constelacao.descricao = descricao;
-    if (curiosidades !== undefined) constelacao.curiosidades = curiosidades;
+    const constelacao = await Constelacao.findByPk(id);
+    if (!constelacao) throw new ValidationError('Constelação não encontrada.');
+
+    const dados = {
+      nome:                nome                ?? constelacao.nome,
+      hemisferio:          hemisferio          ?? constelacao.hemisferio,
+      periodoVisibilidade: periodoVisibilidade ?? constelacao.periodoVisibilidade,
+      principaisEstrelas:  principaisEstrelas  ?? constelacao.principaisEstrelas,
+      descricao:           descricao           ?? constelacao.descricao,
+      curiosidades:        curiosidades        ?? constelacao.curiosidades,
+    };
+
+    await assertValido(dados);
+
+    Object.assign(constelacao, dados);
     await constelacao.save();
     return Constelacao.findByPk(constelacao.id, { include });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const constelacao = await Constelacao.findByPk(id, { include });
-    if (!constelacao) throw new Error('Constelação não encontrada.');
+    const constelacao = await Constelacao.findByPk(id);
+    if (!constelacao) throw new ValidationError('Constelação não encontrada.');
 
-    // RF11: não pode remover se vinculada a observações
     const observacaoVinculada = await Observacao.findOne({
       attributes: ['id'],
       where: { constelacaoId: id },
     });
     if (observacaoVinculada) {
-      throw new Error('Não é possível remover a constelação: existem observações vinculadas.');
+      throw new ValidationError('Não é possível remover a constelação: existem observações vinculadas.');
     }
 
     await constelacao.destroy();

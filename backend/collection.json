@@ -1,0 +1,600 @@
+{
+  "info": {
+    "name": "SIGSN API",
+    "description": "Sistema de Gestão do Observatório Sidereus Nuncius",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3333"
+    }
+  ],
+  "item": [
+    {
+      "name": "Agendamentos",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agendamentos"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/agendamentos/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/agendamentos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataVisita\": \"2026-05-04T09:00:00.000Z\",\n  \"tipoVisita\": \"Diurna\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Grupo escolar do ensino médio\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/agendamentos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataVisita\": \"nao-e-uma-data\",\n  \"tipoVisita\": \"\",\n  \"valorVisita\": \"nao-e-numero\",\n  \"guiaId\": null,\n  \"caravanaId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/agendamentos/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"valorVisita\": 400,\n  \"observacoes\": \"Atualizado\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/agendamentos/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Caravanas",
+      "item": [
+        {
+          "name": "Listar todas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/caravanas"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/caravanas/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/caravanas",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Caravana do Colégio Estadual\",\n  \"tipoCaravana\": \"Escolar\",\n  \"instituicao\": \"Colégio Estadual Central\",\n  \"responsavel\": \"João Silva\",\n  \"telefone\": \"(41) 99999-0001\",\n  \"quantidadeVisitantes\": 30,\n  \"observacoes\": \"Alunos do 3º ano\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/caravanas",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"tipoCaravana\": \"\",\n  \"instituicao\": \"\",\n  \"responsavel\": \"\",\n  \"telefone\": \"\",\n  \"quantidadeVisitantes\": 0\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/caravanas/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"quantidadeVisitantes\": 35,\n  \"observacoes\": \"Atualizado\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/caravanas/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Constelações",
+      "item": [
+        {
+          "name": "Listar todas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/constelacoes"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/constelacoes/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/constelacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Orion\",\n  \"hemisferio\": \"Norte\",\n  \"periodoVisibilidade\": \"Outubro a Março\",\n  \"principaisEstrelas\": \"Betelgeuse, Rigel, Bellatrix\",\n  \"descricao\": \"Constelação do caçador mitológico, visível em todo o mundo.\",\n  \"curiosidades\": \"Contém a Nebulosa de Orion.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/constelacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"hemisferio\": \"\",\n  \"periodoVisibilidade\": \"\",\n  \"principaisEstrelas\": \"\",\n  \"descricao\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/constelacoes/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"curiosidades\": \"Atualizado\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/constelacoes/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coordenadores",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/coordenadores"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/coordenadores/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/coordenadores",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Dra. Ana Paula\",\n  \"cpf\": \"11122233344\",\n  \"telefone\": \"(41) 99999-0002\",\n  \"email\": \"ana.paula@observatorio.br\",\n  \"status\": true,\n  \"especialidade\": \"Astrofísica\",\n  \"login\": \"anapaulad\",\n  \"senha\": \"senha123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/coordenadores",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"email-invalido\",\n  \"especialidade\": \"\",\n  \"login\": \"\",\n  \"senha\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/coordenadores/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"especialidade\": \"Cosmologia\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/coordenadores/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Grupos de Pesquisa",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/grupos-de-pesquisa"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/grupos-de-pesquisa/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/grupos-de-pesquisa",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Grupo Astrofísica\",\n  \"areaDePesquisa\": \"Astrofísica Observacional\",\n  \"dataCriacao\": \"2022-03-10\",\n  \"descricao\": \"Grupo dedicado ao estudo de fenômenos astrofísicos.\",\n  \"status\": true,\n  \"pesquisadorIds\": [1, 2]\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/grupos-de-pesquisa",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"areaDePesquisa\": \"\",\n  \"dataCriacao\": \"nao-e-uma-data\",\n  \"descricao\": \"\",\n  \"status\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/grupos-de-pesquisa/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"descricao\": \"Atualizado\",\n  \"pesquisadorIds\": [1, 2, 3]\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/grupos-de-pesquisa/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Guias",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/guias"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/guias/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/guias",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"cpf\": \"55566677788\",\n  \"telefone\": \"(41) 99999-0003\",\n  \"email\": \"carlos.mendes@observatorio.br\",\n  \"status\": true,\n  \"especialidade\": \"Astronomia Popular\",\n  \"disponibilidade\": \"SEG MANHA,SEG TARDE,QUA NOITE,SEX MANHA\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/guias",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"nao-e-email\",\n  \"especialidade\": \"\",\n  \"disponibilidade\": \"Segunda a Sexta - Manhã\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/guias/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"disponibilidade\": \"SEG MANHA,TER MANHA,QUI TARDE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/guias/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Observações",
+      "item": [
+        {
+          "name": "Listar todas",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/observacoes"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/observacoes/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/observacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataObservacao\": \"2025-07-20\",\n  \"descricao\": \"Observação da Nebulosa de Orion com alta nitidez.\",\n  \"instrumentoUtilizado\": \"Telescópio Refrator 120mm\",\n  \"projetoId\": 1,\n  \"constelacaoId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/observacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataObservacao\": \"nao-e-uma-data\",\n  \"descricao\": \"\",\n  \"instrumentoUtilizado\": \"\",\n  \"projetoId\": null,\n  \"constelacaoId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/observacoes/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"descricao\": \"Observação atualizada com mais detalhes.\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/observacoes/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pesquisadores",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/pesquisadores"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/pesquisadores/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/pesquisadores",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"Dr. Marcos Lima\",\n  \"cpf\": \"99988877766\",\n  \"telefone\": \"(41) 99999-0004\",\n  \"email\": \"marcos.lima@observatorio.br\",\n  \"status\": true,\n  \"especialidade\": \"Cosmologia\",\n  \"login\": \"marcoslima\",\n  \"senha\": \"senha456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/pesquisadores",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"nome\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"nao-e-email\",\n  \"especialidade\": \"\",\n  \"login\": \"\",\n  \"senha\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/pesquisadores/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"especialidade\": \"Astrofísica\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/pesquisadores/1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Projetos",
+      "item": [
+        {
+          "name": "Listar todos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/projetos"
+          }
+        },
+        {
+          "name": "Buscar por ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/projetos/1"
+          }
+        },
+        {
+          "name": "Criar — válido",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/projetos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"titulo\": \"Mapeamento Estelar\",\n  \"dataInicio\": \"2025-01-01\",\n  \"dataTermino\": \"2025-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — com erros",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/projetos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"titulo\": \"\",\n  \"dataInicio\": \"nao-e-uma-data\",\n  \"dataTermino\": \"2024-01-01\",\n  \"status\": \"invalido\",\n  \"areaDePesquisa\": \"\",\n  \"grupoDePesquisaId\": null,\n  \"coordenadorId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Atualizar",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/projetos/1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"status\": \"encerrado\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Remover",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/projetos/1"
+          }
+        }
+      ]
+    }
+  ]
+}

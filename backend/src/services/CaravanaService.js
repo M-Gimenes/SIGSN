@@ -1,8 +1,19 @@
 import { Op } from 'sequelize';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { Caravana } from '../models/Caravana.js';
 import { Agendamento } from '../models/Agendamento.js';
 
 const include = [{ model: Agendamento, as: 'agendamento' }];
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(Caravana, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class CaravanaService {
   static async findAll() {
@@ -15,44 +26,43 @@ class CaravanaService {
   }
 
   static async create(req) {
-    const { nome, tipoCaravana, instituicao, responsavel, telefone, quantidadeVisitantes, observacoes } =
-      req.body;
-    const caravana = await Caravana.create({
-      nome,
-      tipoCaravana,
-      instituicao,
-      responsavel,
-      telefone,
-      quantidadeVisitantes,
-      observacoes,
-    });
+    const { nome, tipoCaravana, instituicao, responsavel, telefone, quantidadeVisitantes, observacoes } = req.body;
+    const dados = { nome, tipoCaravana, instituicao, responsavel, telefone, quantidadeVisitantes, observacoes };
+
+    await assertValido(dados);
+    const caravana = await Caravana.create(dados);
     return Caravana.findByPk(caravana.id, { include });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const caravana = await Caravana.findByPk(id);
-    if (!caravana) throw new Error('Caravana não encontrada.');
+    const { nome, tipoCaravana, instituicao, responsavel, telefone, quantidadeVisitantes, observacoes } = req.body;
 
-    const { nome, tipoCaravana, instituicao, responsavel, telefone, quantidadeVisitantes, observacoes } =
-      req.body;
-    if (nome !== undefined) caravana.nome = nome;
-    if (tipoCaravana !== undefined) caravana.tipoCaravana = tipoCaravana;
-    if (instituicao !== undefined) caravana.instituicao = instituicao;
-    if (responsavel !== undefined) caravana.responsavel = responsavel;
-    if (telefone !== undefined) caravana.telefone = telefone;
-    if (quantidadeVisitantes !== undefined) caravana.quantidadeVisitantes = quantidadeVisitantes;
-    if (observacoes !== undefined) caravana.observacoes = observacoes;
+    const caravana = await Caravana.findByPk(id);
+    if (!caravana) throw new ValidationError('Caravana não encontrada.');
+
+    const dados = {
+      nome:                 nome                 ?? caravana.nome,
+      tipoCaravana:         tipoCaravana         ?? caravana.tipoCaravana,
+      instituicao:          instituicao          ?? caravana.instituicao,
+      responsavel:          responsavel          ?? caravana.responsavel,
+      telefone:             telefone             ?? caravana.telefone,
+      quantidadeVisitantes: quantidadeVisitantes ?? caravana.quantidadeVisitantes,
+      observacoes:          observacoes          ?? caravana.observacoes,
+    };
+
+    await assertValido(dados);
+
+    Object.assign(caravana, dados);
     await caravana.save();
     return Caravana.findByPk(caravana.id, { include });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const caravana = await Caravana.findByPk(id, { include });
-    if (!caravana) throw new Error('Caravana não encontrada.');
+    const caravana = await Caravana.findByPk(id);
+    if (!caravana) throw new ValidationError('Caravana não encontrada.');
 
-    // RF03: não pode remover se vinculada a agendamento futuro
     const agendamentoFuturo = await Agendamento.findOne({
       attributes: ['id'],
       where: {
@@ -61,7 +71,7 @@ class CaravanaService {
       },
     });
     if (agendamentoFuturo) {
-      throw new Error('Não é possível remover a caravana: está vinculada a um agendamento futuro.');
+      throw new ValidationError('Não é possível remover a caravana: está vinculada a um agendamento futuro.');
     }
 
     await caravana.destroy();

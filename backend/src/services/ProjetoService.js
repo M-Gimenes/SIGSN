@@ -1,5 +1,7 @@
 import { Op } from 'sequelize';
 import sequelize from '../config/database-connection.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { Projeto } from '../models/Projeto.js';
 import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 import { Coordenador } from '../models/Coordenador.js';
@@ -14,42 +16,50 @@ const include = [
   { model: Observacao, as: 'observacoes' },
 ];
 
-/**
- * RF31–RF34: no máx. 10 projetos ativos; coordenador no máx. 2 ativos.
- * Deve ser chamada dentro de uma transação para evitar race conditions.
- */
-async function assertRegrasNegocio({ status, grupoDePesquisaId, coordenadorId }, excludeId, transaction) {
-  const grupo = await GrupoDePesquisa.findByPk(grupoDePesquisaId, { transaction });
-  if (!grupo) throw new Error('Grupo de Pesquisa não encontrado.');
+// ─── Validação ────────────────────────────────────────────────────────────────
 
-  const coordenador = await Coordenador.findByPk(coordenadorId, { transaction });
-  if (!coordenador) throw new Error('Coordenador não encontrado.');
+async function assertValido(dados, excludeId, transaction) {
+  const [campoErros, regraErros] = await Promise.all([
+    validarCampos(Projeto, dados),
+    errosDeNegocio(dados, excludeId, transaction),
+  ]);
 
-  if (status !== 'ativo') return;
-
-  const whereBase = { status: 'ativo' };
-  const whereExclude = excludeId != null ? { id: { [Op.ne]: excludeId } } : {};
-
-  const totalAtivos = await Projeto.count({
-    where: { ...whereBase, ...whereExclude },
-    transaction,
-  });
-  if (totalAtivos >= MAX_PROJETOS_ATIVOS) {
-    throw new Error(
-      `Não poderá existir mais que ${MAX_PROJETOS_ATIVOS} projetos ativos simultaneamente.`
-    );
-  }
-
-  const ativosCoordenador = await Projeto.count({
-    where: { ...whereBase, coordenadorId, ...whereExclude },
-    transaction,
-  });
-  if (ativosCoordenador >= MAX_PROJETOS_ATIVOS_POR_COORDENADOR) {
-    throw new Error(
-      `Um coordenador só poderá ser responsável por no máximo ${MAX_PROJETOS_ATIVOS_POR_COORDENADOR} projetos com status Ativo.`
-    );
-  }
+  const todos = [...campoErros, ...regraErros];
+  if (todos.length > 0) throw new ValidationError(todos);
 }
+
+async function errosDeNegocio({ status, grupoDePesquisaId, coordenadorId }, excludeId, transaction) {
+  const erros = [];
+
+  const [grupo, coordenador] = await Promise.all([
+    GrupoDePesquisa.findByPk(grupoDePesquisaId, { transaction }),
+    Coordenador.findByPk(coordenadorId, { transaction }),
+  ]);
+
+  if (!grupo) erros.push('Grupo de Pesquisa não encontrado.');
+  if (!coordenador) erros.push('Coordenador não encontrado.');
+
+  if (status === 'ativo') {
+    const whereBase = { status: 'ativo' };
+    const whereExclude = excludeId != null ? { id: { [Op.ne]: excludeId } } : {};
+
+    const [totalAtivos, ativosCoordenador] = await Promise.all([
+      Projeto.count({ where: { ...whereBase, ...whereExclude }, transaction }),
+      Projeto.count({ where: { ...whereBase, coordenadorId, ...whereExclude }, transaction }),
+    ]);
+
+    if (totalAtivos >= MAX_PROJETOS_ATIVOS) {
+      erros.push(`Não poderá existir mais que ${MAX_PROJETOS_ATIVOS} projetos ativos simultaneamente.`);
+    }
+    if (ativosCoordenador >= MAX_PROJETOS_ATIVOS_POR_COORDENADOR) {
+      erros.push(`Um coordenador só poderá ser responsável por no máximo ${MAX_PROJETOS_ATIVOS_POR_COORDENADOR} projetos com status Ativo.`);
+    }
+  }
+
+  return erros;
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class ProjetoService {
   static async findAll() {
@@ -62,70 +72,62 @@ class ProjetoService {
   }
 
   static async create(req) {
-    const { titulo, dataInicio, dataTermino, status, areaDePesquisa, grupoDePesquisaId, coordenadorId } =
-      req.body;
+    const { titulo, dataInicio, dataTermino, status, areaDePesquisa, grupoDePesquisaId, coordenadorId } = req.body;
 
-    const statusVal = status ?? 'ativo';
+    const dados = {
+      titulo,
+      dataInicio,
+      dataTermino,
+      status: status ?? 'ativo',
+      areaDePesquisa,
+      grupoDePesquisaId,
+      coordenadorId,
+    };
 
-    return sequelize.transaction(async (t) => {
-      await assertRegrasNegocio(
-        { status: statusVal, grupoDePesquisaId, coordenadorId },
-        null,
-        t
-      );
+    return sequelize.transaction(async (transaction) => {
+      await assertValido(dados, null, transaction);
 
-      const projeto = await Projeto.create(
-        { titulo, dataInicio, dataTermino, status: statusVal, areaDePesquisa, grupoDePesquisaId, coordenadorId },
-        { transaction: t }
-      );
-      return Projeto.findByPk(projeto.id, { include, transaction: t });
+      const projeto = await Projeto.create(dados, { transaction });
+      return Projeto.findByPk(projeto.id, { include, transaction });
     });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const { titulo, dataInicio, dataTermino, status, areaDePesquisa, grupoDePesquisaId, coordenadorId } =
-      req.body;
+    const { titulo, dataInicio, dataTermino, status, areaDePesquisa, grupoDePesquisaId, coordenadorId } = req.body;
 
-    return sequelize.transaction(async (t) => {
-      const projeto = await Projeto.findByPk(id, { transaction: t });
-      if (!projeto) throw new Error('Projeto não encontrado.');
+    return sequelize.transaction(async (transaction) => {
+      const projeto = await Projeto.findByPk(id, { transaction });
+      if (!projeto) throw new ValidationError('Projeto não encontrado.');
 
-      const nextStatus = status !== undefined ? status : projeto.status;
-      const nextGrupo = grupoDePesquisaId !== undefined ? grupoDePesquisaId : projeto.grupoDePesquisaId;
-      const nextCoord = coordenadorId !== undefined ? coordenadorId : projeto.coordenadorId;
+      const dados = {
+        titulo:            titulo            ?? projeto.titulo,
+        dataInicio:        dataInicio        ?? projeto.dataInicio,
+        dataTermino:       dataTermino       ?? projeto.dataTermino,
+        status:            status            ?? projeto.status,
+        areaDePesquisa:    areaDePesquisa    ?? projeto.areaDePesquisa,
+        grupoDePesquisaId: grupoDePesquisaId ?? projeto.grupoDePesquisaId,
+        coordenadorId:     coordenadorId     ?? projeto.coordenadorId,
+      };
 
-      await assertRegrasNegocio(
-        { status: nextStatus, grupoDePesquisaId: nextGrupo, coordenadorId: nextCoord },
-        Number(id),
-        t
-      );
+      await assertValido(dados, Number(id), transaction);
 
-      if (titulo !== undefined) projeto.titulo = titulo;
-      if (dataInicio !== undefined) projeto.dataInicio = dataInicio;
-      if (dataTermino !== undefined) projeto.dataTermino = dataTermino;
-      if (status !== undefined) projeto.status = status;
-      if (areaDePesquisa !== undefined) projeto.areaDePesquisa = areaDePesquisa;
-      if (grupoDePesquisaId !== undefined) projeto.grupoDePesquisaId = grupoDePesquisaId;
-      if (coordenadorId !== undefined) projeto.coordenadorId = coordenadorId;
-      await projeto.save({ transaction: t });
-
-      return Projeto.findByPk(projeto.id, { include, transaction: t });
+      Object.assign(projeto, dados);
+      await projeto.save({ transaction });
+      return Projeto.findByPk(projeto.id, { include, transaction });
     });
   }
 
   static async delete(req) {
     const { id } = req.params;
     const projeto = await Projeto.findByPk(id);
-    if (!projeto) throw new Error('Projeto não encontrado.');
+    if (!projeto) throw new ValidationError('Projeto não encontrado.');
     try {
       await projeto.destroy();
       return projeto;
     } catch (error) {
       if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error(
-          'Não é possível remover o projeto: existem observações vinculadas.'
-        );
+        throw new ValidationError('Não é possível remover o projeto: existem observações vinculadas.');
       }
       throw error;
     }

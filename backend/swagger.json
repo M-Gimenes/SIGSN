@@ -36,7 +36,6 @@
                 "Válido": {
                   "value": {
                     "dataVisita": "2025-08-15T20:00:00.000Z",
-                    "tipoVisita": "Noturna",
                     "valorVisita": 35,
                     "observacoes": "Grupo escolar",
                     "guiaId": 1,
@@ -46,7 +45,6 @@
                 "Com erros de validação": {
                   "value": {
                     "dataVisita": "nao-e-uma-data",
-                    "tipoVisita": "TipoInvalido",
                     "valorVisita": "nao-e-numero",
                     "guiaId": null,
                     "caravanaId": null
@@ -562,7 +560,7 @@
                     "telefone": "(41) 99999-0003",
                     "email": "carlos.mendes@observatorio.br",
                     "especialidade": "Astronomia Popular",
-                    "disponibilidade": "Segunda a Sexta, 18h–22h"
+                    "disponibilidade": "NOITE"
                   }
                 },
                 "Com erros de validação": {
@@ -572,7 +570,7 @@
                     "telefone": "",
                     "email": "nao-e-email",
                     "especialidade": "",
-                    "disponibilidade": ""
+                    "disponibilidade": "INVALIDO"
                   }
                 }
               }
