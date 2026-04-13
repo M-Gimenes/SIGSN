@@ -15,15 +15,3 @@ export function getTurnoFromDate(date) {
   return 'NOITE';
 }
 
-const DIA_INDEX = { DOM: 0, SEG: 1, TER: 2, QUA: 3, QUI: 4, SEX: 5, SAB: 6 };
-
-export function isGuiaDisponivel(disponibilidade, dataVisita) {
-  const d = dataVisita instanceof Date ? dataVisita : new Date(dataVisita);
-  const diaSemana = d.getDay();
-  const turnoVisita = getTurnoFromDate(d);
-
-  return disponibilidade.split(',').some((slot) => {
-    const [dia, turno] = slot.trim().split(' ');
-    return DIA_INDEX[dia] === diaSemana && turno === turnoVisita;
-  });
-}

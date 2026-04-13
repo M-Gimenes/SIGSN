@@ -135,7 +135,7 @@ async function seedDatabase() {
       email: 'guia1@sigsn.com',
       status: true,
       especialidade: 'Planetário',
-      disponibilidade: 'SEG MANHA,TER MANHA,QUA MANHA,QUI MANHA,SEX MANHA',
+      disponibilidade: 'MANHA',
     },
     {
       nome: 'Guia 2',
@@ -144,7 +144,7 @@ async function seedDatabase() {
       email: 'guia2@sigsn.com',
       status: true,
       especialidade: 'Telescópios',
-      disponibilidade: 'SEG TARDE,TER TARDE,QUA TARDE,QUI TARDE,SEX TARDE',
+      disponibilidade: 'TARDE',
     },
     {
       nome: 'Guia 3',
@@ -153,7 +153,7 @@ async function seedDatabase() {
       email: 'guia3@sigsn.com',
       status: true,
       especialidade: 'Visitas Escolares',
-      disponibilidade: 'QUA NOITE',
+      disponibilidade: 'NOITE',
     },
     {
       nome: 'Guia 4',
@@ -162,7 +162,7 @@ async function seedDatabase() {
       email: 'guia4@sigsn.com',
       status: true,
       especialidade: 'Sessões Especiais',
-      disponibilidade: 'SAB MANHA,SAB TARDE,SAB NOITE,DOM MANHA,DOM TARDE,DOM NOITE',
+      disponibilidade: 'MANHA',
     },
   ]);
 

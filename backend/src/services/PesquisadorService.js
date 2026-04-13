@@ -1,4 +1,6 @@
 import { Pesquisador } from '../models/Pesquisador.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 
 const include = [
@@ -8,6 +10,15 @@ const include = [
     through: { attributes: [] },
   },
 ];
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(Pesquisador, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class PesquisadorService {
   static async findAll() {
@@ -21,33 +32,34 @@ class PesquisadorService {
 
   static async create(req) {
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    const pesquisador = await Pesquisador.create({
-      nome,
-      cpf,
-      telefone,
-      email,
-      status,
-      especialidade,
-      login,
-      senha,
-    });
+    const dados = { nome, cpf, telefone, email, status, especialidade, login, senha };
+
+    await assertValido(dados);
+    const pesquisador = await Pesquisador.create(dados);
     return Pesquisador.findByPk(pesquisador.id, { include });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const pesquisador = await Pesquisador.findByPk(id);
-    if (!pesquisador) throw new Error('Pesquisador não encontrado.');
-
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    if (nome !== undefined) pesquisador.nome = nome;
-    if (cpf !== undefined) pesquisador.cpf = cpf;
-    if (telefone !== undefined) pesquisador.telefone = telefone;
-    if (email !== undefined) pesquisador.email = email;
-    if (status !== undefined) pesquisador.status = status;
-    if (especialidade !== undefined) pesquisador.especialidade = especialidade;
-    if (login !== undefined) pesquisador.login = login;
-    if (senha !== undefined) pesquisador.senha = senha;
+
+    const pesquisador = await Pesquisador.findByPk(id);
+    if (!pesquisador) throw new ValidationError('Pesquisador não encontrado.');
+
+    const dados = {
+      nome:          nome          ?? pesquisador.nome,
+      cpf:           cpf           ?? pesquisador.cpf,
+      telefone:      telefone      ?? pesquisador.telefone,
+      email:         email         ?? pesquisador.email,
+      status:        status        ?? pesquisador.status,
+      especialidade: especialidade ?? pesquisador.especialidade,
+      login:         login         ?? pesquisador.login,
+      senha:         senha         ?? pesquisador.senha,
+    };
+
+    await assertValido(dados);
+
+    Object.assign(pesquisador, dados);
     await pesquisador.save();
     return Pesquisador.findByPk(pesquisador.id, { include });
   }
@@ -55,13 +67,13 @@ class PesquisadorService {
   static async delete(req) {
     const { id } = req.params;
     const pesquisador = await Pesquisador.findByPk(id);
-    if (!pesquisador) throw new Error('Pesquisador não encontrado.');
+    if (!pesquisador) throw new ValidationError('Pesquisador não encontrado.');
     try {
       await pesquisador.destroy();
       return pesquisador;
     } catch (error) {
       if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error('Não é possível remover o pesquisador: existem vínculos no sistema.');
+        throw new ValidationError('Não é possível remover o pesquisador: existem vínculos no sistema.');
       }
       throw error;
     }

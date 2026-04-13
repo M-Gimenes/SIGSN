@@ -12,17 +12,9 @@ class Guia extends Pessoa {
           allowNull: false,
           validate: {
             notEmpty: { msg: 'Disponibilidade do Guia deve ser preenchida.' },
-            isValidFormat(value) {
-              const pairRegex = /^(SEG|TER|QUA|QUI|SEX|SAB|DOM) (MANHA|TARDE|NOITE)$/;
-              for (const slot of value.split(',')) {
-                if (!pairRegex.test(slot.trim())) {
-                  throw new Error(
-                    `Disponibilidade inválida: "${slot.trim()}". ` +
-                    `Use "DIA TURNO" separados por vírgula (ex: "SEG MANHA,QUA NOITE"). ` +
-                    `Dias: SEG, TER, QUA, QUI, SEX, SAB, DOM. Turnos: MANHA, TARDE, NOITE.`
-                  );
-                }
-              }
+            isIn: {
+              args: [['MANHA', 'TARDE', 'NOITE']],
+              msg: 'Disponibilidade deve ser MANHA, TARDE ou NOITE.',
             },
           },
         },

@@ -3,6 +3,8 @@ import sequelize from '../config/database-connection.js';
 import { Observacao } from '../models/Observacao.js';
 import { Projeto } from '../models/Projeto.js';
 import { Constelacao } from '../models/Constelacao.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 
 const MAX_OBSERVACOES_POR_DIA = 2;
 
@@ -11,10 +13,54 @@ const include = [
   { model: Constelacao, as: 'constelacao' },
 ];
 
-/**
- * Calcula a próxima versão para a combinação projeto+constelação dentro da transação,
- * evitando race conditions ao ler e escrever sob o mesmo lock.
- */
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados, excludeId, transaction) {
+  const [campoErros, regraErros] = await Promise.all([
+    validarCampos(Observacao, dados),
+    errosDeNegocio(dados, excludeId, transaction),
+  ]);
+
+  const todos = [...campoErros, ...regraErros];
+  if (todos.length > 0) throw new ValidationError(todos);
+}
+
+async function errosDeNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
+  const erros = [];
+
+  if (!constelacaoId) erros.push('Constelação observada deve ser informada.');
+
+  const [projeto, constelacao] = await Promise.all([
+    Projeto.findByPk(projetoId, { transaction }),
+    constelacaoId ? Constelacao.findByPk(constelacaoId, { transaction }) : Promise.resolve(null),
+  ]);
+
+  if (!projeto) erros.push('Projeto não encontrado.');
+  if (constelacaoId && !constelacao) erros.push('Constelação não encontrada.');
+
+  if (projeto && constelacao && dataObservacao) {
+    const totalNoDia = await Observacao.count({
+      where: {
+        projetoId,
+        constelacaoId,
+        dataObservacao,
+        ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
+      },
+      transaction,
+    });
+
+    if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
+      erros.push(
+        `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
+      );
+    }
+  }
+
+  return erros;
+}
+
+// ─── Versão ───────────────────────────────────────────────────────────────────
+
 async function proximaVersao(projetoId, constelacaoId, excludeId, transaction) {
   const max = await Observacao.max('versaoObservacao', {
     where: {
@@ -28,37 +74,7 @@ async function proximaVersao(projetoId, constelacaoId, excludeId, transaction) {
   return Number.isFinite(maxVersao) ? maxVersao + 1 : 1;
 }
 
-/**
- * RF35/RF38: valida todas as regras de negócio da observação.
- * - Projeto e constelação devem existir.
- * - Máx. 2 observações da mesma constelação no mesmo dia para o mesmo projeto.
- * Deve ser chamada dentro de uma transação para evitar race conditions.
- */
-async function assertRegrasNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
-  if (!constelacaoId) throw new Error('Constelação observada deve ser informada.');
-
-  const projeto = await Projeto.findByPk(projetoId, { transaction });
-  if (!projeto) throw new Error('Projeto não encontrado.');
-
-  const constelacao = await Constelacao.findByPk(constelacaoId, { transaction });
-  if (!constelacao) throw new Error('Constelação não encontrada.');
-
-  const totalNoDia = await Observacao.count({
-    where: {
-      projetoId,
-      constelacaoId,
-      dataObservacao,
-      ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
-    },
-    transaction,
-  });
-
-  if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
-    throw new Error(
-      `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
-    );
-  }
-}
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class ObservacaoService {
   static async findAll() {
@@ -74,10 +90,13 @@ class ObservacaoService {
     const { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId } = req.body;
 
     return sequelize.transaction(async (transaction) => {
-      await assertRegrasNegocio({ dataObservacao, projetoId, constelacaoId }, null, transaction);
+      await assertValido(
+        { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId },
+        null,
+        transaction
+      );
 
       const versaoObservacao = await proximaVersao(projetoId, constelacaoId, null, transaction);
-
       const observacao = await Observacao.create(
         { dataObservacao, descricao, instrumentoUtilizado, versaoObservacao, projetoId, constelacaoId },
         { transaction }
@@ -92,30 +111,26 @@ class ObservacaoService {
 
     return sequelize.transaction(async (transaction) => {
       const observacao = await Observacao.findByPk(id, { transaction });
-      if (!observacao) throw new Error('Observação não encontrada.');
+      if (!observacao) throw new ValidationError('Observação não encontrada.');
 
-      const nextDataObservacao = dataObservacao !== undefined ? dataObservacao : observacao.dataObservacao;
-      const nextProjetoId = projetoId !== undefined ? projetoId : observacao.projetoId;
-      const nextConstelacaoId = constelacaoId !== undefined ? constelacaoId : observacao.constelacaoId;
+      const dados = {
+        dataObservacao:      dataObservacao      ?? observacao.dataObservacao,
+        descricao:           descricao           ?? observacao.descricao,
+        instrumentoUtilizado: instrumentoUtilizado ?? observacao.instrumentoUtilizado,
+        projetoId:           projetoId           ?? observacao.projetoId,
+        constelacaoId:       constelacaoId       ?? observacao.constelacaoId,
+      };
 
-      await assertRegrasNegocio(
-        { dataObservacao: nextDataObservacao, projetoId: nextProjetoId, constelacaoId: nextConstelacaoId },
-        Number(id),
-        transaction
-      );
+      await assertValido(dados, Number(id), transaction);
 
-      // Recalcula a versão apenas se mudar de projeto ou constelação
-      let versaoObservacao = observacao.versaoObservacao;
-      if (nextProjetoId !== observacao.projetoId || nextConstelacaoId !== observacao.constelacaoId) {
-        versaoObservacao = await proximaVersao(nextProjetoId, nextConstelacaoId, Number(id), transaction);
-      }
+      const mudouVinculo = dados.projetoId !== observacao.projetoId
+        || dados.constelacaoId !== observacao.constelacaoId;
 
-      if (dataObservacao !== undefined) observacao.dataObservacao = dataObservacao;
-      if (descricao !== undefined) observacao.descricao = descricao;
-      if (instrumentoUtilizado !== undefined) observacao.instrumentoUtilizado = instrumentoUtilizado;
-      observacao.versaoObservacao = versaoObservacao;
-      observacao.projetoId = nextProjetoId;
-      observacao.constelacaoId = nextConstelacaoId;
+      const versaoObservacao = mudouVinculo
+        ? await proximaVersao(dados.projetoId, dados.constelacaoId, Number(id), transaction)
+        : observacao.versaoObservacao;
+
+      Object.assign(observacao, { ...dados, versaoObservacao });
       await observacao.save({ transaction });
       return Observacao.findByPk(observacao.id, { include, transaction });
     });
@@ -124,7 +139,7 @@ class ObservacaoService {
   static async delete(req) {
     const { id } = req.params;
     const observacao = await Observacao.findByPk(id);
-    if (!observacao) throw new Error('Observação não encontrada.');
+    if (!observacao) throw new ValidationError('Observação não encontrada.');
     await observacao.destroy();
     return observacao;
   }

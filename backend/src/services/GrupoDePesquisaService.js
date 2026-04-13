@@ -1,4 +1,6 @@
 import sequelize from '../config/database-connection.js';
+import { ValidationError } from '../utils/errors.js';
+import { validarCampos } from '../utils/validate.js';
 import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 import { Pesquisador } from '../models/Pesquisador.js';
 
@@ -9,6 +11,15 @@ const include = [
     through: { attributes: [] },
   },
 ];
+
+// ─── Validação ────────────────────────────────────────────────────────────────
+
+async function assertValido(dados) {
+  const erros = await validarCampos(GrupoDePesquisa, dados);
+  if (erros.length > 0) throw new ValidationError(erros);
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 class GrupoDePesquisaService {
   static async findAll() {
@@ -22,12 +33,12 @@ class GrupoDePesquisaService {
 
   static async create(req) {
     const { nome, areaDePesquisa, dataCriacao, descricao, status, pesquisadorIds } = req.body;
+    const dados = { nome, areaDePesquisa, dataCriacao, descricao, status };
 
     return sequelize.transaction(async (transaction) => {
-      const grupo = await GrupoDePesquisa.create(
-        { nome, areaDePesquisa, dataCriacao, descricao, status },
-        { transaction }
-      );
+      await assertValido(dados);
+
+      const grupo = await GrupoDePesquisa.create(dados, { transaction });
 
       if (pesquisadorIds && pesquisadorIds.length > 0) {
         await grupo.setPesquisadores(pesquisadorIds, { transaction });
@@ -43,13 +54,19 @@ class GrupoDePesquisaService {
 
     return sequelize.transaction(async (transaction) => {
       const grupo = await GrupoDePesquisa.findByPk(id, { transaction });
-      if (!grupo) throw new Error('Grupo de Pesquisa não encontrado.');
+      if (!grupo) throw new ValidationError('Grupo de Pesquisa não encontrado.');
 
-      if (nome !== undefined) grupo.nome = nome;
-      if (areaDePesquisa !== undefined) grupo.areaDePesquisa = areaDePesquisa;
-      if (dataCriacao !== undefined) grupo.dataCriacao = dataCriacao;
-      if (descricao !== undefined) grupo.descricao = descricao;
-      if (status !== undefined) grupo.status = status;
+      const dados = {
+        nome:           nome           ?? grupo.nome,
+        areaDePesquisa: areaDePesquisa ?? grupo.areaDePesquisa,
+        dataCriacao:    dataCriacao    ?? grupo.dataCriacao,
+        descricao:      descricao      ?? grupo.descricao,
+        status:         status         ?? grupo.status,
+      };
+
+      await assertValido(dados);
+
+      Object.assign(grupo, dados);
       await grupo.save({ transaction });
 
       if (pesquisadorIds !== undefined) {
@@ -63,7 +80,7 @@ class GrupoDePesquisaService {
   static async delete(req) {
     const { id } = req.params;
     const grupo = await GrupoDePesquisa.findByPk(id);
-    if (!grupo) throw new Error('Grupo de Pesquisa não encontrado.');
+    if (!grupo) throw new ValidationError('Grupo de Pesquisa não encontrado.');
     await grupo.destroy();
     return grupo;
   }

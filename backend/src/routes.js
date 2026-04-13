@@ -28,7 +28,6 @@ routes.post('/agendamentos', (req, res, next) => {
             "Válido": {
               value: {
                 dataVisita: "2025-08-15T20:00:00.000Z",
-                tipoVisita: "Noturna",
                 valorVisita: 35.00,
                 observacoes: "Grupo escolar",
                 guiaId: 1,
@@ -38,7 +37,6 @@ routes.post('/agendamentos', (req, res, next) => {
             "Com erros de validação": {
               value: {
                 dataVisita: "nao-e-uma-data",
-                tipoVisita: "TipoInvalido",
                 valorVisita: "nao-e-numero",
                 guiaId: null,
                 caravanaId: null
@@ -251,7 +249,7 @@ routes.post('/guias', (req, res, next) => {
                 telefone: "(41) 99999-0003",
                 email: "carlos.mendes@observatorio.br",
                 especialidade: "Astronomia Popular",
-                disponibilidade: "Segunda a Sexta, 18h–22h"
+                disponibilidade: "NOITE"
               }
             },
             "Com erros de validação": {
@@ -261,7 +259,7 @@ routes.post('/guias', (req, res, next) => {
                 telefone: "",
                 email: "nao-e-email",
                 especialidade: "",
-                disponibilidade: ""
+                disponibilidade: "INVALIDO"
               }
             }
           }
