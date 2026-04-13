@@ -23,17 +23,17 @@ class GrupoDePesquisaService {
   static async create(req) {
     const { nome, areaDePesquisa, dataCriacao, descricao, status, pesquisadorIds } = req.body;
 
-    return sequelize.transaction(async (t) => {
-      const obj = await GrupoDePesquisa.create(
+    return sequelize.transaction(async (transaction) => {
+      const grupo = await GrupoDePesquisa.create(
         { nome, areaDePesquisa, dataCriacao, descricao, status },
-        { transaction: t }
+        { transaction }
       );
 
       if (pesquisadorIds && pesquisadorIds.length > 0) {
-        await obj.setPesquisadores(pesquisadorIds, { transaction: t });
+        await grupo.setPesquisadores(pesquisadorIds, { transaction });
       }
 
-      return GrupoDePesquisa.findByPk(obj.id, { include, transaction: t });
+      return GrupoDePesquisa.findByPk(grupo.id, { include, transaction });
     });
   }
 
@@ -41,40 +41,31 @@ class GrupoDePesquisaService {
     const { id } = req.params;
     const { nome, areaDePesquisa, dataCriacao, descricao, status, pesquisadorIds } = req.body;
 
-    return sequelize.transaction(async (t) => {
-      const obj = await GrupoDePesquisa.findByPk(id, { transaction: t });
-      if (!obj) throw new Error('Grupo de Pesquisa não encontrado.');
+    return sequelize.transaction(async (transaction) => {
+      const grupo = await GrupoDePesquisa.findByPk(id, { transaction });
+      if (!grupo) throw new Error('Grupo de Pesquisa não encontrado.');
 
-      if (nome !== undefined) obj.nome = nome;
-      if (areaDePesquisa !== undefined) obj.areaDePesquisa = areaDePesquisa;
-      if (dataCriacao !== undefined) obj.dataCriacao = dataCriacao;
-      if (descricao !== undefined) obj.descricao = descricao;
-      if (status !== undefined) obj.status = status;
-      await obj.save({ transaction: t });
+      if (nome !== undefined) grupo.nome = nome;
+      if (areaDePesquisa !== undefined) grupo.areaDePesquisa = areaDePesquisa;
+      if (dataCriacao !== undefined) grupo.dataCriacao = dataCriacao;
+      if (descricao !== undefined) grupo.descricao = descricao;
+      if (status !== undefined) grupo.status = status;
+      await grupo.save({ transaction });
 
       if (pesquisadorIds !== undefined) {
-        await obj.setPesquisadores(pesquisadorIds, { transaction: t });
+        await grupo.setPesquisadores(pesquisadorIds, { transaction });
       }
 
-      return GrupoDePesquisa.findByPk(obj.id, { include, transaction: t });
+      return GrupoDePesquisa.findByPk(grupo.id, { include, transaction });
     });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await GrupoDePesquisa.findByPk(id);
-    if (!obj) throw new Error('Grupo de Pesquisa não encontrado.');
-    try {
-      await obj.destroy();
-      return obj;
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error(
-          'Não é possível remover o grupo: existem projetos ou vínculos com pesquisadores.'
-        );
-      }
-      throw error;
-    }
+    const grupo = await GrupoDePesquisa.findByPk(id);
+    if (!grupo) throw new Error('Grupo de Pesquisa não encontrado.');
+    await grupo.destroy();
+    return grupo;
   }
 }
 

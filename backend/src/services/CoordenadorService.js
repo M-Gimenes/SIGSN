@@ -17,35 +17,28 @@ class CoordenadorService {
 
   static async update(req) {
     const { id } = req.params;
-    const obj = await Coordenador.findByPk(id);
-    if (!obj) throw new Error('Coordenador não encontrado.');
+    const coordenador = await Coordenador.findByPk(id);
+    if (!coordenador) throw new Error('Coordenador não encontrado.');
 
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    if (nome !== undefined) obj.nome = nome;
-    if (cpf !== undefined) obj.cpf = cpf;
-    if (telefone !== undefined) obj.telefone = telefone;
-    if (email !== undefined) obj.email = email;
-    if (status !== undefined) obj.status = status;
-    if (especialidade !== undefined) obj.especialidade = especialidade;
-    if (login !== undefined) obj.login = login;
-    if (senha !== undefined) obj.senha = senha;
-    await obj.save();
-    return obj;
+    if (nome !== undefined) coordenador.nome = nome;
+    if (cpf !== undefined) coordenador.cpf = cpf;
+    if (telefone !== undefined) coordenador.telefone = telefone;
+    if (email !== undefined) coordenador.email = email;
+    if (status !== undefined) coordenador.status = status;
+    if (especialidade !== undefined) coordenador.especialidade = especialidade;
+    if (login !== undefined) coordenador.login = login;
+    if (senha !== undefined) coordenador.senha = senha;
+    await coordenador.save();
+    return coordenador;
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Coordenador.findByPk(id);
-    if (!obj) throw new Error('Coordenador não encontrado.');
-    try {
-      await obj.destroy();
-      return obj;
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error('Não é possível remover o coordenador: existem projetos vinculados.');
-      }
-      throw error;
-    }
+    const coordenador = await Coordenador.findByPk(id);
+    if (!coordenador) throw new Error('Coordenador não encontrado.');
+    await coordenador.destroy();
+    return coordenador;
   }
 }
 

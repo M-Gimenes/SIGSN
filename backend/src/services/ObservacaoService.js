@@ -1,8 +1,10 @@
-import { Op, UniqueConstraintError } from 'sequelize';
+import { Op } from 'sequelize';
 import sequelize from '../config/database-connection.js';
 import { Observacao } from '../models/Observacao.js';
 import { Projeto } from '../models/Projeto.js';
 import { Constelacao } from '../models/Constelacao.js';
+
+const MAX_OBSERVACOES_POR_DIA = 2;
 
 const include = [
   { model: Projeto, as: 'projeto' },
@@ -22,11 +24,17 @@ async function proximaVersao(projetoId, constelacaoId, excludeId, transaction) {
     },
     transaction,
   });
-  const n = max == null ? 0 : Number(max);
-  return Number.isFinite(n) ? n + 1 : 1;
+  const maxVersao = max == null ? 0 : Number(max);
+  return Number.isFinite(maxVersao) ? maxVersao + 1 : 1;
 }
 
-async function validarReferencias(projetoId, constelacaoId, transaction) {
+/**
+ * RF35/RF38: valida todas as regras de negócio da observação.
+ * - Projeto e constelação devem existir.
+ * - Máx. 2 observações da mesma constelação no mesmo dia para o mesmo projeto.
+ * Deve ser chamada dentro de uma transação para evitar race conditions.
+ */
+async function assertRegrasNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
   if (!constelacaoId) throw new Error('Constelação observada deve ser informada.');
 
   const projeto = await Projeto.findByPk(projetoId, { transaction });
@@ -34,6 +42,22 @@ async function validarReferencias(projetoId, constelacaoId, transaction) {
 
   const constelacao = await Constelacao.findByPk(constelacaoId, { transaction });
   if (!constelacao) throw new Error('Constelação não encontrada.');
+
+  const totalNoDia = await Observacao.count({
+    where: {
+      projetoId,
+      constelacaoId,
+      dataObservacao,
+      ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
+    },
+    transaction,
+  });
+
+  if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
+    throw new Error(
+      `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
+    );
+  }
 }
 
 class ObservacaoService {
@@ -46,31 +70,19 @@ class ObservacaoService {
     return Observacao.findByPk(id, { include });
   }
 
-  /**
-   * RF35: versão calculada automaticamente; RF38: não permite duplicata constelação+projeto+dia.
-   */
   static async create(req) {
     const { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId } = req.body;
 
-    return sequelize.transaction(async (t) => {
-      await validarReferencias(projetoId, constelacaoId, t);
+    return sequelize.transaction(async (transaction) => {
+      await assertRegrasNegocio({ dataObservacao, projetoId, constelacaoId }, null, transaction);
 
-      const versaoObservacao = await proximaVersao(projetoId, constelacaoId, null, t);
+      const versaoObservacao = await proximaVersao(projetoId, constelacaoId, null, transaction);
 
-      try {
-        const obj = await Observacao.create(
-          { dataObservacao, descricao, instrumentoUtilizado, versaoObservacao, projetoId, constelacaoId },
-          { transaction: t }
-        );
-        return Observacao.findByPk(obj.id, { include, transaction: t });
-      } catch (error) {
-        if (error instanceof UniqueConstraintError) {
-          throw new Error(
-            'Não é permitido registrar duas observações da mesma constelação no mesmo dia associadas ao mesmo projeto.'
-          );
-        }
-        throw error;
-      }
+      const observacao = await Observacao.create(
+        { dataObservacao, descricao, instrumentoUtilizado, versaoObservacao, projetoId, constelacaoId },
+        { transaction }
+      );
+      return Observacao.findByPk(observacao.id, { include, transaction });
     });
   }
 
@@ -78,47 +90,43 @@ class ObservacaoService {
     const { id } = req.params;
     const { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId } = req.body;
 
-    return sequelize.transaction(async (t) => {
-      const obj = await Observacao.findByPk(id, { transaction: t });
-      if (!obj) throw new Error('Observação não encontrada.');
+    return sequelize.transaction(async (transaction) => {
+      const observacao = await Observacao.findByPk(id, { transaction });
+      if (!observacao) throw new Error('Observação não encontrada.');
 
-      const nextProjetoId = projetoId !== undefined ? projetoId : obj.projetoId;
-      const nextConstelacaoId = constelacaoId !== undefined ? constelacaoId : obj.constelacaoId;
+      const nextDataObservacao = dataObservacao !== undefined ? dataObservacao : observacao.dataObservacao;
+      const nextProjetoId = projetoId !== undefined ? projetoId : observacao.projetoId;
+      const nextConstelacaoId = constelacaoId !== undefined ? constelacaoId : observacao.constelacaoId;
 
-      await validarReferencias(nextProjetoId, nextConstelacaoId, t);
+      await assertRegrasNegocio(
+        { dataObservacao: nextDataObservacao, projetoId: nextProjetoId, constelacaoId: nextConstelacaoId },
+        Number(id),
+        transaction
+      );
 
       // Recalcula a versão apenas se mudar de projeto ou constelação
-      let versaoObservacao = obj.versaoObservacao;
-      if (nextProjetoId !== obj.projetoId || nextConstelacaoId !== obj.constelacaoId) {
-        versaoObservacao = await proximaVersao(nextProjetoId, nextConstelacaoId, Number(id), t);
+      let versaoObservacao = observacao.versaoObservacao;
+      if (nextProjetoId !== observacao.projetoId || nextConstelacaoId !== observacao.constelacaoId) {
+        versaoObservacao = await proximaVersao(nextProjetoId, nextConstelacaoId, Number(id), transaction);
       }
 
-      try {
-        if (dataObservacao !== undefined) obj.dataObservacao = dataObservacao;
-        if (descricao !== undefined) obj.descricao = descricao;
-        if (instrumentoUtilizado !== undefined) obj.instrumentoUtilizado = instrumentoUtilizado;
-        obj.versaoObservacao = versaoObservacao;
-        obj.projetoId = nextProjetoId;
-        obj.constelacaoId = nextConstelacaoId;
-        await obj.save({ transaction: t });
-        return Observacao.findByPk(obj.id, { include, transaction: t });
-      } catch (error) {
-        if (error instanceof UniqueConstraintError) {
-          throw new Error(
-            'Não é permitido registrar duas observações da mesma constelação no mesmo dia associadas ao mesmo projeto.'
-          );
-        }
-        throw error;
-      }
+      if (dataObservacao !== undefined) observacao.dataObservacao = dataObservacao;
+      if (descricao !== undefined) observacao.descricao = descricao;
+      if (instrumentoUtilizado !== undefined) observacao.instrumentoUtilizado = instrumentoUtilizado;
+      observacao.versaoObservacao = versaoObservacao;
+      observacao.projetoId = nextProjetoId;
+      observacao.constelacaoId = nextConstelacaoId;
+      await observacao.save({ transaction });
+      return Observacao.findByPk(observacao.id, { include, transaction });
     });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Observacao.findByPk(id);
-    if (!obj) throw new Error('Observação não encontrada.');
-    await obj.destroy();
-    return obj;
+    const observacao = await Observacao.findByPk(id);
+    if (!observacao) throw new Error('Observação não encontrada.');
+    await observacao.destroy();
+    return observacao;
   }
 }
 

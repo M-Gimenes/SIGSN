@@ -16,7 +16,7 @@ class ConstelacaoService {
   static async create(req) {
     const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } =
       req.body;
-    const obj = await Constelacao.create({
+    const constelacao = await Constelacao.create({
       nome,
       hemisferio,
       periodoVisibilidade,
@@ -24,38 +24,42 @@ class ConstelacaoService {
       descricao,
       curiosidades,
     });
-    return Constelacao.findByPk(obj.id, { include });
+    return Constelacao.findByPk(constelacao.id, { include });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const obj = await Constelacao.findByPk(id);
-    if (!obj) throw new Error('Constelação não encontrada.');
+    const constelacao = await Constelacao.findByPk(id);
+    if (!constelacao) throw new Error('Constelação não encontrada.');
 
     const { nome, hemisferio, periodoVisibilidade, principaisEstrelas, descricao, curiosidades } =
       req.body;
-    if (nome !== undefined) obj.nome = nome;
-    if (hemisferio !== undefined) obj.hemisferio = hemisferio;
-    if (periodoVisibilidade !== undefined) obj.periodoVisibilidade = periodoVisibilidade;
-    if (principaisEstrelas !== undefined) obj.principaisEstrelas = principaisEstrelas;
-    if (descricao !== undefined) obj.descricao = descricao;
-    if (curiosidades !== undefined) obj.curiosidades = curiosidades;
-    await obj.save();
-    return Constelacao.findByPk(obj.id, { include });
+    if (nome !== undefined) constelacao.nome = nome;
+    if (hemisferio !== undefined) constelacao.hemisferio = hemisferio;
+    if (periodoVisibilidade !== undefined) constelacao.periodoVisibilidade = periodoVisibilidade;
+    if (principaisEstrelas !== undefined) constelacao.principaisEstrelas = principaisEstrelas;
+    if (descricao !== undefined) constelacao.descricao = descricao;
+    if (curiosidades !== undefined) constelacao.curiosidades = curiosidades;
+    await constelacao.save();
+    return Constelacao.findByPk(constelacao.id, { include });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Constelacao.findByPk(id, { include });
-    if (!obj) throw new Error('Constelação não encontrada.');
+    const constelacao = await Constelacao.findByPk(id, { include });
+    if (!constelacao) throw new Error('Constelação não encontrada.');
 
     // RF11: não pode remover se vinculada a observações
-    if (obj.observacoes && obj.observacoes.length > 0) {
+    const observacaoVinculada = await Observacao.findOne({
+      attributes: ['id'],
+      where: { constelacaoId: id },
+    });
+    if (observacaoVinculada) {
       throw new Error('Não é possível remover a constelação: existem observações vinculadas.');
     }
 
-    await obj.destroy();
-    return obj;
+    await constelacao.destroy();
+    return constelacao;
   }
 }
 

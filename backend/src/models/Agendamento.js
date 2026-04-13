@@ -12,17 +12,6 @@ class Agendamento extends Model {
             isDate: { msg: 'Data da visita deve ser válida.' },
           },
         },
-        tipoVisita: {
-          type: DataTypes.STRING,
-          allowNull: false,
-          validate: {
-            notEmpty: { msg: 'Tipo de visita deve ser preenchido.' },
-            isIn: {
-              args: [['Diurna', 'Noturna', 'Sessão Especial']],
-              msg: 'Tipo de visita deve ser Diurna, Noturna ou Sessão Especial.',
-            },
-          },
-        },
         valorVisita: {
           type: DataTypes.DOUBLE,
           allowNull: true,
@@ -39,13 +28,6 @@ class Agendamento extends Model {
         sequelize,
         modelName: 'agendamento',
         tableName: 'agendamentos',
-        indexes: [
-          {
-            unique: true,
-            fields: ['data_visita'],
-            name: 'agendamento_data_visita_unq',
-          },
-        ],
       }
     );
   }

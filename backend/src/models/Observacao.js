@@ -40,13 +40,6 @@ class Observacao extends Model {
         sequelize,
         modelName: 'observacao',
         tableName: 'observacoes',
-        indexes: [
-          {
-            unique: true,
-            fields: ['projeto_id', 'constelacao_id', 'data_observacao'],
-            name: 'observacao_projeto_constelacao_data_unq',
-          },
-        ],
       }
     );
   }
