@@ -560,6 +560,8 @@
                     "telefone": "(41) 99999-0003",
                     "email": "carlos.mendes@observatorio.br",
                     "especialidade": "Astronomia Popular",
+                    "login": "carlosmendes",
+                    "senha": "senha123",
                     "disponibilidade": "NOITE"
                   }
                 },
@@ -570,6 +572,8 @@
                     "telefone": "",
                     "email": "nao-e-email",
                     "especialidade": "",
+                    "login": "",
+                    "senha": "",
                     "disponibilidade": "INVALIDO"
                   }
                 }

@@ -133,8 +133,9 @@ async function seedDatabase() {
       cpf: '30000000001',
       telefone: '(28) 97771-0001',
       email: 'guia1@sigsn.com',
-      status: true,
       especialidade: 'Planetário',
+      login: 'guia1',
+      senha: 'senha123',
       disponibilidade: 'MANHA',
     },
     {
@@ -142,8 +143,9 @@ async function seedDatabase() {
       cpf: '30000000002',
       telefone: '(28) 97772-0002',
       email: 'guia2@sigsn.com',
-      status: true,
       especialidade: 'Telescópios',
+      login: 'guia2',
+      senha: 'senha123',
       disponibilidade: 'TARDE',
     },
     {
@@ -151,8 +153,9 @@ async function seedDatabase() {
       cpf: '30000000003',
       telefone: '(28) 97773-0003',
       email: 'guia3@sigsn.com',
-      status: true,
       especialidade: 'Visitas Escolares',
+      login: 'guia3',
+      senha: 'senha123',
       disponibilidade: 'NOITE',
     },
     {
@@ -160,8 +163,9 @@ async function seedDatabase() {
       cpf: '30000000004',
       telefone: '(28) 97774-0004',
       email: 'guia4@sigsn.com',
-      status: true,
       especialidade: 'Sessões Especiais',
+      login: 'guia4',
+      senha: 'senha123',
       disponibilidade: 'MANHA',
     },
   ]);

@@ -6,7 +6,7 @@ class Guia extends Pessoa {
   static init(sequelize) {
     super.init(
       {
-        ...Pessoa.atributosBase(),
+        ...Pessoa.atributosBase('guia'),
         disponibilidade: {
           type: DataTypes.STRING,
           allowNull: false,
