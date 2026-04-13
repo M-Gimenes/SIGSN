@@ -21,7 +21,7 @@ class PesquisadorService {
 
   static async create(req) {
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    const obj = await Pesquisador.create({
+    const pesquisador = await Pesquisador.create({
       nome,
       cpf,
       telefone,
@@ -31,34 +31,34 @@ class PesquisadorService {
       login,
       senha,
     });
-    return Pesquisador.findByPk(obj.id, { include });
+    return Pesquisador.findByPk(pesquisador.id, { include });
   }
 
   static async update(req) {
     const { id } = req.params;
-    const obj = await Pesquisador.findByPk(id);
-    if (!obj) throw new Error('Pesquisador não encontrado.');
+    const pesquisador = await Pesquisador.findByPk(id);
+    if (!pesquisador) throw new Error('Pesquisador não encontrado.');
 
     const { nome, cpf, telefone, email, status, especialidade, login, senha } = req.body;
-    if (nome !== undefined) obj.nome = nome;
-    if (cpf !== undefined) obj.cpf = cpf;
-    if (telefone !== undefined) obj.telefone = telefone;
-    if (email !== undefined) obj.email = email;
-    if (status !== undefined) obj.status = status;
-    if (especialidade !== undefined) obj.especialidade = especialidade;
-    if (login !== undefined) obj.login = login;
-    if (senha !== undefined) obj.senha = senha;
-    await obj.save();
-    return Pesquisador.findByPk(obj.id, { include });
+    if (nome !== undefined) pesquisador.nome = nome;
+    if (cpf !== undefined) pesquisador.cpf = cpf;
+    if (telefone !== undefined) pesquisador.telefone = telefone;
+    if (email !== undefined) pesquisador.email = email;
+    if (status !== undefined) pesquisador.status = status;
+    if (especialidade !== undefined) pesquisador.especialidade = especialidade;
+    if (login !== undefined) pesquisador.login = login;
+    if (senha !== undefined) pesquisador.senha = senha;
+    await pesquisador.save();
+    return Pesquisador.findByPk(pesquisador.id, { include });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Pesquisador.findByPk(id);
-    if (!obj) throw new Error('Pesquisador não encontrado.');
+    const pesquisador = await Pesquisador.findByPk(id);
+    if (!pesquisador) throw new Error('Pesquisador não encontrado.');
     try {
-      await obj.destroy();
-      return obj;
+      await pesquisador.destroy();
+      return pesquisador;
     } catch (error) {
       if (error.name === 'SequelizeForeignKeyConstraintError') {
         throw new Error('Não é possível remover o pesquisador: existem vínculos no sistema.');

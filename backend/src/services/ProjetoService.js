@@ -74,11 +74,11 @@ class ProjetoService {
         t
       );
 
-      const obj = await Projeto.create(
+      const projeto = await Projeto.create(
         { titulo, dataInicio, dataTermino, status: statusVal, areaDePesquisa, grupoDePesquisaId, coordenadorId },
         { transaction: t }
       );
-      return Projeto.findByPk(obj.id, { include, transaction: t });
+      return Projeto.findByPk(projeto.id, { include, transaction: t });
     });
   }
 
@@ -88,12 +88,12 @@ class ProjetoService {
       req.body;
 
     return sequelize.transaction(async (t) => {
-      const obj = await Projeto.findByPk(id, { transaction: t });
-      if (!obj) throw new Error('Projeto não encontrado.');
+      const projeto = await Projeto.findByPk(id, { transaction: t });
+      if (!projeto) throw new Error('Projeto não encontrado.');
 
-      const nextStatus = status !== undefined ? status : obj.status;
-      const nextGrupo = grupoDePesquisaId !== undefined ? grupoDePesquisaId : obj.grupoDePesquisaId;
-      const nextCoord = coordenadorId !== undefined ? coordenadorId : obj.coordenadorId;
+      const nextStatus = status !== undefined ? status : projeto.status;
+      const nextGrupo = grupoDePesquisaId !== undefined ? grupoDePesquisaId : projeto.grupoDePesquisaId;
+      const nextCoord = coordenadorId !== undefined ? coordenadorId : projeto.coordenadorId;
 
       await assertRegrasNegocio(
         { status: nextStatus, grupoDePesquisaId: nextGrupo, coordenadorId: nextCoord },
@@ -101,26 +101,26 @@ class ProjetoService {
         t
       );
 
-      if (titulo !== undefined) obj.titulo = titulo;
-      if (dataInicio !== undefined) obj.dataInicio = dataInicio;
-      if (dataTermino !== undefined) obj.dataTermino = dataTermino;
-      if (status !== undefined) obj.status = status;
-      if (areaDePesquisa !== undefined) obj.areaDePesquisa = areaDePesquisa;
-      if (grupoDePesquisaId !== undefined) obj.grupoDePesquisaId = grupoDePesquisaId;
-      if (coordenadorId !== undefined) obj.coordenadorId = coordenadorId;
-      await obj.save({ transaction: t });
+      if (titulo !== undefined) projeto.titulo = titulo;
+      if (dataInicio !== undefined) projeto.dataInicio = dataInicio;
+      if (dataTermino !== undefined) projeto.dataTermino = dataTermino;
+      if (status !== undefined) projeto.status = status;
+      if (areaDePesquisa !== undefined) projeto.areaDePesquisa = areaDePesquisa;
+      if (grupoDePesquisaId !== undefined) projeto.grupoDePesquisaId = grupoDePesquisaId;
+      if (coordenadorId !== undefined) projeto.coordenadorId = coordenadorId;
+      await projeto.save({ transaction: t });
 
-      return Projeto.findByPk(obj.id, { include, transaction: t });
+      return Projeto.findByPk(projeto.id, { include, transaction: t });
     });
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Projeto.findByPk(id);
-    if (!obj) throw new Error('Projeto não encontrado.');
+    const projeto = await Projeto.findByPk(id);
+    if (!projeto) throw new Error('Projeto não encontrado.');
     try {
-      await obj.destroy();
-      return obj;
+      await projeto.destroy();
+      return projeto;
     } catch (error) {
       if (error.name === 'SequelizeForeignKeyConstraintError') {
         throw new Error(

@@ -1,0 +1,955 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SIGSN API",
+    "description": "Sistema de Gestão do Observatório Sidereus Nuncius",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333"
+    }
+  ],
+  "paths": {
+    "/agendamentos": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar agendamento",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "dataVisita": "2025-08-15T20:00:00.000Z",
+                    "tipoVisita": "Noturna",
+                    "valorVisita": 35,
+                    "observacoes": "Grupo escolar",
+                    "guiaId": 1,
+                    "caravanaId": 1
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "dataVisita": "nao-e-uma-data",
+                    "tipoVisita": "TipoInvalido",
+                    "valorVisita": "nao-e-numero",
+                    "guiaId": null,
+                    "caravanaId": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/agendamentos/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/caravanas": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar caravana",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Caravana do Colégio Estadual",
+                    "tipoCaravana": "Escolar",
+                    "instituicao": "Colégio Estadual Central",
+                    "responsavel": "João Silva",
+                    "telefone": "(41) 99999-0001",
+                    "quantidadeVisitantes": 30,
+                    "observacoes": "Alunos do 3º ano"
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "",
+                    "tipoCaravana": "TipoInvalido",
+                    "instituicao": "",
+                    "responsavel": "",
+                    "telefone": "",
+                    "quantidadeVisitantes": 0
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/caravanas/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/constelacoes": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar constelação",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Orion",
+                    "hemisferio": "Norte",
+                    "periodoVisibilidade": "Outubro a Março",
+                    "principaisEstrelas": "Betelgeuse, Rigel, Bellatrix",
+                    "descricao": "Constelação do caçador mitológico, visível em todo o mundo.",
+                    "curiosidades": "Contém a Nebulosa de Orion."
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "X",
+                    "hemisferio": "Leste",
+                    "periodoVisibilidade": "",
+                    "principaisEstrelas": "",
+                    "descricao": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/constelacoes/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/coordenadores": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar coordenador",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Dra. Ana Paula",
+                    "cpf": "11122233344",
+                    "telefone": "(41) 99999-0002",
+                    "email": "ana.paula@observatorio.br",
+                    "especialidade": "Astrofísica",
+                    "login": "anapaulad",
+                    "senha": "senha123"
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "",
+                    "cpf": "",
+                    "telefone": "",
+                    "email": "email-invalido",
+                    "especialidade": "",
+                    "login": "",
+                    "senha": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/coordenadores/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/grupos-de-pesquisa": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar grupo de pesquisa",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Grupo Astrofísica",
+                    "areaDePesquisa": "Astrofísica Observacional",
+                    "dataCriacao": "2022-03-10",
+                    "descricao": "Grupo dedicado ao estudo de fenômenos astrofísicos.",
+                    "status": true,
+                    "pesquisadorIds": [
+                      1,
+                      2
+                    ]
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "AB",
+                    "areaDePesquisa": "",
+                    "dataCriacao": "nao-e-uma-data",
+                    "status": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/grupos-de-pesquisa/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/guias": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar guia",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Carlos Mendes",
+                    "cpf": "55566677788",
+                    "telefone": "(41) 99999-0003",
+                    "email": "carlos.mendes@observatorio.br",
+                    "especialidade": "Astronomia Popular",
+                    "disponibilidade": "Segunda a Sexta, 18h–22h"
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "",
+                    "cpf": "",
+                    "telefone": "",
+                    "email": "nao-e-email",
+                    "especialidade": "",
+                    "disponibilidade": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/guias/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/observacoes": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar observação",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "dataObservacao": "2025-07-20",
+                    "descricao": "Observação da Nebulosa de Orion com alta nitidez.",
+                    "instrumentoUtilizado": "Telescópio Refrator 120mm",
+                    "projetoId": 1,
+                    "constelacaoId": 1
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "dataObservacao": "nao-e-uma-data",
+                    "descricao": "",
+                    "instrumentoUtilizado": "",
+                    "projetoId": null,
+                    "constelacaoId": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/observacoes/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/pesquisadores": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar pesquisador",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "nome": "Dr. Marcos Lima",
+                    "cpf": "99988877766",
+                    "telefone": "(41) 99999-0004",
+                    "email": "marcos.lima@observatorio.br",
+                    "especialidade": "Cosmologia",
+                    "login": "marcoslima",
+                    "senha": "senha456"
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "nome": "",
+                    "cpf": "",
+                    "telefone": "",
+                    "email": "nao-e-email",
+                    "especialidade": "",
+                    "login": "",
+                    "senha": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pesquisadores/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/projetos": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar projeto",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "examples": {
+                "Válido": {
+                  "value": {
+                    "titulo": "Mapeamento Estelar",
+                    "dataInicio": "2025-01-01",
+                    "dataTermino": "2025-12-31",
+                    "status": "ativo",
+                    "areaDePesquisa": "Astrometria",
+                    "grupoDePesquisaId": 1,
+                    "coordenadorId": 1
+                  }
+                },
+                "Com erros de validação": {
+                  "value": {
+                    "titulo": "AB",
+                    "dataInicio": "nao-e-uma-data",
+                    "dataTermino": "2024-01-01",
+                    "status": "invalido",
+                    "areaDePesquisa": "",
+                    "grupoDePesquisaId": null,
+                    "coordenadorId": null
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projetos/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}

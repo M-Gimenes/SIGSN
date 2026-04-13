@@ -19,28 +19,29 @@ class GuiaService {
 
   static async update(req) {
     const { id } = req.params;
-    const obj = await Guia.findByPk(id);
-    if (!obj) throw new Error('Guia não encontrado.');
+    const guia = await Guia.findByPk(id);
+    if (!guia) throw new Error('Guia não encontrado.');
 
     const { nome, cpf, telefone, email, status, especialidade, disponibilidade } = req.body;
-    if (nome !== undefined) obj.nome = nome;
-    if (cpf !== undefined) obj.cpf = cpf;
-    if (telefone !== undefined) obj.telefone = telefone;
-    if (email !== undefined) obj.email = email;
-    if (status !== undefined) obj.status = status;
-    if (especialidade !== undefined) obj.especialidade = especialidade;
-    if (disponibilidade !== undefined) obj.disponibilidade = disponibilidade;
-    await obj.save();
-    return obj;
+    if (nome !== undefined) guia.nome = nome;
+    if (cpf !== undefined) guia.cpf = cpf;
+    if (telefone !== undefined) guia.telefone = telefone;
+    if (email !== undefined) guia.email = email;
+    if (status !== undefined) guia.status = status;
+    if (especialidade !== undefined) guia.especialidade = especialidade;
+    if (disponibilidade !== undefined) guia.disponibilidade = disponibilidade;
+    await guia.save();
+    return guia;
   }
 
   static async delete(req) {
     const { id } = req.params;
-    const obj = await Guia.findByPk(id);
-    if (!obj) throw new Error('Guia não encontrado.');
+    const guia = await Guia.findByPk(id);
+    if (!guia) throw new Error('Guia não encontrado.');
 
     // RF07: não pode remover se vinculado a agendamento futuro
     const agendamentoFuturo = await Agendamento.findOne({
+      attributes: ['id'],
       where: {
         guiaId: id,
         dataVisita: { [Op.gt]: new Date() },
@@ -50,15 +51,8 @@ class GuiaService {
       throw new Error('Não é possível remover o guia: está vinculado a um agendamento futuro.');
     }
 
-    try {
-      await obj.destroy();
-      return obj;
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new Error('Não é possível remover o guia: existem agendamentos vinculados.');
-      }
-      throw error;
-    }
+    await guia.destroy();
+    return guia;
   }
 }
 
