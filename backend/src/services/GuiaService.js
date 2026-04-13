@@ -24,8 +24,8 @@ class GuiaService {
   }
 
   static async create(req) {
-    const { nome, cpf, telefone, email, status, especialidade, disponibilidade } = req.body;
-    const dados = { nome, cpf, telefone, email, status, especialidade, disponibilidade };
+    const { nome, cpf, telefone, email, status, especialidade, login, senha, disponibilidade } = req.body;
+    const dados = { nome, cpf, telefone, email, status, especialidade, login, senha, disponibilidade };
 
     await assertValido(dados);
     return Guia.create(dados);
@@ -33,7 +33,7 @@ class GuiaService {
 
   static async update(req) {
     const { id } = req.params;
-    const { nome, cpf, telefone, email, status, especialidade, disponibilidade } = req.body;
+    const { nome, cpf, telefone, email, status, especialidade, login, senha, disponibilidade } = req.body;
 
     const guia = await Guia.findByPk(id);
     if (!guia) throw new ValidationError('Guia não encontrado.');
@@ -45,6 +45,8 @@ class GuiaService {
       email:           email           ?? guia.email,
       status:          status          ?? guia.status,
       especialidade:   especialidade   ?? guia.especialidade,
+      login:           login           ?? guia.login,
+      senha:           senha           ?? guia.senha,
       disponibilidade: disponibilidade ?? guia.disponibilidade,
     };
 

@@ -249,6 +249,8 @@ routes.post('/guias', (req, res, next) => {
                 telefone: "(41) 99999-0003",
                 email: "carlos.mendes@observatorio.br",
                 especialidade: "Astronomia Popular",
+                login: "carlosmendes",
+                senha: "senha123",
                 disponibilidade: "NOITE"
               }
             },
@@ -259,6 +261,8 @@ routes.post('/guias', (req, res, next) => {
                 telefone: "",
                 email: "nao-e-email",
                 especialidade: "",
+                login: "",
+                senha: "",
                 disponibilidade: "INVALIDO"
               }
             }

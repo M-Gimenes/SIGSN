@@ -37,7 +37,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataVisita\": \"2026-05-04T09:00:00.000Z\",\n  \"tipoVisita\": \"Diurna\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Grupo escolar do ensino médio\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
+              "raw": "{\n  \"dataVisita\": \"2026-05-04T09:00:00.000Z\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Grupo escolar do ensino médio\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
             }
           }
         },
@@ -50,7 +50,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataVisita\": \"nao-e-uma-data\",\n  \"tipoVisita\": \"\",\n  \"valorVisita\": \"nao-e-numero\",\n  \"guiaId\": null,\n  \"caravanaId\": null\n}"
+              "raw": "{\n  \"dataVisita\": \"nao-e-uma-data\",\n  \"valorVisita\": \"nao-e-numero\",\n  \"guiaId\": null,\n  \"caravanaId\": null\n}"
             }
           }
         },
@@ -362,7 +362,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"cpf\": \"55566677788\",\n  \"telefone\": \"(41) 99999-0003\",\n  \"email\": \"carlos.mendes@observatorio.br\",\n  \"status\": true,\n  \"especialidade\": \"Astronomia Popular\",\n  \"disponibilidade\": \"SEG MANHA,SEG TARDE,QUA NOITE,SEX MANHA\"\n}"
+              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"cpf\": \"55566677788\",\n  \"telefone\": \"(41) 99999-0003\",\n  \"email\": \"carlos.mendes@observatorio.br\",\n  \"especialidade\": \"Astronomia Popular\",\n  \"login\": \"carlosmendes\",\n  \"senha\": \"senha123\",\n  \"disponibilidade\": \"NOITE\"\n}"
             }
           }
         },
@@ -375,7 +375,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"nao-e-email\",\n  \"especialidade\": \"\",\n  \"disponibilidade\": \"Segunda a Sexta - Manhã\"\n}"
+              "raw": "{\n  \"nome\": \"\",\n  \"cpf\": \"\",\n  \"telefone\": \"\",\n  \"email\": \"nao-e-email\",\n  \"especialidade\": \"\",\n  \"login\": \"\",\n  \"senha\": \"\",\n  \"disponibilidade\": \"INVALIDO\"\n}"
             }
           }
         },
@@ -388,7 +388,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"disponibilidade\": \"SEG MANHA,TER MANHA,QUI TARDE\"\n}"
+              "raw": "{\n  \"disponibilidade\": \"MANHA\"\n}"
             }
           }
         },
