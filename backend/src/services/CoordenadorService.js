@@ -2,6 +2,8 @@ import { Coordenador } from '../models/Coordenador.js';
 import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 
+// Matheus - Cadastro 
+
 // ─── Validação ────────────────────────────────────────────────────────────────
 
 async function assertValido(dados) {

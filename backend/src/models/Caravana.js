@@ -64,8 +64,8 @@ class Caravana extends Model {
   }
 
   static associate(models) {
-    this.hasOne(models.agendamento, {
-      as: 'agendamento',
+    this.hasMany(models.agendamento, {
+      as: 'agendamentos',
       onDelete: 'RESTRICT',
       onUpdate: 'CASCADE',
     });

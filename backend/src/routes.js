@@ -27,19 +27,37 @@ routes.post('/agendamentos', (req, res, next) => {
           examples: {
             "Válido": {
               value: {
-                dataVisita: "2025-08-15T20:00:00.000Z",
-                valorVisita: 35.00,
-                observacoes: "Grupo escolar",
+                dataVisita: "2026-06-10T08:00:00.000Z",
+                valorVisita: 350,
+                observacoes: "Visita escolar matinal",
                 guiaId: 1,
                 caravanaId: 1
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 dataVisita: "nao-e-uma-data",
-                valorVisita: "nao-e-numero",
+                valorVisita: -50,
                 guiaId: null,
                 caravanaId: null
+              }
+            },
+            "RN 1 — Guia sem disponibilidade compatível com o turno": {
+              value: {
+                dataVisita: "2026-06-10T20:00:00.000Z",
+                valorVisita: 350,
+                observacoes: "Guia 1 é MANHA; visita às 20h cai no turno NOITE",
+                guiaId: 1,
+                caravanaId: 1
+              }
+            },
+            "RN 2 — Limite de 3 agendamentos no mesmo turno por dia excedido": {
+              value: {
+                dataVisita: "2026-06-11T20:00:00.000Z",
+                valorVisita: 400,
+                observacoes: "4º agendamento no turno NOITE do dia 2026-06-11",
+                guiaId: 3,
+                caravanaId: 1
               }
             }
           }
@@ -77,10 +95,10 @@ routes.post('/caravanas', (req, res, next) => {
                 observacoes: "Alunos do 3º ano"
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "",
-                tipoCaravana: "TipoInvalido",
+                tipoCaravana: "",
                 instituicao: "",
                 responsavel: "",
                 telefone: "",
@@ -121,10 +139,10 @@ routes.post('/constelacoes', (req, res, next) => {
                 curiosidades: "Contém a Nebulosa de Orion."
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "X",
-                hemisferio: "Leste",
+                hemisferio: "",
                 periodoVisibilidade: "",
                 principaisEstrelas: "",
                 descricao: ""
@@ -160,12 +178,13 @@ routes.post('/coordenadores', (req, res, next) => {
                 cpf: "11122233344",
                 telefone: "(41) 99999-0002",
                 email: "ana.paula@observatorio.br",
+                status: true,
                 especialidade: "Astrofísica",
                 login: "anapaulad",
                 senha: "senha123"
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "",
                 cpf: "",
@@ -210,11 +229,12 @@ routes.post('/grupos-de-pesquisa', (req, res, next) => {
                 pesquisadorIds: [1, 2]
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "AB",
                 areaDePesquisa: "",
                 dataCriacao: "nao-e-uma-data",
+                descricao: "",
                 status: null
               }
             }
@@ -248,13 +268,14 @@ routes.post('/guias', (req, res, next) => {
                 cpf: "55566677788",
                 telefone: "(41) 99999-0003",
                 email: "carlos.mendes@observatorio.br",
+                status: true,
                 especialidade: "Astronomia Popular",
                 login: "carlosmendes",
                 senha: "senha123",
                 disponibilidade: "NOITE"
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "",
                 cpf: "",
@@ -292,20 +313,37 @@ routes.post('/observacoes', (req, res, next) => {
           examples: {
             "Válido": {
               value: {
-                dataObservacao: "2025-07-20",
-                descricao: "Observação da Nebulosa de Orion com alta nitidez.",
-                instrumentoUtilizado: "Telescópio Refrator 120mm",
+                dataObservacao: "2026-05-01",
+                descricao: "Registro detalhado das posições estelares.",
+                instrumentoUtilizado: "Telescópio refletor 200mm",
                 projetoId: 1,
-                constelacaoId: 1
+                constelacaoId: 2
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 dataObservacao: "nao-e-uma-data",
                 descricao: "",
                 instrumentoUtilizado: "",
                 projetoId: null,
                 constelacaoId: null
+              }
+            },
+            "RN 1 — Constelação não informada": {
+              value: {
+                dataObservacao: "2026-05-01",
+                descricao: "Observação sem constelação definida.",
+                instrumentoUtilizado: "Telescópio refletor 200mm",
+                projetoId: 1
+              }
+            },
+            "RN 2 — Limite de 2 observações do mesmo projeto/constelação/dia excedido": {
+              value: {
+                dataObservacao: "2025-09-10",
+                descricao: "3ª observação no mesmo dia para o mesmo projeto e constelação.",
+                instrumentoUtilizado: "Câmera CCD",
+                projetoId: 1,
+                constelacaoId: 1
               }
             }
           }
@@ -338,12 +376,13 @@ routes.post('/pesquisadores', (req, res, next) => {
                 cpf: "99988877766",
                 telefone: "(41) 99999-0004",
                 email: "marcos.lima@observatorio.br",
+                status: true,
                 especialidade: "Cosmologia",
                 login: "marcoslima",
                 senha: "senha456"
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 nome: "",
                 cpf: "",
@@ -380,16 +419,16 @@ routes.post('/projetos', (req, res, next) => {
           examples: {
             "Válido": {
               value: {
-                titulo: "Mapeamento Estelar",
-                dataInicio: "2025-01-01",
-                dataTermino: "2025-12-31",
+                titulo: "Projeto Nova Era",
+                dataInicio: "2026-06-01",
+                dataTermino: "2026-12-31",
                 status: "ativo",
                 areaDePesquisa: "Astrometria",
                 grupoDePesquisaId: 1,
-                coordenadorId: 1
+                coordenadorId: 2
               }
             },
-            "Com erros de validação": {
+            "Erros de campos básicos": {
               value: {
                 titulo: "AB",
                 dataInicio: "nao-e-uma-data",
@@ -398,6 +437,28 @@ routes.post('/projetos', (req, res, next) => {
                 areaDePesquisa: "",
                 grupoDePesquisaId: null,
                 coordenadorId: null
+              }
+            },
+            "RN 1 — Limite de 10 projetos ativos simultâneos excedido": {
+              value: {
+                titulo: "Projeto Décimo Primeiro",
+                dataInicio: "2026-06-01",
+                dataTermino: "2026-12-31",
+                status: "ativo",
+                areaDePesquisa: "Astronomia Geral",
+                grupoDePesquisaId: 1,
+                coordenadorId: 3
+              }
+            },
+            "RN 2 — Coordenador já no limite de 2 projetos ativos": {
+              value: {
+                titulo: "Terceiro Projeto do Coordenador",
+                dataInicio: "2026-06-01",
+                dataTermino: "2026-12-31",
+                status: "ativo",
+                areaDePesquisa: "Astrometria",
+                grupoDePesquisaId: 2,
+                coordenadorId: 1
               }
             }
           }

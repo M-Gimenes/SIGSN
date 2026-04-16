@@ -3,6 +3,8 @@ import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 import { Observacao } from '../models/Observacao.js';
 
+// Emanuelly - Cadastro
+
 const include = [{ model: Observacao, as: 'observacoes' }];
 
 // ─── Validação ────────────────────────────────────────────────────────────────
@@ -60,15 +62,6 @@ class ConstelacaoService {
     const { id } = req.params;
     const constelacao = await Constelacao.findByPk(id);
     if (!constelacao) throw new ValidationError('Constelação não encontrada.');
-
-    const observacaoVinculada = await Observacao.findOne({
-      attributes: ['id'],
-      where: { constelacaoId: id },
-    });
-    if (observacaoVinculada) {
-      throw new ValidationError('Não é possível remover a constelação: existem observações vinculadas.');
-    }
-
     await constelacao.destroy();
     return constelacao;
   }

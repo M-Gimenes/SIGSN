@@ -6,6 +6,8 @@ import { Constelacao } from '../models/Constelacao.js';
 import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 
+// Emanuelly - Processo
+
 const MAX_OBSERVACOES_POR_DIA = 2;
 
 const include = [
@@ -18,45 +20,63 @@ const include = [
 async function assertValido(dados, excludeId, transaction) {
   const [campoErros, regraErros] = await Promise.all([
     validarCampos(Observacao, dados),
-    errosDeNegocio(dados, excludeId, transaction),
+    verificarRegrasDeNegocio(dados, excludeId, transaction),
   ]);
 
   const todos = [...campoErros, ...regraErros];
   if (todos.length > 0) throw new ValidationError(todos);
 }
 
-async function errosDeNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
+async function verificarConstelacaoInformada(constelacaoId) {
   const erros = [];
-
+  // Regra de negócio: constelação deve ser informada
   if (!constelacaoId) erros.push('Constelação observada deve ser informada.');
+  return erros;
+}
 
+async function verificarExistenciaProjetoEConstelacao(projetoId, constelacaoId, transaction) {
+  const erros = [];
+  // Regra de negócio: projeto e constelação informados devem existir
   const [projeto, constelacao] = await Promise.all([
     Projeto.findByPk(projetoId, { transaction }),
     constelacaoId ? Constelacao.findByPk(constelacaoId, { transaction }) : Promise.resolve(null),
   ]);
-
   if (!projeto) erros.push('Projeto não encontrado.');
   if (constelacaoId && !constelacao) erros.push('Constelação não encontrada.');
-
-  if (projeto && constelacao && dataObservacao) {
-    const totalNoDia = await Observacao.count({
-      where: {
-        projetoId,
-        constelacaoId,
-        dataObservacao,
-        ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
-      },
-      transaction,
-    });
-
-    if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
-      erros.push(
-        `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
-      );
-    }
-  }
-
   return erros;
+}
+
+async function verificarLimiteObservacoesDiarias(projetoId, constelacaoId, dataObservacao, excludeId, transaction) {
+  const erros = [];
+  // Regra de negócio: limite de observações da mesma constelação pelo mesmo projeto no mesmo dia
+  const totalNoDia = await Observacao.count({
+    where: {
+      projetoId,
+      constelacaoId,
+      dataObservacao,
+      ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
+    },
+    transaction,
+  });
+  if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
+    erros.push(
+      `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
+    );
+  }
+  return erros;
+}
+
+async function verificarRegrasDeNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
+  const [errosConstelacao, errosExistencia] = await Promise.all([
+    verificarConstelacaoInformada(constelacaoId),
+    verificarExistenciaProjetoEConstelacao(projetoId, constelacaoId, transaction),
+  ]);
+
+  const errosLimite = errosConstelacao.length === 0 && errosExistencia.length === 0
+    ? await verificarLimiteObservacoesDiarias(projetoId, constelacaoId, dataObservacao, excludeId, transaction)
+    : [];
+
+  return [...errosConstelacao, ...errosExistencia, ...errosLimite];
 }
 
 // ─── Versão ───────────────────────────────────────────────────────────────────
@@ -114,11 +134,11 @@ class ObservacaoService {
       if (!observacao) throw new ValidationError('Observação não encontrada.');
 
       const dados = {
-        dataObservacao:      dataObservacao      ?? observacao.dataObservacao,
-        descricao:           descricao           ?? observacao.descricao,
+        dataObservacao:       dataObservacao       ?? observacao.dataObservacao,
+        descricao:            descricao            ?? observacao.descricao,
         instrumentoUtilizado: instrumentoUtilizado ?? observacao.instrumentoUtilizado,
-        projetoId:           projetoId           ?? observacao.projetoId,
-        constelacaoId:       constelacaoId       ?? observacao.constelacaoId,
+        projetoId:            projetoId            ?? observacao.projetoId,
+        constelacaoId:        constelacaoId        ?? observacao.constelacaoId,
       };
 
       await assertValido(dados, Number(id), transaction);

@@ -1,8 +1,8 @@
-import { Op } from 'sequelize';
 import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 import { Guia } from '../models/Guia.js';
-import { Agendamento } from '../models/Agendamento.js';
+
+// Larissa - Cadastro
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 
@@ -61,18 +61,6 @@ class GuiaService {
     const { id } = req.params;
     const guia = await Guia.findByPk(id);
     if (!guia) throw new ValidationError('Guia não encontrado.');
-
-    const agendamentoFuturo = await Agendamento.findOne({
-      attributes: ['id'],
-      where: {
-        guiaId: id,
-        dataVisita: { [Op.gt]: new Date() },
-      },
-    });
-    if (agendamentoFuturo) {
-      throw new ValidationError('Não é possível remover o guia: está vinculado a um agendamento futuro.');
-    }
-
     await guia.destroy();
     return guia;
   }

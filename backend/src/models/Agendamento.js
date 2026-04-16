@@ -46,7 +46,6 @@ class Agendamento extends Model {
       foreignKey: {
         name: 'caravanaId',
         allowNull: false,
-        unique: true,
         validate: { notNull: { msg: 'Caravana do agendamento deve ser preenchida.' } },
       },
     });

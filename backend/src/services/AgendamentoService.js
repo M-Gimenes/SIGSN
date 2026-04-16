@@ -7,6 +7,8 @@ import { formatLocalDateYYYYMMDD, getTurnoFromDate } from '../utils/agendamentoT
 import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 
+// Larissa - Processo
+
 const MAX_AGENDAMENTOS_POR_TURNO = 3;
 
 const include = [
@@ -19,45 +21,54 @@ const include = [
 async function assertValido(dados, excludeId, transaction) {
   const [campoErros, regraErros] = await Promise.all([
     validarCampos(Agendamento, dados),
-    errosDeNegocio(dados, excludeId, transaction),
+    verificarRegrasDeNegocio(dados, excludeId, transaction),
   ]);
 
   const todos = [...campoErros, ...regraErros];
   if (todos.length > 0) throw new ValidationError(todos);
 }
 
-async function errosDeNegocio({ dataVisita, guiaId }, excludeId, transaction) {
+async function verificarDisponibilidadeGuia(guiaId, turno, transaction) {
   const erros = [];
-
-  const visitDate = new Date(dataVisita);
-  const dayStr = formatLocalDateYYYYMMDD(visitDate);
-  const turno = getTurnoFromDate(visitDate);
-
-  const [guia, agendamentosNoDia] = await Promise.all([
-    Guia.findByPk(guiaId, { transaction }),
-    Agendamento.findAll({
-      attributes: ['id', 'dataVisita'],
-      where: sequelize.where(sequelize.fn('date', sequelize.col('data_visita')), dayStr),
-      transaction,
-    }),
-  ]);
-
+  // Regra de negócio: guia deve existir e ter disponibilidade compatível com o turno da visita
+  const guia = await Guia.findByPk(guiaId, { transaction });
   if (!guia) {
     erros.push('Guia não encontrado.');
   } else if (guia.disponibilidade !== turno) {
     erros.push(`O guia "${guia.nome}" não tem disponibilidade compatível com o horário selecionado.`);
   }
+  return erros;
+}
 
+async function verificarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction) {
+  const erros = [];
+  // Regra de negócio: limite máximo de agendamentos por turno por dia
+  const dayStr = formatLocalDateYYYYMMDD(visitDate);
+  const agendamentosNoDia = await Agendamento.findAll({
+    attributes: ['id', 'dataVisita'],
+    where: sequelize.where(sequelize.fn('date', sequelize.col('data_visita')), dayStr),
+    transaction,
+  });
   const totalNoTurno = agendamentosNoDia.filter((row) => {
     if (excludeId != null && Number(row.id) === Number(excludeId)) return false;
     return getTurnoFromDate(row.dataVisita) === turno;
   }).length;
-
   if (totalNoTurno >= MAX_AGENDAMENTOS_POR_TURNO) {
     erros.push(`Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`);
   }
-
   return erros;
+}
+
+async function verificarRegrasDeNegocio({ dataVisita, guiaId }, excludeId, transaction) {
+  const visitDate = new Date(dataVisita);
+  const turno = getTurnoFromDate(visitDate);
+
+  const [errosGuia, errosLimite] = await Promise.all([
+    verificarDisponibilidadeGuia(guiaId, turno, transaction),
+    verificarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction),
+  ]);
+
+  return [...errosGuia, ...errosLimite];
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────

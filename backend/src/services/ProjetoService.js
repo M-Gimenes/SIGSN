@@ -7,6 +7,8 @@ import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 import { Coordenador } from '../models/Coordenador.js';
 import { Observacao } from '../models/Observacao.js';
 
+// Matheus - Processo
+
 const MAX_PROJETOS_ATIVOS = 10;
 const MAX_PROJETOS_ATIVOS_POR_COORDENADOR = 2;
 
@@ -21,42 +23,58 @@ const include = [
 async function assertValido(dados, excludeId, transaction) {
   const [campoErros, regraErros] = await Promise.all([
     validarCampos(Projeto, dados),
-    errosDeNegocio(dados, excludeId, transaction),
+    verificarRegrasDeNegocio(dados, excludeId, transaction),
   ]);
 
   const todos = [...campoErros, ...regraErros];
   if (todos.length > 0) throw new ValidationError(todos);
 }
 
-async function errosDeNegocio({ status, grupoDePesquisaId, coordenadorId }, excludeId, transaction) {
+async function verificarExistenciaGrupoECoordenador(grupoDePesquisaId, coordenadorId, transaction) {
   const erros = [];
-
+  // Regra de negócio: grupo de pesquisa e coordenador informados devem existir
   const [grupo, coordenador] = await Promise.all([
     GrupoDePesquisa.findByPk(grupoDePesquisaId, { transaction }),
     Coordenador.findByPk(coordenadorId, { transaction }),
   ]);
-
   if (!grupo) erros.push('Grupo de Pesquisa não encontrado.');
   if (!coordenador) erros.push('Coordenador não encontrado.');
-
-  if (status === 'ativo') {
-    const whereBase = { status: 'ativo' };
-    const whereExclude = excludeId != null ? { id: { [Op.ne]: excludeId } } : {};
-
-    const [totalAtivos, ativosCoordenador] = await Promise.all([
-      Projeto.count({ where: { ...whereBase, ...whereExclude }, transaction }),
-      Projeto.count({ where: { ...whereBase, coordenadorId, ...whereExclude }, transaction }),
-    ]);
-
-    if (totalAtivos >= MAX_PROJETOS_ATIVOS) {
-      erros.push(`Não poderá existir mais que ${MAX_PROJETOS_ATIVOS} projetos ativos simultaneamente.`);
-    }
-    if (ativosCoordenador >= MAX_PROJETOS_ATIVOS_POR_COORDENADOR) {
-      erros.push(`Um coordenador só poderá ser responsável por no máximo ${MAX_PROJETOS_ATIVOS_POR_COORDENADOR} projetos com status Ativo.`);
-    }
-  }
-
   return erros;
+}
+
+async function verificarLimiteProjetosAtivos(excludeId, transaction) {
+  const erros = [];
+  // Regra de negócio: limite máximo de projetos ativos simultaneamente
+  const whereExclude = excludeId != null ? { id: { [Op.ne]: excludeId } } : {};
+  const totalAtivos = await Projeto.count({ where: { status: 'ativo', ...whereExclude }, transaction });
+  if (totalAtivos >= MAX_PROJETOS_ATIVOS) {
+    erros.push(`Não poderá existir mais que ${MAX_PROJETOS_ATIVOS} projetos ativos simultaneamente.`);
+  }
+  return erros;
+}
+
+async function verificarLimiteProjetosPorCoordenador(coordenadorId, excludeId, transaction) {
+  const erros = [];
+  // Regra de negócio: coordenador pode ser responsável por no máximo N projetos ativos
+  const whereExclude = excludeId != null ? { id: { [Op.ne]: excludeId } } : {};
+  const ativosCoordenador = await Projeto.count({ where: { status: 'ativo', coordenadorId, ...whereExclude }, transaction });
+  if (ativosCoordenador >= MAX_PROJETOS_ATIVOS_POR_COORDENADOR) {
+    erros.push(`Um coordenador só poderá ser responsável por no máximo ${MAX_PROJETOS_ATIVOS_POR_COORDENADOR} projetos com status Ativo.`);
+  }
+  return erros;
+}
+
+async function verificarRegrasDeNegocio({ status, grupoDePesquisaId, coordenadorId }, excludeId, transaction) {
+  const errosExistencia = await verificarExistenciaGrupoECoordenador(grupoDePesquisaId, coordenadorId, transaction);
+
+  if (status !== 'ativo') return errosExistencia;
+
+  const [errosLimiteGlobal, errosLimiteCoordenador] = await Promise.all([
+    verificarLimiteProjetosAtivos(excludeId, transaction),
+    verificarLimiteProjetosPorCoordenador(coordenadorId, excludeId, transaction),
+  ]);
+
+  return [...errosExistencia, ...errosLimiteGlobal, ...errosLimiteCoordenador];
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -122,15 +140,8 @@ class ProjetoService {
     const { id } = req.params;
     const projeto = await Projeto.findByPk(id);
     if (!projeto) throw new ValidationError('Projeto não encontrado.');
-    try {
-      await projeto.destroy();
-      return projeto;
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new ValidationError('Não é possível remover o projeto: existem observações vinculadas.');
-      }
-      throw error;
-    }
+    await projeto.destroy();
+    return projeto;
   }
 }
 
