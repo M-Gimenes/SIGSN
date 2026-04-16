@@ -37,12 +37,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataVisita\": \"2026-05-04T09:00:00.000Z\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Grupo escolar do ensino médio\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
+              "raw": "{\n  \"dataVisita\": \"2026-06-10T08:00:00.000Z\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Visita escolar matinal\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -50,7 +50,33 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataVisita\": \"nao-e-uma-data\",\n  \"valorVisita\": \"nao-e-numero\",\n  \"guiaId\": null,\n  \"caravanaId\": null\n}"
+              "raw": "{\n  \"dataVisita\": \"nao-e-uma-data\",\n  \"valorVisita\": -50,\n  \"guiaId\": null,\n  \"caravanaId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — RN 1 (guia sem disponibilidade compatível com o turno)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/agendamentos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataVisita\": \"2026-06-10T20:00:00.000Z\",\n  \"valorVisita\": 350,\n  \"observacoes\": \"Guia 1 é MANHA; visita às 20h cai no turno NOITE\",\n  \"guiaId\": 1,\n  \"caravanaId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — RN 2 (4º agendamento no mesmo turno e dia, excede limite de 3)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/agendamentos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataVisita\": \"2026-06-11T20:00:00.000Z\",\n  \"valorVisita\": 400,\n  \"observacoes\": \"4º agendamento no turno NOITE do dia 2026-06-11\",\n  \"guiaId\": 3,\n  \"caravanaId\": 1\n}"
             }
           }
         },
@@ -63,7 +89,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"valorVisita\": 400,\n  \"observacoes\": \"Atualizado\"\n}"
+              "raw": "{\n  \"valorVisita\": 400,\n  \"observacoes\": \"Valor atualizado\"\n}"
             }
           }
         },
@@ -107,7 +133,7 @@
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -128,7 +154,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"quantidadeVisitantes\": 35,\n  \"observacoes\": \"Atualizado\"\n}"
+              "raw": "{\n  \"quantidadeVisitantes\": 35,\n  \"observacoes\": \"Número de visitantes atualizado\"\n}"
             }
           }
         },
@@ -136,7 +162,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/caravanas/1"
+            "url": "{{baseUrl}}/caravanas/4"
           }
         }
       ]
@@ -167,12 +193,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"Orion\",\n  \"hemisferio\": \"Norte\",\n  \"periodoVisibilidade\": \"Outubro a Março\",\n  \"principaisEstrelas\": \"Betelgeuse, Rigel, Bellatrix\",\n  \"descricao\": \"Constelação do caçador mitológico, visível em todo o mundo.\",\n  \"curiosidades\": \"Contém a Nebulosa de Orion.\"\n}"
+              "raw": "{\n  \"nome\": \"Lyra\",\n  \"hemisferio\": \"Norte\",\n  \"periodoVisibilidade\": \"Maio a Novembro\",\n  \"principaisEstrelas\": \"Vega, Epsilon Lyrae\",\n  \"descricao\": \"Pequena constelação que contém a estrela mais brilhante do hemisfério norte no verão.\",\n  \"curiosidades\": \"Contém a Nebulosa do Anel (M57).\"\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -180,7 +206,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"\",\n  \"hemisferio\": \"\",\n  \"periodoVisibilidade\": \"\",\n  \"principaisEstrelas\": \"\",\n  \"descricao\": \"\"\n}"
+              "raw": "{\n  \"nome\": \"X\",\n  \"hemisferio\": \"\",\n  \"periodoVisibilidade\": \"\",\n  \"principaisEstrelas\": \"\",\n  \"descricao\": \"\"\n}"
             }
           }
         },
@@ -193,7 +219,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"curiosidades\": \"Atualizado\"\n}"
+              "raw": "{\n  \"curiosidades\": \"Curiosidade atualizada com nova informação.\"\n}"
             }
           }
         },
@@ -201,7 +227,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/constelacoes/1"
+            "url": "{{baseUrl}}/constelacoes/4"
           }
         }
       ]
@@ -237,7 +263,7 @@
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -266,7 +292,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/coordenadores/1"
+            "url": "{{baseUrl}}/coordenadores/4"
           }
         }
       ]
@@ -297,12 +323,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"Grupo Astrofísica\",\n  \"areaDePesquisa\": \"Astrofísica Observacional\",\n  \"dataCriacao\": \"2022-03-10\",\n  \"descricao\": \"Grupo dedicado ao estudo de fenômenos astrofísicos.\",\n  \"status\": true,\n  \"pesquisadorIds\": [1, 2]\n}"
+              "raw": "{\n  \"nome\": \"Grupo Astrofísica\",\n  \"areaDePesquisa\": \"Astrofísica Observacional\",\n  \"dataCriacao\": \"2026-03-10\",\n  \"descricao\": \"Grupo dedicado ao estudo de fenômenos astrofísicos.\",\n  \"status\": true,\n  \"pesquisadorIds\": [1, 2]\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -323,7 +349,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"descricao\": \"Atualizado\",\n  \"pesquisadorIds\": [1, 2, 3]\n}"
+              "raw": "{\n  \"descricao\": \"Descrição atualizada do grupo.\",\n  \"pesquisadorIds\": [1, 2, 3]\n}"
             }
           }
         },
@@ -331,7 +357,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/grupos-de-pesquisa/1"
+            "url": "{{baseUrl}}/grupos-de-pesquisa/4"
           }
         }
       ]
@@ -362,12 +388,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"cpf\": \"55566677788\",\n  \"telefone\": \"(41) 99999-0003\",\n  \"email\": \"carlos.mendes@observatorio.br\",\n  \"especialidade\": \"Astronomia Popular\",\n  \"login\": \"carlosmendes\",\n  \"senha\": \"senha123\",\n  \"disponibilidade\": \"NOITE\"\n}"
+              "raw": "{\n  \"nome\": \"Carlos Mendes\",\n  \"cpf\": \"55566677788\",\n  \"telefone\": \"(41) 99999-0003\",\n  \"email\": \"carlos.mendes@observatorio.br\",\n  \"status\": true,\n  \"especialidade\": \"Astronomia Popular\",\n  \"login\": \"carlosmendes\",\n  \"senha\": \"senha123\",\n  \"disponibilidade\": \"NOITE\"\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -388,7 +414,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"disponibilidade\": \"MANHA\"\n}"
+              "raw": "{\n  \"disponibilidade\": \"TARDE\"\n}"
             }
           }
         },
@@ -396,7 +422,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/guias/1"
+            "url": "{{baseUrl}}/guias/4"
           }
         }
       ]
@@ -427,12 +453,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataObservacao\": \"2025-07-20\",\n  \"descricao\": \"Observação da Nebulosa de Orion com alta nitidez.\",\n  \"instrumentoUtilizado\": \"Telescópio Refrator 120mm\",\n  \"projetoId\": 1,\n  \"constelacaoId\": 1\n}"
+              "raw": "{\n  \"dataObservacao\": \"2026-05-01\",\n  \"descricao\": \"Registro detalhado das posições estelares.\",\n  \"instrumentoUtilizado\": \"Telescópio refletor 200mm\",\n  \"projetoId\": 1,\n  \"constelacaoId\": 2\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -445,6 +471,32 @@
           }
         },
         {
+          "name": "Criar — RN 1 (constelação não informada)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/observacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataObservacao\": \"2026-05-01\",\n  \"descricao\": \"Observação sem constelação definida.\",\n  \"instrumentoUtilizado\": \"Telescópio refletor 200mm\",\n  \"projetoId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — RN 2 (3ª observação no mesmo projeto, constelação e dia — excede limite de 2)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/observacoes",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"dataObservacao\": \"2025-09-10\",\n  \"descricao\": \"3ª observação no mesmo dia para o mesmo projeto e constelação.\",\n  \"instrumentoUtilizado\": \"Câmera CCD\",\n  \"projetoId\": 1,\n  \"constelacaoId\": 1\n}"
+            }
+          }
+        },
+        {
           "name": "Atualizar",
           "request": {
             "method": "PUT",
@@ -453,7 +505,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"descricao\": \"Observação atualizada com mais detalhes.\"\n}"
+              "raw": "{\n  \"descricao\": \"Observação atualizada com mais detalhes sobre a posição estelar.\"\n}"
             }
           }
         },
@@ -497,7 +549,7 @@
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -526,7 +578,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/pesquisadores/1"
+            "url": "{{baseUrl}}/pesquisadores/4"
           }
         }
       ]
@@ -557,12 +609,12 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"titulo\": \"Mapeamento Estelar\",\n  \"dataInicio\": \"2025-01-01\",\n  \"dataTermino\": \"2025-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 1\n}"
+              "raw": "{\n  \"titulo\": \"Projeto Nova Era\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 2\n}"
             }
           }
         },
         {
-          "name": "Criar — com erros",
+          "name": "Criar — erros de campos básicos",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -570,7 +622,33 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"titulo\": \"\",\n  \"dataInicio\": \"nao-e-uma-data\",\n  \"dataTermino\": \"2024-01-01\",\n  \"status\": \"invalido\",\n  \"areaDePesquisa\": \"\",\n  \"grupoDePesquisaId\": null,\n  \"coordenadorId\": null\n}"
+              "raw": "{\n  \"titulo\": \"AB\",\n  \"dataInicio\": \"nao-e-uma-data\",\n  \"dataTermino\": \"2024-01-01\",\n  \"status\": \"invalido\",\n  \"areaDePesquisa\": \"\",\n  \"grupoDePesquisaId\": null,\n  \"coordenadorId\": null\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — RN 1 (11º projeto ativo — excede limite de 10 simultâneos)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/projetos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"titulo\": \"Projeto Décimo Primeiro\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astronomia Geral\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Criar — RN 2 (coordenador 1 já no limite de 2 projetos ativos)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/projetos",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"titulo\": \"Terceiro Projeto do Coordenador\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 2,\n  \"coordenadorId\": 1\n}"
             }
           }
         },
@@ -583,7 +661,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"status\": \"encerrado\"\n}"
+              "raw": "{\n  \"status\": \"concluido\"\n}"
             }
           }
         },
@@ -591,7 +669,7 @@
           "name": "Remover",
           "request": {
             "method": "DELETE",
-            "url": "{{baseUrl}}/projetos/1"
+            "url": "{{baseUrl}}/projetos/4"
           }
         }
       ]

@@ -1,10 +1,11 @@
-import { Op } from 'sequelize';
 import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 import { Caravana } from '../models/Caravana.js';
 import { Agendamento } from '../models/Agendamento.js';
 
-const include = [{ model: Agendamento, as: 'agendamento' }];
+// Larissa - Cadastro
+
+const include = [{ model: Agendamento, as: 'agendamentos' }];
 
 // ─── Validação ────────────────────────────────────────────────────────────────
 
@@ -62,18 +63,6 @@ class CaravanaService {
     const { id } = req.params;
     const caravana = await Caravana.findByPk(id);
     if (!caravana) throw new ValidationError('Caravana não encontrada.');
-
-    const agendamentoFuturo = await Agendamento.findOne({
-      attributes: ['id'],
-      where: {
-        caravanaId: id,
-        dataVisita: { [Op.gt]: new Date() },
-      },
-    });
-    if (agendamentoFuturo) {
-      throw new ValidationError('Não é possível remover a caravana: está vinculada a um agendamento futuro.');
-    }
-
     await caravana.destroy();
     return caravana;
   }

@@ -3,6 +3,8 @@ import { ValidationError } from '../utils/errors.js';
 import { validarCampos } from '../utils/validate.js';
 import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 
+// Matheus - Cadastro
+
 const include = [
   {
     model: GrupoDePesquisa,
@@ -68,15 +70,8 @@ class PesquisadorService {
     const { id } = req.params;
     const pesquisador = await Pesquisador.findByPk(id);
     if (!pesquisador) throw new ValidationError('Pesquisador não encontrado.');
-    try {
-      await pesquisador.destroy();
-      return pesquisador;
-    } catch (error) {
-      if (error.name === 'SequelizeForeignKeyConstraintError') {
-        throw new ValidationError('Não é possível remover o pesquisador: existem vínculos no sistema.');
-      }
-      throw error;
-    }
+    await pesquisador.destroy();
+    return pesquisador;
   }
 }
 

@@ -4,6 +4,8 @@ import { validarCampos } from '../utils/validate.js';
 import { GrupoDePesquisa } from '../models/GrupoDePesquisa.js';
 import { Pesquisador } from '../models/Pesquisador.js';
 
+// Emanuelly - Cadastro
+
 const include = [
   {
     model: Pesquisador,
