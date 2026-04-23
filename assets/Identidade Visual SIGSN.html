@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>SIGSN — Identidade Visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:        #1a2547;        /* deep indigo ink */
+    --ink-soft:   #2d3a5f;
+    --ink-mute:   #5a6487;
+    --paper:      #f4efe4;        /* parchment */
+    --paper-deep: #ece5d3;
+    --paper-warm: #e8dfc7;
+    --ember:      #b8542b;        /* burnt sienna */
+    --gold:       #c9a04a;        /* faded brass */
+    --verdigris:  #516b5d;        /* oxidized copper */
+    --rule:       #1a254722;
+    --rule-bold:  #1a254755;
+
+    --serif-display: 'Cormorant Garamond', 'Garamond', serif;
+    --serif-text:    'Newsreader', 'Georgia', serif;
+    --mono:          'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--paper);color:var(--ink);font-family:var(--serif-text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+  body{
+    background-image:
+      radial-gradient(ellipse at 12% 8%, #ecdfbb55, transparent 50%),
+      radial-gradient(ellipse at 92% 85%, #d8c79855, transparent 60%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.14  0 0 0 0 0.28  0 0 0 0.035 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ——— layout shell ——— */
+  .shell{max-width:1320px;margin:0 auto;padding:56px 56px 120px}
+  section{margin-top:120px;position:relative}
+  section:first-of-type{margin-top:0}
+
+  /* ——— typography primitives ——— */
+  .eyebrow{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--ink-mute);font-weight:400;
+  }
+  .serif-caps{
+    font-family:var(--serif-display);font-weight:500;
+    letter-spacing:.18em;text-transform:uppercase;
+  }
+  h1,h2,h3{font-family:var(--serif-display);font-weight:500;letter-spacing:.01em}
+  h1{font-size:84px;line-height:.95}
+  h2{font-size:48px;line-height:1.05}
+  h3{font-size:22px;line-height:1.25}
+  .italic-lead{font-family:var(--serif-text);font-style:italic;font-weight:300;color:var(--ink-soft);font-size:20px;line-height:1.5;max-width:56ch}
+  .rule{height:1px;background:var(--rule);margin:40px 0}
+  .rule-bold{height:1px;background:var(--rule-bold);margin:24px 0}
+  .double-rule{border-top:1px solid var(--rule-bold);border-bottom:1px solid var(--rule-bold);padding:6px 0;height:8px;margin:32px 0}
+  .mono{font-family:var(--mono)}
+  sup{font-family:var(--mono);font-size:.55em;vertical-align:super;letter-spacing:.1em;color:var(--ember)}
+
+  /* ——— section header ——— */
+  .sec-head{display:grid;grid-template-columns:120px 1fr;gap:24px;align-items:baseline;margin-bottom:48px;padding-bottom:16px;border-bottom:1px solid var(--rule-bold)}
+  .sec-num{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--ember)}
+  .sec-title{font-family:var(--serif-display);font-size:34px;font-weight:500;letter-spacing:.02em}
+  .sec-meta{margin-top:6px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase}
+
+  /* ————————————— COVER ————————————— */
+  .cover{
+    position:relative;min-height:96vh;padding:32px 0 0;
+    display:grid;grid-template-rows:auto 1fr auto;gap:32px
+  }
+  .cover-chrome{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;
+    color:var(--ink-mute);text-transform:uppercase
+  }
+  .cover-center{display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center;padding:40px 0}
+  .cover-lockup{position:relative}
+  .cover-mark{width:100%;max-width:460px;display:block}
+  .cover-titling{font-family:var(--serif-display);margin-top:40px}
+  .cover-titling .line-1{font-size:18px;letter-spacing:.38em;color:var(--ember);text-transform:uppercase;font-weight:500}
+  .cover-titling .line-2{font-size:100px;line-height:.92;letter-spacing:.02em;font-weight:500;margin-top:12px}
+  .cover-titling .line-3{font-style:italic;font-weight:300;font-family:var(--serif-text);font-size:24px;margin-top:20px;color:var(--ink-soft);max-width:34ch;line-height:1.35}
+  .cover-quote{border-left:1px solid var(--rule-bold);padding-left:32px}
+  .cover-quote .latin{font-family:var(--serif-display);font-style:italic;font-size:30px;line-height:1.28;color:var(--ink);max-width:28ch}
+  .cover-quote .attr{margin-top:20px;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase}
+  .cover-quote .trans{margin-top:18px;font-style:italic;font-family:var(--serif-text);font-size:15px;color:var(--ink-mute);max-width:34ch}
+
+  .cover-foot{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    padding-top:32px;border-top:1px solid var(--rule-bold)
+  }
+  .cover-foot .index-list{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-mute);display:grid;grid-template-columns:repeat(3,auto);gap:4px 40px}
+  .cover-foot .index-list b{color:var(--ink);font-weight:500}
+
+  /* ornamental diagram behind cover */
+  .cover-orn{position:absolute;top:60px;right:-60px;width:520px;opacity:.14;pointer-events:none}
+
+  /* ————————————— CONCEPT ————————————— */
+  .concept-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px}
+  .concept-grid h2{margin-bottom:12px}
+  .concept-grid p+p{margin-top:14px}
+  .principles{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold);margin-top:36px}
+  .principles li{background:var(--paper);padding:28px 26px;display:flex;flex-direction:column;gap:10px;min-height:170px}
+  .principles .p-num{font-family:var(--mono);font-size:10px;letter-spacing:.25em;color:var(--ember)}
+  .principles .p-ttl{font-family:var(--serif-display);font-size:24px;font-style:italic;font-weight:500;letter-spacing:.01em}
+  .principles .p-txt{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+
+  /* ————————————— LOGO SYSTEM ————————————— */
+  .logo-hero{
+    display:grid;grid-template-columns:1.15fr 1fr;gap:0;
+    border:1px solid var(--rule-bold);background:var(--paper-deep);
+    position:relative;overflow:hidden
+  }
+  .logo-hero-display{padding:80px 64px;display:flex;align-items:center;justify-content:center;position:relative;border-right:1px solid var(--rule-bold)}
+  .logo-hero-display::before{
+    content:'';position:absolute;inset:24px;
+    background-image:
+      linear-gradient(var(--rule) 1px,transparent 1px),
+      linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+    background-size:24px 24px;opacity:.6;pointer-events:none
+  }
+  .logo-hero-display svg{width:min(100%,420px);height:auto;aspect-ratio:1/1;position:relative;z-index:1;display:block}
+  .logo-hero-caption{padding:48px}
+  .logo-hero-caption .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--ember);text-transform:uppercase}
+  .logo-hero-caption h3{font-family:var(--serif-display);font-size:30px;font-style:italic;font-weight:500;margin-top:14px;max-width:18ch;line-height:1.15}
+  .logo-hero-caption p{margin-top:18px;color:var(--ink-soft);font-size:14.5px;line-height:1.6;max-width:34ch}
+  .logo-hero-caption .meta{margin-top:40px;display:grid;grid-template-columns:auto 1fr;gap:8px 24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase}
+  .logo-hero-caption .meta dt{color:var(--ink-mute)}
+  .logo-hero-caption .meta dd{color:var(--ink)}
+
+  /* variant tiles */
+  .variants{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold);margin-top:48px}
+  .variant{background:var(--paper);padding:40px 24px 20px;display:flex;flex-direction:column;align-items:center;gap:24px;min-height:260px;justify-content:space-between}
+  .variant.dark{background:var(--ink);color:var(--paper)}
+  .variant.ember{background:var(--ember);color:var(--paper)}
+  .variant.paper-deep{background:var(--paper-warm)}
+  .variant .holder{flex:1;display:flex;align-items:center;justify-content:center;width:100%}
+  .variant .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;opacity:.7;text-align:center}
+  .variant.dark .lbl,.variant.ember .lbl{color:var(--paper)}
+  .variant svg{width:auto;max-width:100%;max-height:110px;height:110px;display:block}
+  .variant .holder svg[viewBox="0 0 200 200"]{width:110px;height:110px}
+  .variant .holder svg[viewBox="0 0 440 110"]{width:auto;height:80px;max-width:100%}
+  .variant .holder svg[viewBox="0 0 160 180"]{width:auto;height:140px}
+
+  /* construction */
+  .construction{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;margin-top:48px;align-items:start}
+  .construction-art{border:1px solid var(--rule-bold);padding:32px;background:var(--paper-deep);position:relative}
+  .construction-art svg{display:block;width:100%;height:auto;aspect-ratio:1/1}
+  .construction-notes{padding-top:12px}
+  .construction-notes h3{font-style:italic;font-weight:500;margin-bottom:10px}
+  .construction-notes ul{list-style:none;margin-top:18px;display:flex;flex-direction:column;gap:14px}
+  .construction-notes li{padding-left:28px;position:relative;font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+  .construction-notes li::before{
+    content:attr(data-n);position:absolute;left:0;top:0;
+    font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--ember);
+    border:1px solid var(--ember);border-radius:999px;width:20px;height:20px;
+    display:flex;align-items:center;justify-content:center
+  }
+
+  /* clear space / misuse */
+  .rules-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+  .rule-card{border:1px solid var(--rule-bold);padding:32px}
+  .rule-card .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-bottom:16px}
+  .misuse-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold);margin-top:40px}
+  .mis{background:var(--paper);padding:24px 18px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;min-height:200px;justify-content:space-between}
+  .mis .cross{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--ember);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+  .mis .cross::before{content:'✕';font-size:12px}
+  .mis svg{max-width:100px;max-height:100px}
+
+  /* ————————————— COLOR ————————————— */
+  .palette-primary{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold)}
+  .swatch{padding:36px 28px;min-height:260px;display:flex;flex-direction:column;justify-content:space-between}
+  .swatch .name{font-family:var(--serif-display);font-size:30px;font-style:italic;font-weight:500;letter-spacing:.02em}
+  .swatch .latin{font-family:var(--serif-text);font-style:italic;font-size:14px;opacity:.75;margin-top:4px}
+  .swatch .codes{font-family:var(--mono);font-size:11px;letter-spacing:.12em;display:flex;flex-direction:column;gap:4px}
+  .swatch .role{font-family:var(--mono);font-size:9.5px;letter-spacing:.25em;text-transform:uppercase;opacity:.65}
+  .sw-ink{background:var(--ink);color:var(--paper)}
+  .sw-paper{background:var(--paper);color:var(--ink);border:none}
+  .sw-ember{background:var(--ember);color:var(--paper)}
+
+  .palette-accents{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold);margin-top:1px;border-top:none}
+  .swatch-sm{padding:28px 24px;min-height:200px;display:flex;flex-direction:column;justify-content:space-between}
+  .swatch-sm .name{font-family:var(--serif-display);font-size:22px;font-style:italic;font-weight:500}
+  .sw-gold{background:var(--gold);color:var(--ink)}
+  .sw-verdigris{background:var(--verdigris);color:var(--paper)}
+  .sw-paper-deep{background:var(--paper-deep);color:var(--ink)}
+  .sw-ink-soft{background:var(--ink-soft);color:var(--paper)}
+
+  .palette-proportion{display:flex;height:56px;margin-top:40px;border:1px solid var(--rule-bold)}
+  .palette-proportion div{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase}
+
+  /* ————————————— TYPE ————————————— */
+  .type-stack{display:grid;grid-template-columns:1fr;gap:0;border:1px solid var(--rule-bold)}
+  .type-row{display:grid;grid-template-columns:240px 1fr;gap:0;border-bottom:1px solid var(--rule-bold);min-height:220px}
+  .type-row:last-child{border-bottom:none}
+  .type-meta{padding:28px;border-right:1px solid var(--rule-bold);display:flex;flex-direction:column;justify-content:space-between;background:var(--paper-deep)}
+  .type-meta .role{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--ember);text-transform:uppercase}
+  .type-meta .fname{font-family:var(--serif-display);font-size:26px;font-style:italic;font-weight:500;margin-top:10px}
+  .type-meta .use{margin-top:14px;font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .type-meta .ms{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink-mute);margin-top:20px}
+  .type-specimen{padding:40px 40px;display:flex;align-items:center;overflow:hidden}
+  .spec-display{font-family:var(--serif-display);font-size:88px;line-height:.95;font-weight:500;letter-spacing:.005em}
+  .spec-display em{font-style:italic;font-weight:500;color:var(--ember)}
+  .spec-text{font-family:var(--serif-text);font-size:20px;line-height:1.45;max-width:36ch;color:var(--ink)}
+  .spec-text em{font-style:italic;color:var(--ink-soft)}
+  .spec-mono{font-family:var(--mono);font-size:14px;line-height:1.7;color:var(--ink-soft)}
+
+  .type-scale{margin-top:40px;border:1px solid var(--rule-bold);padding:32px 40px}
+  .scale-row{display:grid;grid-template-columns:120px 80px 1fr;gap:24px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--rule)}
+  .scale-row:last-child{border-bottom:none}
+  .scale-row .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase}
+  .scale-row .px{font-family:var(--mono);font-size:11px;color:var(--ember)}
+  .scale-row .demo{font-family:var(--serif-display);font-weight:500}
+
+  /* ————————————— MARKS / ICONS ————————————— */
+  .icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold)}
+  .icon-cell{background:var(--paper);padding:24px 12px;display:flex;flex-direction:column;align-items:center;gap:12px;min-height:130px;justify-content:center}
+  .icon-cell svg{width:32px;height:32px;color:var(--ink)}
+  .icon-cell span{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase}
+
+  /* ————————————— APPLICATIONS ————————————— */
+  .app-row{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px}
+  .app-card{border:1px solid var(--rule-bold);overflow:hidden;background:var(--paper-deep)}
+  .app-card .cap{padding:16px 24px;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;border-bottom:1px solid var(--rule-bold);background:var(--paper);display:flex;justify-content:space-between}
+
+  /* ——— product UI mock ——— */
+  .ui-mock{background:var(--paper);color:var(--ink);padding:0;min-height:540px;display:grid;grid-template-columns:220px 1fr}
+  .ui-side{background:var(--paper-deep);border-right:1px solid var(--rule-bold);padding:24px 0;display:flex;flex-direction:column}
+  .ui-brand{padding:0 24px 20px;border-bottom:1px solid var(--rule-bold);margin-bottom:16px}
+  .ui-brand .mk{display:flex;align-items:center;gap:10px}
+  .ui-brand .mk svg{width:28px;height:28px}
+  .ui-brand .mk .wm{font-family:var(--serif-display);font-size:22px;letter-spacing:.22em;font-weight:600}
+  .ui-brand .mk .dot{width:4px;height:4px;border-radius:50%;background:var(--ember)}
+  .ui-brand small{display:block;font-family:var(--mono);font-size:8.5px;letter-spacing:.24em;color:var(--ink-mute);margin-top:6px;text-transform:uppercase}
+  .ui-nav{display:flex;flex-direction:column;gap:2px;padding:0 12px}
+  .ui-nav .sec{font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--ink-mute);text-transform:uppercase;padding:16px 12px 6px}
+  .ui-nav a{padding:8px 12px;font-family:var(--serif-text);font-size:14px;color:var(--ink-soft);text-decoration:none;border-left:2px solid transparent;display:flex;gap:10px;align-items:center}
+  .ui-nav a.on{color:var(--ink);border-left-color:var(--ember);background:#00000008;font-weight:500}
+  .ui-nav a .ico{font-family:var(--mono);font-size:10px;color:var(--ink-mute);width:16px}
+
+  .ui-main{padding:28px 32px;background:var(--paper)}
+  .ui-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--rule-bold);padding-bottom:16px}
+  .ui-head h4{font-family:var(--serif-display);font-size:28px;font-weight:500;letter-spacing:.01em}
+  .ui-head h4 em{font-style:italic;color:var(--ember)}
+  .ui-head .breadcrumb{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase}
+  .ui-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:18px;border:1px solid var(--rule-bold);border-left:none}
+  .ui-stat{padding:14px 18px;border-left:1px solid var(--rule-bold)}
+  .ui-stat .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase}
+  .ui-stat .val{font-family:var(--serif-display);font-size:32px;font-weight:500;line-height:1.1;margin-top:4px}
+  .ui-stat .val sup{color:var(--ember)}
+  .ui-table{margin-top:18px;width:100%;border-collapse:collapse;font-size:13px}
+  .ui-table th{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase;text-align:left;padding:10px 10px;border-bottom:1px solid var(--rule-bold)}
+  .ui-table td{padding:10px 10px;border-bottom:1px solid var(--rule);font-family:var(--serif-text)}
+  .ui-table td.mn{font-family:var(--mono);font-size:11px;color:var(--ink-mute)}
+  .pill{display:inline-block;padding:1px 8px;border:1px solid currentColor;border-radius:999px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase}
+  .pill.m{color:var(--ember)}
+  .pill.t{color:var(--gold)}
+  .pill.n{color:var(--verdigris)}
+
+  /* login card */
+  .login-mock{background:var(--ink);color:var(--paper);padding:48px;min-height:540px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+  .login-mock::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      radial-gradient(circle at 18% 22%, #ffffff16 0 1.5px, transparent 2px),
+      radial-gradient(circle at 72% 64%, #ffffff10 0 1px, transparent 1.5px),
+      radial-gradient(circle at 88% 12%, #ffffff18 0 2px, transparent 3px),
+      radial-gradient(circle at 30% 80%, #ffffff10 0 1px, transparent 2px),
+      radial-gradient(circle at 50% 48%, #ffffff08 0 1px, transparent 2px),
+      radial-gradient(circle at 8% 90%, #ffffff0c 0 1px, transparent 2px),
+      radial-gradient(circle at 62% 20%, #ffffff12 0 1px, transparent 2px);
+    pointer-events:none;
+  }
+  .login-card{background:#0f1734;border:1px solid #ffffff22;padding:40px 40px 32px;width:340px;position:relative;z-index:1}
+  .login-card .crn{position:absolute;width:10px;height:10px;border:1px solid #ffffff33}
+  .login-card .crn.tl{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .login-card .crn.tr{top:-1px;right:-1px;border-left:none;border-bottom:none}
+  .login-card .crn.bl{bottom:-1px;left:-1px;border-right:none;border-top:none}
+  .login-card .crn.br{bottom:-1px;right:-1px;border-left:none;border-top:none}
+  .login-card .mk{display:flex;flex-direction:column;align-items:center;gap:14px;padding-bottom:20px;border-bottom:1px solid #ffffff1f}
+  .login-card .mk svg{width:52px;height:52px}
+  .login-card .mk .wm{font-family:var(--serif-display);font-size:28px;letter-spacing:.3em;font-weight:500}
+  .login-card .mk small{font-family:var(--mono);font-size:8.5px;letter-spacing:.3em;color:#ffffff88;text-transform:uppercase}
+  .login-card .field{margin-top:18px}
+  .login-card .field label{font-family:var(--mono);font-size:9px;letter-spacing:.25em;color:#ffffff88;text-transform:uppercase;display:block;margin-bottom:6px}
+  .login-card .field input{width:100%;background:#ffffff08;border:none;border-bottom:1px solid #ffffff33;padding:8px 2px;color:var(--paper);font-family:var(--serif-text);font-size:14px;outline:none}
+  .login-card .btn{margin-top:26px;width:100%;background:var(--ember);color:var(--paper);border:none;padding:12px;font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer}
+  .login-card .ft{margin-top:20px;font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:#ffffff66;text-transform:uppercase;text-align:center}
+
+  /* stationery / seal */
+  .seal-mock{padding:48px;min-height:400px;background:
+    radial-gradient(ellipse at 20% 10%, #ecdfbb88, transparent 55%),
+    radial-gradient(ellipse at 90% 90%, #d8c79866, transparent 60%),
+    var(--paper);
+    display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .seal-card{background:var(--paper);border:1px solid var(--rule-bold);padding:36px;display:flex;flex-direction:column;gap:18px;position:relative}
+  .seal-card::before,.seal-card::after{
+    content:'';position:absolute;width:18px;height:18px;border:1px solid var(--ink);
+  }
+  .seal-card::before{top:12px;left:12px;border-right:none;border-bottom:none}
+  .seal-card::after{bottom:12px;right:12px;border-left:none;border-top:none}
+  .seal-card .eyebrow{color:var(--ember)}
+  .seal-card h5{font-family:var(--serif-display);font-size:34px;font-weight:500;letter-spacing:.01em;font-style:italic}
+  .seal-card .txt{font-family:var(--serif-text);font-size:14px;color:var(--ink-soft);line-height:1.55;max-width:36ch}
+  .seal-card .divider{display:flex;align-items:center;gap:12px;margin-top:auto}
+  .seal-card .divider::before,.seal-card .divider::after{content:'';flex:1;height:1px;background:var(--rule-bold)}
+  .seal-card .divider svg{width:18px;height:18px}
+  .seal-card .foot{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute);display:flex;justify-content:space-between}
+
+  .sealstamp{display:flex;align-items:center;justify-content:center}
+  .sealstamp svg{width:280px;height:280px;display:block}
+
+  /* tokens table */
+  .tokens{border:1px solid var(--rule-bold)}
+  .tokens .trw{display:grid;grid-template-columns:160px 120px 80px 1fr;gap:20px;padding:12px 20px;border-bottom:1px solid var(--rule);align-items:center;font-size:13px}
+  .tokens .trw:last-child{border-bottom:none}
+  .tokens .trw.hd{background:var(--paper-deep);font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;padding:14px 20px}
+  .tokens .nm{font-family:var(--mono);color:var(--ember)}
+  .tokens .hx{font-family:var(--mono);color:var(--ink-mute)}
+  .tokens .ch{width:36px;height:20px;border:1px solid var(--rule-bold);border-radius:2px}
+  .tokens .ds{font-family:var(--serif-text);color:var(--ink-soft)}
+
+  /* footer */
+  .colophon{margin-top:120px;padding-top:32px;border-top:1px solid var(--rule-bold);display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase}
+  .colophon p{max-width:48ch;line-height:1.8;text-transform:none;letter-spacing:.02em;font-family:var(--serif-text);font-style:italic;font-size:13px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<!-- ═════════════ RE-USABLE MARK (primary) ═════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Primary mark: armillary ring + SN monogram inside -->
+    <symbol id="mark-primary" viewBox="0 0 200 200">
+      <g transform="translate(100 100)">
+        <g fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+          <circle r="86"/>
+          <g>
+            <line x1="-86" y1="0" x2="-82" y2="0"/>
+            <line x1="86" y1="0" x2="82" y2="0"/>
+            <line x1="0" y1="-86" x2="0" y2="-82"/>
+            <line x1="0" y1="86" x2="0" y2="82"/>
+          </g>
+          <ellipse rx="86" ry="34" transform="rotate(-24)"/>
+          <ellipse rx="86" ry="34" transform="rotate(24)"/>
+          <line x1="0" y1="-94" x2="0" y2="94" stroke-dasharray="1 4"/>
+          <circle r="64"/>
+        </g>
+        <circle r="52" fill="currentColor" opacity=".06"/>
+        <circle r="52" fill="none" stroke="currentColor" stroke-width="1"/>
+        <g font-family="Cormorant Garamond, Garamond, serif" font-weight="500" text-anchor="middle" fill="currentColor">
+          <text y="18" font-size="60" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+        </g>
+        <g fill="currentColor">
+          <polygon points="0,-86 1.6,-80 6,-78 1.6,-76 0,-70 -1.6,-76 -6,-78 -1.6,-80"/>
+          <circle cx="0" cy="-64" r="1.6"/>
+          <circle cx="64" cy="0" r="1.6"/>
+          <circle cx="0" cy="64" r="1.6"/>
+          <circle cx="-64" cy="0" r="1.6"/>
+        </g>
+      </g>
+    </symbol>
+
+    <!-- Compact monogram (just seal disc) -->
+    <symbol id="mark-seal" viewBox="0 0 120 120">
+      <g transform="translate(60 60)">
+        <circle r="54" fill="none" stroke="currentColor" stroke-width="1.25"/>
+        <circle r="48" fill="none" stroke="currentColor" stroke-width=".75" stroke-dasharray="1 3"/>
+        <text x="0" y="18" font-family="Cormorant Garamond, serif" font-weight="500" font-size="52" text-anchor="middle" fill="currentColor" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+        <polygon points="0,-54 1.2,-49 4,-47 1.2,-45 0,-40 -1.2,-45 -4,-47 -1.2,-49" fill="currentColor"/>
+      </g>
+    </symbol>
+
+    <!-- Horizontal lockup (flattened — no nested symbol) -->
+    <symbol id="lockup-h" viewBox="0 0 440 110">
+      <g fill="currentColor">
+        <g transform="translate(55 55)">
+          <circle r="48" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <circle r="42" fill="none" stroke="currentColor" stroke-width=".7" stroke-dasharray="1 3"/>
+          <text y="17" font-family="Cormorant Garamond, serif" font-weight="500" font-size="48" text-anchor="middle" fill="currentColor" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+          <polygon points="0,-48 1.1,-43 3.6,-42 1.1,-40 0,-35 -1.1,-40 -3.6,-42 -1.1,-43" fill="currentColor"/>
+        </g>
+        <text x="130" y="58" font-family="Cormorant Garamond, serif" font-weight="600" font-size="48" letter-spacing="6">SIGSN</text>
+        <text x="130" y="82" font-family="JetBrains Mono, monospace" font-size="10" letter-spacing="4">OBSERVATORIUM · SIDEREUS · NUNCIUS</text>
+      </g>
+    </symbol>
+
+    <!-- Stacked lockup (flattened) -->
+    <symbol id="lockup-v" viewBox="0 0 160 180">
+      <g fill="currentColor" transform="translate(80 10)">
+        <g transform="translate(0 55)">
+          <circle r="48" fill="none" stroke="currentColor" stroke-width="1.25"/>
+          <circle r="42" fill="none" stroke="currentColor" stroke-width=".7" stroke-dasharray="1 3"/>
+          <text y="17" font-family="Cormorant Garamond, serif" font-weight="500" font-size="48" text-anchor="middle" fill="currentColor" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+          <polygon points="0,-48 1.1,-43 3.6,-42 1.1,-40 0,-35 -1.1,-40 -3.6,-42 -1.1,-43" fill="currentColor"/>
+        </g>
+        <text x="0" y="138" font-family="Cormorant Garamond, serif" font-weight="600" font-size="26" letter-spacing="9" text-anchor="middle">SIGSN</text>
+        <text x="0" y="158" font-family="JetBrains Mono, monospace" font-size="7.5" letter-spacing="3.5" text-anchor="middle">EST · 1610 · OBSERVATORIUM</text>
+      </g>
+    </symbol>
+
+    <!-- tiny star for decoration -->
+    <symbol id="tiny-star" viewBox="0 0 20 20">
+      <polygon fill="currentColor" points="10,1 11.5,8 19,10 11.5,12 10,19 8.5,12 1,10 8.5,8"/>
+    </symbol>
+
+    <!-- constellation-style ornament for cover -->
+    <symbol id="constellation-orn" viewBox="0 0 400 400"><g transform="translate(200 200)">
+      <g fill="none" stroke="currentColor" stroke-width=".75">
+        <circle r="180"/>
+        <circle r="140" stroke-dasharray="1 4"/>
+        <circle r="100"/>
+        <ellipse rx="180" ry="60" transform="rotate(-18)"/>
+        <ellipse rx="180" ry="60" transform="rotate(18)"/>
+        <line x1="-190" y1="0" x2="190" y2="0"/>
+        <line x1="0" y1="-190" x2="0" y2="190"/>
+        <line x1="-140" y1="-140" x2="140" y2="140" stroke-dasharray="1 4"/>
+        <line x1="-140" y1="140" x2="140" y2="-140" stroke-dasharray="1 4"/>
+      </g>
+      <g fill="currentColor">
+        <circle cx="-130" cy="-40" r="2.5"/>
+        <circle cx="-80" cy="-90" r="1.5"/>
+        <circle cx="-30" cy="-60" r="2"/>
+        <circle cx="40" cy="-100" r="1.5"/>
+        <circle cx="110" cy="-30" r="2.5"/>
+        <circle cx="70" cy="60" r="1.5"/>
+        <circle cx="-60" cy="110" r="2"/>
+        <circle cx="-110" cy="50" r="1.5"/>
+        <polygon points="0,-160 2,-152 8,-150 2,-148 0,-140 -2,-148 -8,-150 -2,-152"/>
+      </g>
+      <g stroke="currentColor" stroke-width=".5" fill="none">
+        <polyline points="-130,-40 -80,-90 -30,-60 40,-100 110,-30 70,60 -60,110 -110,50 -130,-40"/>
+      </g>
+      </g>
+    </symbol>
+
+    <!-- icons: spare line style -->
+    <symbol id="ic-telescope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 8l10-3 7 2-3 10-10 3z"/><line x1="10" y1="13" x2="14" y2="16"/><line x1="10" y1="13" x2="7" y2="20"/><line x1="14" y1="16" x2="17" y2="20"/>
+    </symbol>
+    <symbol id="ic-constellation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="4,18 8,9 14,14 19,5"/><circle cx="4" cy="18" r="1.4" fill="currentColor"/><circle cx="8" cy="9" r="1.4" fill="currentColor"/><circle cx="14" cy="14" r="1.4" fill="currentColor"/><circle cx="19" cy="5" r="1.4" fill="currentColor"/>
+    </symbol>
+    <symbol id="ic-caravan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="7" width="14" height="9"/><path d="M17 10h3l1 3v3h-4"/><circle cx="8" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+    </symbol>
+    <symbol id="ic-project" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 6h6l2 2h10v11H3z"/>
+    </symbol>
+    <symbol id="ic-researcher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.5"/><path d="M4 20c1-4 5-6 8-6s7 2 8 6"/>
+    </symbol>
+    <symbol id="ic-schedule" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="5" width="18" height="16"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
+    </symbol>
+    <symbol id="ic-group" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="8" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M2 20c.7-3 3.5-5 6-5s5.3 2 6 5"/><path d="M14 19c.5-2 2.2-3.5 4.5-3.5"/>
+    </symbol>
+    <symbol id="ic-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="9"/><polygon points="12,5 14,12 12,19 10,12" fill="currentColor" stroke="none"/>
+    </symbol>
+    <symbol id="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 14A8 8 0 1 1 10 4a6.5 6.5 0 0 0 10 10z"/>
+    </symbol>
+    <symbol id="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="4"/><g><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="7" y2="7"/><line x1="17" y1="17" x2="19" y2="19"/><line x1="5" y1="19" x2="7" y2="17"/><line x1="17" y1="7" x2="19" y2="5"/></g>
+    </symbol>
+    <symbol id="ic-dawn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 17h16"/><path d="M6 17a6 6 0 0 1 12 0"/><line x1="12" y1="4" x2="12" y2="7"/><line x1="4" y1="13" x2="6" y2="13"/><line x1="18" y1="13" x2="20" y2="13"/>
+    </symbol>
+    <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 5c3-1 6-1 8 0v15c-2-1-5-1-8 0z"/><path d="M20 5c-3-1-6-1-8 0v15c2-1 5-1 8 0z"/>
+    </symbol>
+    <symbol id="ic-seal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="10" r="5"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="shell">
+
+<!-- ═════════════ COVER ═════════════ -->
+<section class="cover">
+  <div style="position:absolute;top:40px;right:-80px;width:520px;opacity:.13;pointer-events:none;color:var(--ink)">
+    <svg viewBox="0 0 400 400" width="100%" height="auto"><use href="#constellation-orn"/></svg>
+  </div>
+
+  <header class="cover-chrome">
+    <span>Observatorium · Sidereus · Nuncius</span>
+    <span>MMXXVI · Vol. I</span>
+    <span>Brand · Sistema · Visual</span>
+  </header>
+
+  <div class="cover-center">
+    <div class="cover-lockup">
+      <div class="cover-titling">
+        <div class="line-1">Identidade Visual</div>
+        <div class="line-2">Sidereus<br><em style="font-style:italic;color:var(--ember)">Nuncius.</em></div>
+        <div class="line-3">Sistema de Gestão do Observatório — um mensageiro das estrelas, traduzido em sinais, tipos e tintas.</div>
+      </div>
+    </div>
+    <aside class="cover-quote">
+      <div style="color:var(--ember);margin-bottom:24px">
+        <svg width="72" height="72" viewBox="0 0 120 120"><use href="#mark-seal"/></svg>
+      </div>
+      <p class="latin">“Magna longeque admirabilia spectacula pandens.”</p>
+      <div class="attr">Galileo Galilei · Venetiis · MDCX</div>
+      <p class="trans">Revelando grandes espetáculos e admiráveis, que convidamos a contemplar — sobretudo ao universo. <sup>01</sup></p>
+    </aside>
+  </div>
+
+  <footer class="cover-foot">
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Documento</div>
+      <div style="font-family:var(--serif-display);font-size:22px;letter-spacing:.02em">Manual da Marca · v 1.0</div>
+    </div>
+    <div class="index-list">
+      <span>I · <b>Conceito</b></span><span>II · <b>Marca</b></span><span>III · <b>Cor</b></span>
+      <span>IV · <b>Tipo</b></span><span>V · <b>Signos</b></span><span>VI · <b>Aplicações</b></span>
+    </div>
+  </footer>
+</section>
+
+<!-- ═════════════ I · CONCEITO ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ I</div>
+      <div class="sec-meta">De Concepto</div>
+    </div>
+    <div>
+      <div class="sec-title">O mensageiro das estrelas, hoje.</div>
+    </div>
+  </div>
+
+  <div class="concept-grid">
+    <div>
+      <p class="italic-lead">
+        O SIGSN organiza três processos do Observatório Sidereus Nuncius — agendamento de caravanas, coordenação de projetos de pesquisa e registro de observações astronômicas.
+      </p>
+      <p style="margin-top:22px;color:var(--ink-soft);font-size:15px;line-height:1.65;max-width:48ch">
+        A marca toma emprestado o gesto fundador do observatório: Galileu apontando a luneta para Júpiter e descrevendo, em latim simples, o que via. Nosso papel é o mesmo — converter o céu observado em registros legíveis, datados, assinados. Um atlas de trabalho, não uma vitrine.
+      </p>
+      <p style="margin-top:16px;color:var(--ink-soft);font-size:15px;line-height:1.65;max-width:48ch">
+        Rejeitamos o clichê da astronomia como néon sobre fundo preto. Preferimos a <em>tinta sobre pergaminho</em> das cartas celestes e o rigor dos instrumentos de latão.
+      </p>
+    </div>
+    <div>
+      <div class="eyebrow">Posicionamento</div>
+      <h2 style="margin-top:10px;font-style:italic">Instrumento editorial, <br>não dashboard decorativo.</h2>
+      <div class="double-rule"></div>
+      <dl style="display:grid;grid-template-columns:auto 1fr;gap:10px 28px;font-size:14.5px">
+        <dt class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Cliente</dt><dd>Observatório Sidereus Nuncius</dd>
+        <dt class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Fundação</dt><dd>R. Pedro Américo, 02 · Tel. (28) 3522-1071</dd>
+        <dt class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Proprietário</dt><dd>Galileu Galilei</dd>
+        <dt class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Atores</dt><dd>Coordenador · Pesquisador · Guia</dd>
+        <dt class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Domínios</dt><dd>Caravanas · Constelações · Projetos · Observações</dd>
+      </dl>
+    </div>
+  </div>
+
+  <ul class="principles">
+    <li>
+      <span class="p-num">PR · 01</span>
+      <span class="p-ttl">Precisão de instrumento</span>
+      <span class="p-txt">Régua, compasso, coordenadas. Tudo mensurado, nada flutua. Os números — CPF, data, turno, hemisfério — têm dignidade tipográfica.</span>
+    </li>
+    <li>
+      <span class="p-num">PR · 02</span>
+      <span class="p-ttl">Pergaminho, não painel</span>
+      <span class="p-txt">A página é papel velado, a tinta é indigo profundo. Fundos escuros só onde o céu realmente aparece — no login, em visualizações de observação, nunca por default.</span>
+    </li>
+    <li>
+      <span class="p-num">PR · 03</span>
+      <span class="p-ttl">Latim discreto</span>
+      <span class="p-txt">Pequenas inscrições em latim — <em>Observatorium</em>, <em>Mane · Meridies · Nox</em> — funcionam como timbre e lembrete da filiação histórica. Nunca na UI crítica; sempre em margens e selos.</span>
+    </li>
+    <li>
+      <span class="p-num">PR · 04</span>
+      <span class="p-ttl">Estrelas contadas</span>
+      <span class="p-txt">Se houver uma estrela, que seja uma só e significativa — a <em>Stella Polaris</em> do lodestar no topo do selo. Céus cintilantes são reservados ao pano de fundo do login.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- ═════════════ II · MARCA ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ II</div>
+      <div class="sec-meta">De Signo</div>
+    </div>
+    <div>
+      <div class="sec-title">A marca — um selo armilar.</div>
+    </div>
+  </div>
+
+  <div class="logo-hero">
+    <div class="logo-hero-display" style="color:var(--ink)">
+      <svg viewBox="0 0 200 200"><use href="#mark-primary"/></svg>
+    </div>
+    <div class="logo-hero-caption">
+      <div class="tag">Marca primária · <em>Signum primarium</em></div>
+      <h3>Uma esfera armilar comprimida em disco, selada com a cifra <em>SN</em>.</h3>
+      <p>O anel externo evoca a astrolábio — instrumento pelo qual o navegador e o astrônomo antigos mediam o céu. A <em>Stella Polaris</em> marca o norte; quatro pontos cardinais lembram os quatro satélites galileanos (Medicean Stars) descritos no tratado homônimo de 1610.</p>
+      <dl class="meta">
+        <dt>Construção</dt><dd>Grelha · 24 × 24</dd>
+        <dt>Raio ótico</dt><dd>86 u · anel · 52 u · selo</dd>
+        <dt>Cifra</dt><dd>S romano + N itálico</dd>
+        <dt>Uso</dt><dd>Principal · Institucional</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="variants">
+    <div class="variant">
+      <div class="holder" style="color:var(--ink)"><svg viewBox="0 0 440 110"><use href="#lockup-h"/></svg></div>
+      <div class="lbl">Lockup · Horizontal · Ink on Paper</div>
+    </div>
+    <div class="variant paper-deep">
+      <div class="holder" style="color:var(--ink)"><svg viewBox="0 0 160 180" style="color:var(--ink)"><use href="#lockup-v"/></svg></div>
+      <div class="lbl">Lockup · Vertical · Selo Institucional</div>
+    </div>
+    <div class="variant dark">
+      <div class="holder" style="color:var(--paper)"><svg viewBox="0 0 440 110" style="color:var(--paper)"><use href="#lockup-h"/></svg></div>
+      <div class="lbl">Ink Reverse · Paper on Ink</div>
+    </div>
+    <div class="variant ember">
+      <div class="holder" style="color:var(--paper)"><svg viewBox="0 0 200 200"><use href="#mark-primary"/></svg></div>
+      <div class="lbl">Ember Reverse · Selo de carimbo</div>
+    </div>
+  </div>
+
+  <!-- construction -->
+  <div class="construction">
+    <div class="construction-art" style="color:var(--ink)">
+      <svg viewBox="0 0 240 240" style="background:
+         linear-gradient(var(--rule) 1px,transparent 1px),
+         linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:12px 12px">
+        <!-- construction lines -->
+        <g fill="none" stroke="#b8542b88" stroke-width=".6" stroke-dasharray="2 3">
+          <circle r="86"/><circle r="64"/><circle r="52"/><circle r="94"/>
+          <line x1="-110" y1="0" x2="110" y2="0"/>
+          <line x1="0" y1="-110" x2="0" y2="110"/>
+          <line x1="-100" y1="-100" x2="100" y2="100"/>
+          <line x1="-100" y1="100" x2="100" y2="-100"/>
+        </g>
+        <use href="#mark-primary"/>
+        <!-- measurements -->
+        <g font-family="JetBrains Mono, monospace" font-size="5" fill="#b8542b" letter-spacing="1">
+          <text x="90" y="-2">R 86</text>
+          <text x="68" y="-2">R 64</text>
+          <text x="56" y="-2">R 52</text>
+          <text x="-30" y="-92">★ polaris</text>
+        </g>
+      </svg>
+    </div>
+    <div class="construction-notes">
+      <div class="eyebrow">Construção · <em>Fabrica</em></div>
+      <h3>Geometria do selo</h3>
+      <ul>
+        <li data-n="1">Anel exterior — raio <span class="mono">86u</span>. Peso <span class="mono">1.25</span>. Tangenciado por duas elipses a ±24° representando a eclíptica.</li>
+        <li data-n="2">Anel meridiano interior — raio <span class="mono">64u</span>. Referência para o selo central e para os quatro pontos cardeais.</li>
+        <li data-n="3">Disco de selo — raio <span class="mono">52u</span>, preenchimento a 6% da tinta. Segura a cifra central sem competir com o anel.</li>
+        <li data-n="4">Cifra <em>SN</em> — S romano, N itálico. A itálica inclina para leste, ecoando o gesto de alguém que aponta para cima.</li>
+        <li data-n="5">Estrela polar — oito pontas assimétricas, alinhada com o meridiano. Nunca substituída por pentagramas.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- clear space & minimum sizes -->
+  <div class="rules-grid">
+    <div class="rule-card">
+      <div class="lbl">Área de respiro · <em>Spatium</em></div>
+      <div style="display:flex;align-items:center;gap:32px">
+        <div style="position:relative;padding:40px;border:1px dashed var(--ember)">
+          <svg viewBox="0 0 200 200" width="120" height="120" style="color:var(--ink);display:block"><use href="#mark-primary"/></svg>
+          <span style="position:absolute;top:8px;left:8px;font-family:var(--mono);font-size:10px;color:var(--ember)">x</span>
+          <span style="position:absolute;bottom:8px;right:8px;font-family:var(--mono);font-size:10px;color:var(--ember)">x</span>
+        </div>
+        <div style="font-size:14px;color:var(--ink-soft);line-height:1.55">
+          O espaço mínimo ao redor da marca equivale à altura da cifra <em>S</em> — denotada <span class="mono" style="color:var(--ember)">x</span>. Nenhum elemento gráfico pode invadir essa margem.
+        </div>
+      </div>
+    </div>
+    <div class="rule-card">
+      <div class="lbl">Tamanhos mínimos · <em>Modulus minimus</em></div>
+      <div style="display:flex;align-items:flex-end;gap:32px;justify-content:flex-start;padding:12px 0">
+        <div style="text-align:center">
+          <svg viewBox="0 0 200 200" width="72" height="72" style="color:var(--ink);display:block"><use href="#mark-primary"/></svg>
+          <div class="mono" style="font-size:10px;letter-spacing:.18em;color:var(--ink-mute);margin-top:8px">72 PX · DIGITAL</div>
+        </div>
+        <div style="text-align:center">
+          <svg viewBox="0 0 200 200" width="40" height="40" style="color:var(--ink);display:block"><use href="#mark-primary"/></svg>
+          <div class="mono" style="font-size:10px;letter-spacing:.18em;color:var(--ink-mute);margin-top:8px">40 PX · FAVICON</div>
+        </div>
+        <div style="text-align:center">
+          <svg viewBox="0 0 120 120" width="28" height="28" style="color:var(--ink);display:block"><use href="#mark-seal"/></svg>
+          <div class="mono" style="font-size:10px;letter-spacing:.18em;color:var(--ink-mute);margin-top:8px">28 PX · SEAL ONLY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- misuse -->
+  <div class="eyebrow" style="margin-top:48px">Usos proibidos · <em>Usus prohibiti</em></div>
+  <div class="misuse-grid">
+    <div class="mis" style="color:var(--ink)">
+      <svg viewBox="0 0 200 200" style="transform:rotate(18deg)"><use href="#mark-primary"/></svg>
+      <span class="cross">Não rotacionar</span>
+    </div>
+    <div class="mis" style="color:var(--ink)">
+      <svg viewBox="0 0 200 200" style="transform:scaleX(1.5)"><use href="#mark-primary"/></svg>
+      <span class="cross">Não deformar</span>
+    </div>
+    <div class="mis" style="background:linear-gradient(90deg,#ff7aa0,#8b5cf6,#38bdf8);color:#fff">
+      <svg viewBox="0 0 200 200"><use href="#mark-primary"/></svg>
+      <span class="cross" style="color:#fff">Não usar sobre gradiente</span>
+    </div>
+    <div class="mis" style="color:#b85ad3">
+      <svg viewBox="0 0 200 200"><use href="#mark-primary"/></svg>
+      <span class="cross">Não recolorir fora do sistema</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ III · COR ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ III</div>
+      <div class="sec-meta">De Coloribus</div>
+    </div>
+    <div>
+      <div class="sec-title">Tinta, pergaminho, brasa.</div>
+    </div>
+  </div>
+
+  <p class="italic-lead" style="margin-bottom:36px">
+    Três tintas fundadoras e quatro complementares. A proporção é governada: o pergaminho domina, a tinta estrutura, a brasa aponta — nada mais.
+  </p>
+
+  <div class="palette-primary">
+    <div class="swatch sw-ink">
+      <div>
+        <div class="role">Fundadora · 01</div>
+        <div class="name">Atramentum</div>
+        <div class="latin">Tinta · indigo profundo</div>
+      </div>
+      <div class="codes">
+        <span>HEX · #1A2547</span>
+        <span>RGB · 26 · 37 · 71</span>
+        <span>CMYK · 95 · 85 · 35 · 40</span>
+        <span>PMS · 2768 C</span>
+      </div>
+    </div>
+    <div class="swatch sw-paper">
+      <div>
+        <div class="role">Fundadora · 02</div>
+        <div class="name">Pergamenum</div>
+        <div class="latin">Pergaminho · creme velado</div>
+      </div>
+      <div class="codes">
+        <span>HEX · #F4EFE4</span>
+        <span>RGB · 244 · 239 · 228</span>
+        <span>CMYK · 4 · 5 · 10 · 0</span>
+        <span>PMS · Warm Gray 1 C</span>
+      </div>
+    </div>
+    <div class="swatch sw-ember">
+      <div>
+        <div class="role">Fundadora · 03</div>
+        <div class="name">Flamma</div>
+        <div class="latin">Brasa · siena queimada</div>
+      </div>
+      <div class="codes">
+        <span>HEX · #B8542B</span>
+        <span>RGB · 184 · 84 · 43</span>
+        <span>CMYK · 20 · 75 · 90 · 10</span>
+        <span>PMS · 1675 C</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="palette-accents">
+    <div class="swatch-sm sw-gold">
+      <div>
+        <div class="role">Acento</div>
+        <div class="name">Aurum</div>
+      </div>
+      <div class="codes"><span>#C9A04A</span><span>Latão · estações douradas</span></div>
+    </div>
+    <div class="swatch-sm sw-verdigris">
+      <div>
+        <div class="role">Acento</div>
+        <div class="name">Aerugo</div>
+      </div>
+      <div class="codes"><span>#516B5D</span><span>Cobre oxidado · status ativo</span></div>
+    </div>
+    <div class="swatch-sm sw-ink-soft">
+      <div>
+        <div class="role">Neutro</div>
+        <div class="name">Nebula</div>
+      </div>
+      <div class="codes"><span>#2D3A5F</span><span>Tinta diluída · rótulos</span></div>
+    </div>
+    <div class="swatch-sm sw-paper-deep">
+      <div>
+        <div class="role">Neutro</div>
+        <div class="name">Charta</div>
+      </div>
+      <div class="codes"><span>#ECE5D3</span><span>Pergaminho envelhecido · painéis</span></div>
+    </div>
+  </div>
+
+  <div class="palette-proportion">
+    <div style="flex:60;background:var(--paper);color:var(--ink)">Pergamenum · 60</div>
+    <div style="flex:28;background:var(--ink);color:var(--paper)">Atramentum · 28</div>
+    <div style="flex:6;background:var(--paper-deep);color:var(--ink)">Charta · 6</div>
+    <div style="flex:4;background:var(--ember);color:var(--paper)">Flamma · 4</div>
+    <div style="flex:2;background:var(--gold);color:var(--ink)">Aurum · 2</div>
+  </div>
+  <p class="mono" style="font-size:10.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase;margin-top:12px;text-align:center">Proporção alvo · por centésimos</p>
+
+  <!-- Semantic turno -->
+  <div style="margin-top:56px">
+    <div class="eyebrow">Semântica de turno · <em>Signa horarum</em></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule-bold);border:1px solid var(--rule-bold);margin-top:16px">
+      <div style="background:var(--paper);padding:28px;display:flex;gap:18px;align-items:center">
+        <div style="width:52px;height:52px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold)"><svg width="28" height="28"><use href="#ic-dawn"/></svg></div>
+        <div>
+          <div class="serif-caps" style="font-size:14px;color:var(--gold)">Mane</div>
+          <div style="font-family:var(--serif-display);font-size:24px;font-weight:500">Manhã</div>
+          <div class="mono" style="font-size:10.5px;color:var(--ink-mute);letter-spacing:.18em">06h — 12h</div>
+        </div>
+      </div>
+      <div style="background:var(--paper);padding:28px;display:flex;gap:18px;align-items:center">
+        <div style="width:52px;height:52px;border:1px solid var(--ember);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ember)"><svg width="28" height="28"><use href="#ic-sun"/></svg></div>
+        <div>
+          <div class="serif-caps" style="font-size:14px;color:var(--ember)">Meridies</div>
+          <div style="font-family:var(--serif-display);font-size:24px;font-weight:500">Tarde</div>
+          <div class="mono" style="font-size:10.5px;color:var(--ink-mute);letter-spacing:.18em">12h — 18h</div>
+        </div>
+      </div>
+      <div style="background:var(--paper);padding:28px;display:flex;gap:18px;align-items:center">
+        <div style="width:52px;height:52px;border:1px solid var(--ink);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink)"><svg width="28" height="28"><use href="#ic-moon"/></svg></div>
+        <div>
+          <div class="serif-caps" style="font-size:14px;color:var(--ink)">Nox</div>
+          <div style="font-family:var(--serif-display);font-size:24px;font-weight:500">Noite</div>
+          <div class="mono" style="font-size:10.5px;color:var(--ink-mute);letter-spacing:.18em">18h — 06h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ IV · TIPO ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ IV</div>
+      <div class="sec-meta">De Litteris</div>
+    </div>
+    <div>
+      <div class="sec-title">Três vozes tipográficas.</div>
+    </div>
+  </div>
+
+  <p class="italic-lead" style="margin-bottom:36px">
+    Uma serifa para declarar, uma para ler, uma monoespaçada para medir. As três convivem em partitura — nunca em disputa.
+  </p>
+
+  <div class="type-stack">
+    <!-- display -->
+    <div class="type-row">
+      <div class="type-meta">
+        <div>
+          <div class="role">Display · Titular</div>
+          <div class="fname">Cormorant Garamond</div>
+          <div class="use">Títulos, mastheads, selos. A itálica carrega o acento; nunca deve ser usada em texto corrente abaixo de 18 px.</div>
+        </div>
+        <div class="ms">500 · 600 · 700<br>Italic · Roman</div>
+      </div>
+      <div class="type-specimen">
+        <div class="spec-display">Observare, <em>describere.</em></div>
+      </div>
+    </div>
+
+    <!-- text -->
+    <div class="type-row">
+      <div class="type-meta">
+        <div>
+          <div class="role">Texto · Currens</div>
+          <div class="fname">Newsreader</div>
+          <div class="use">Parágrafos, descrições de observação, transcrições de relatório. Concebida para leitura prolongada em tela.</div>
+        </div>
+        <div class="ms">300 · 400 · 500<br>Italic · Roman · Optical 6–72</div>
+      </div>
+      <div class="type-specimen">
+        <p class="spec-text">
+          Observada em <em>13 de dezembro de 2025</em>, a constelação de Orion apresentou variação de brilho notável em Betelgeuse. O instrumento utilizado — telescópio refletor — registrou a leitura sob céu sem perturbação lunar.
+        </p>
+      </div>
+    </div>
+
+    <!-- mono -->
+    <div class="type-row">
+      <div class="type-meta">
+        <div>
+          <div class="role">Dados · Numerus</div>
+          <div class="fname">JetBrains Mono</div>
+          <div class="use">Coordenadas, CPFs, timestamps, códigos de entidade, etiquetas e rótulos técnicos. Monoespaçada por higiene, não por ostentação.</div>
+        </div>
+        <div class="ms">300 · 400 · 500<br>Tabular · Technical</div>
+      </div>
+      <div class="type-specimen">
+        <div class="spec-mono">
+          OBS-2025-12-13 · v03 · PROJ-LCA<br>
+          α = 05h 55m 10.3s · δ = +07° 24′ 25″<br>
+          HEMISFÉRIO · NORTE · MANE 06:00 – 12:00
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- scale -->
+  <div class="type-scale">
+    <div class="eyebrow" style="margin-bottom:16px">Escala tipográfica · <em>Scala typographica</em></div>
+    <div class="scale-row"><span class="tag">Display · XL</span><span class="px">84 / .95</span><span class="demo" style="font-size:60px">Sidereus Nuncius</span></div>
+    <div class="scale-row"><span class="tag">Display · L</span><span class="px">48 / 1.05</span><span class="demo" style="font-size:40px">Observatorium publicum</span></div>
+    <div class="scale-row"><span class="tag">Heading · M</span><span class="px">28 / 1.2</span><span class="demo" style="font-size:26px;font-style:italic">Próximas visitas da semana</span></div>
+    <div class="scale-row"><span class="tag">Body · L</span><span class="px">18 / 1.55</span><span class="demo" style="font-family:var(--serif-text);font-size:18px;font-weight:400">Registro periódico das observações astronômicas, organizado por projeto e constelação.</span></div>
+    <div class="scale-row"><span class="tag">Body · M</span><span class="px">15 / 1.55</span><span class="demo" style="font-family:var(--serif-text);font-size:15px;font-weight:400">Coordenador · Pesquisador · Guia — três perfis, uma casa.</span></div>
+    <div class="scale-row"><span class="tag">Caption</span><span class="px">10.5 / 1.4</span><span class="demo mono" style="font-size:10.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">RF01–RF44 · OBSERVATORIUM SIDEREUS NUNCIUS · MMXXVI</span></div>
+  </div>
+</section>
+
+<!-- ═════════════ V · SIGNOS ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ V</div>
+      <div class="sec-meta">Iconographia</div>
+    </div>
+    <div>
+      <div class="sec-title">Signos de domínio.</div>
+    </div>
+  </div>
+
+  <p class="italic-lead" style="margin-bottom:28px">
+    Um alfabeto iconográfico mínimo — traço hairline, cantos suavemente arredondados, inspirado nas gravuras dos tratados astronômicos do século XVII.
+  </p>
+
+  <div class="icon-grid">
+    <div class="icon-cell"><svg><use href="#ic-telescope"/></svg><span>Observação</span></div>
+    <div class="icon-cell"><svg><use href="#ic-constellation"/></svg><span>Constelação</span></div>
+    <div class="icon-cell"><svg><use href="#ic-caravan"/></svg><span>Caravana</span></div>
+    <div class="icon-cell"><svg><use href="#ic-schedule"/></svg><span>Agendamento</span></div>
+    <div class="icon-cell"><svg><use href="#ic-project"/></svg><span>Projeto</span></div>
+    <div class="icon-cell"><svg><use href="#ic-group"/></svg><span>Grupo</span></div>
+    <div class="icon-cell"><svg><use href="#ic-researcher"/></svg><span>Pesquisador</span></div>
+    <div class="icon-cell"><svg><use href="#ic-compass"/></svg><span>Hemisfério</span></div>
+    <div class="icon-cell"><svg><use href="#ic-dawn"/></svg><span>Manhã</span></div>
+    <div class="icon-cell"><svg><use href="#ic-sun"/></svg><span>Tarde</span></div>
+    <div class="icon-cell"><svg><use href="#ic-moon"/></svg><span>Noite</span></div>
+    <div class="icon-cell"><svg><use href="#ic-seal"/></svg><span>Selo / Versão</span></div>
+  </div>
+
+  <!-- ornamental marks -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:40px;margin-top:48px;align-items:center;justify-items:center;color:var(--ink)">
+    <div style="text-align:center">
+      <svg width="40" height="40"><use href="#tiny-star"/></svg>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-top:10px">Asterisco</div>
+    </div>
+    <div style="text-align:center">
+      <svg width="100" height="16" viewBox="0 0 100 16">
+        <line x1="0" y1="8" x2="42" y2="8" stroke="currentColor" stroke-width="1"/>
+        <line x1="58" y1="8" x2="100" y2="8" stroke="currentColor" stroke-width="1"/>
+        <polygon points="50,2 51,7 56,8 51,9 50,14 49,9 44,8 49,7" fill="currentColor"/>
+      </svg>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-top:10px">Divisor estelar</div>
+    </div>
+    <div style="text-align:center">
+      <svg width="100" height="24" viewBox="0 0 100 24">
+        <line x1="0" y1="12" x2="100" y2="12" stroke="currentColor" stroke-width="1"/>
+        <line x1="0" y1="12" x2="0" y2="6" stroke="currentColor"/>
+        <line x1="25" y1="12" x2="25" y2="9" stroke="currentColor"/>
+        <line x1="50" y1="12" x2="50" y2="6" stroke="currentColor"/>
+        <line x1="75" y1="12" x2="75" y2="9" stroke="currentColor"/>
+        <line x1="100" y1="12" x2="100" y2="6" stroke="currentColor"/>
+      </svg>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-top:10px">Escala · Grau</div>
+    </div>
+    <div style="text-align:center">
+      <svg width="80" height="24" viewBox="0 0 80 24">
+        <text x="0" y="18" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor" letter-spacing="3">§ III</text>
+      </svg>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-top:10px">Marca de seção</div>
+    </div>
+    <div style="text-align:center;color:var(--ember)">
+      <svg width="40" height="40" viewBox="0 0 40 40"><g transform="translate(20 20)">
+        <circle r="16" fill="none" stroke="currentColor"/>
+        <circle r="12" fill="none" stroke="currentColor" stroke-dasharray="1 3"/>
+        <text x="0" y="4" font-family="Cormorant Garamond, serif" font-size="16" font-style="italic" font-weight="500" text-anchor="middle" fill="currentColor">v</text>
+      </g></svg>
+      <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase;margin-top:10px">Selo de versão</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ VI · APLICAÇÕES ═════════════ -->
+<section>
+  <div class="sec-head">
+    <div>
+      <div class="sec-num">§ VI</div>
+      <div class="sec-meta">Applicationes</div>
+    </div>
+    <div>
+      <div class="sec-title">A marca em operação.</div>
+    </div>
+  </div>
+
+  <p class="italic-lead" style="margin-bottom:8px">
+    Três superfícies canônicas — a porta (login), a mesa de trabalho (dashboard) e o selo oficial (documento). Juntas, cobrem 90% do contato do usuário com o sistema.
+  </p>
+
+  <!-- app row 1: login + dashboard -->
+  <div class="app-row">
+    <div class="app-card">
+      <div class="cap"><span>App · <em>Ianua</em> · Login</span><span>Atramentum</span></div>
+      <div class="login-mock">
+        <div class="login-card">
+          <span class="crn tl"></span><span class="crn tr"></span><span class="crn bl"></span><span class="crn br"></span>
+          <div class="mk">
+            <svg viewBox="0 0 200 200" style="color:var(--paper)"><use href="#mark-primary"/></svg>
+            <div style="display:flex;flex-direction:column;align-items:center">
+              <span class="wm">SIGSN</span>
+              <small>Observatorium · Sidereus · Nuncius</small>
+            </div>
+          </div>
+          <div class="field"><label>Login · Nomen</label><input value="emanuelly.b" readonly></label></div>
+          <div class="field"><label>Senha · Clavis</label><input type="password" value="••••••••" readonly></div>
+          <button class="btn">Ingredi — Entrar no Sistema</button>
+          <div class="ft">Ne cede malis · © MMXXVI</div>
+        </div>
+      </div>
+    </div>
+    <div class="app-card">
+      <div class="cap"><span>App · <em>Tabula</em> · Dashboard</span><span>Pergamenum</span></div>
+      <div class="ui-mock">
+        <aside class="ui-side">
+          <div class="ui-brand">
+            <div class="mk" style="color:var(--ink)">
+              <svg viewBox="0 0 200 200"><use href="#mark-primary"/></svg>
+              <span class="wm">SIGSN</span>
+              <span class="dot"></span>
+            </div>
+            <small>Obs. Sidereus Nuncius</small>
+          </div>
+          <nav class="ui-nav">
+            <span class="sec">Principal</span>
+            <a class="on"><span class="ico">§ I</span> Tabula</a>
+            <a><span class="ico">§ II</span> Agendamentos</a>
+            <span class="sec">Cadastros</span>
+            <a><span class="ico">·</span> Caravanas</a>
+            <a><span class="ico">·</span> Guias</a>
+            <a><span class="ico">·</span> Constelações</a>
+            <a><span class="ico">·</span> Projetos</a>
+            <span class="sec">Pessoas</span>
+            <a><span class="ico">·</span> Pesquisadores</a>
+          </nav>
+        </aside>
+        <main class="ui-main">
+          <div class="ui-head">
+            <div>
+              <div class="breadcrumb">§ I · Tabula Principalis</div>
+              <h4>Visão <em>geral.</em></h4>
+            </div>
+            <div class="mono" style="font-size:10px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">XXI · IV · MMXXVI</div>
+          </div>
+          <div class="ui-stats">
+            <div class="ui-stat"><div class="lbl">Agendamentos</div><div class="val">04<sup>*</sup></div></div>
+            <div class="ui-stat"><div class="lbl">Visitantes</div><div class="val">148</div></div>
+            <div class="ui-stat"><div class="lbl">Observações</div><div class="val">12<sup>v3</sup></div></div>
+            <div class="ui-stat"><div class="lbl">Projetos ativos</div><div class="val">02</div></div>
+          </div>
+          <div style="margin-top:20px;display:flex;justify-content:space-between;align-items:baseline">
+            <div style="font-family:var(--serif-display);font-style:italic;font-size:18px">Próximas visitas</div>
+            <div class="mono" style="font-size:9.5px;letter-spacing:.2em;color:var(--ink-mute);text-transform:uppercase">Ordenado por data</div>
+          </div>
+          <table class="ui-table">
+            <thead><tr><th>Data</th><th>Caravana</th><th>Guia</th><th>Turno</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td class="mn">20·IV · 09:00</td><td>Escola Alfa</td><td>João Silva</td><td><span class="pill m">Mane</span></td><td class="mn">R$ 800,00</td></tr>
+              <tr><td class="mn">21·IV · 14:30</td><td>Turma 2026</td><td>Ana Costa</td><td><span class="pill t">Meridies</span></td><td class="mn">R$ 1.200,00</td></tr>
+              <tr><td class="mn">23·IV · 20:00</td><td>Estudantes TI</td><td>Ana Costa</td><td><span class="pill n">Nox</span></td><td class="mn">R$ 1.500,00</td></tr>
+            </tbody>
+          </table>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- app row 2: stationery/seal + observation sheet -->
+  <div class="app-row">
+    <div class="app-card">
+      <div class="cap"><span>App · <em>Charta officialis</em> · Papelaria</span><span>Selo de correspondência</span></div>
+      <div class="seal-mock">
+        <div class="seal-card">
+          <span class="eyebrow">Carta de Observação · RF38</span>
+          <h5>Boletim semanal</h5>
+          <div style="font-family:var(--serif-text);font-style:italic;color:var(--ink-mute);font-size:13px;letter-spacing:.03em">Ao coordenador responsável,</div>
+          <p class="txt">Encaminhamos o registro consolidado das observações da constelação de Orion, versão três, concluído sob instrumentação refletora na noite de 13 de dezembro.</p>
+          <div class="divider">
+            <svg style="color:var(--ember)"><use href="#tiny-star"/></svg>
+          </div>
+          <div class="foot"><span>Emanuelly Borges</span><span>v · 03 / MMXXV</span></div>
+        </div>
+        <div class="sealstamp" style="color:var(--ember)">
+          <svg viewBox="0 0 200 200">
+            <use href="#mark-primary"/>
+            <g transform="translate(100 100)">
+              <g fill="none" stroke="currentColor" stroke-width=".5">
+                <circle r="96"/>
+                <circle r="99"/>
+              </g>
+              <g font-family="Cormorant Garamond, serif" font-size="7" font-weight="600" fill="currentColor" letter-spacing="2.5">
+                <path id="sealTop" d="M -92 0 A 92 92 0 0 1 92 0" fill="none"/>
+                <path id="sealBot" d="M -92 0 A 92 92 0 0 0 92 0" fill="none"/>
+                <text><textPath href="#sealTop" startOffset="50%" text-anchor="middle">· OBSERVATORIUM · SIDEREUS · NUNCIUS ·</textPath></text>
+                <text><textPath href="#sealBot" startOffset="50%" text-anchor="middle">· SIGILLUM · OFFICII · MMXXVI ·</textPath></text>
+              </g>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-card">
+      <div class="cap"><span>App · <em>Schedula observationis</em> · Ficha</span><span>Formulário de observação</span></div>
+      <div style="background:var(--paper);padding:32px;min-height:540px;position:relative">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--rule-bold);padding-bottom:12px">
+          <div>
+            <div class="eyebrow" style="color:var(--ember)">Ficha de observação · RF35</div>
+            <h5 style="font-family:var(--serif-display);font-size:26px;font-weight:500;margin-top:6px">Orion · <em style="font-style:italic;color:var(--ember)">Betelgeuse</em></h5>
+          </div>
+          <div style="color:var(--ink)"><svg viewBox="0 0 120 120" width="42" height="42"><use href="#mark-seal"/></svg></div>
+        </div>
+        <dl style="margin-top:20px;display:grid;grid-template-columns:140px 1fr;gap:10px 18px;font-size:13.5px">
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Data</dt><dd style="font-family:var(--mono)">2025 · XII · 13 · 22h 40</dd>
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Projeto</dt><dd>LCA · Luzes Cambiantes de Astros</dd>
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Hemisfério</dt><dd>Norte · <span class="mono" style="color:var(--ember)">α 05h 55m · δ +07°24′</span></dd>
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Instrumento</dt><dd>Telescópio refletor · 200 mm</dd>
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Turno</dt><dd><span class="pill n" style="color:var(--ink)">Nox 18–06</span></dd>
+          <dt class="mono" style="font-size:10px;letter-spacing:.22em;color:var(--ink-mute);text-transform:uppercase">Versão</dt><dd><span style="display:inline-flex;align-items:center;gap:6px"><svg width="18" height="18" viewBox="0 0 40 40" style="color:var(--ember)"><g transform="translate(20 20)"><circle r="16" fill="none" stroke="currentColor"/><circle r="12" fill="none" stroke="currentColor" stroke-dasharray="1 3"/><text x="0" y="4" font-family="Cormorant Garamond, serif" font-size="16" font-style="italic" text-anchor="middle" fill="currentColor">v</text></g></svg><span class="mono" style="color:var(--ember)">03</span> — terceira revisão</span></dd>
+        </dl>
+        <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)">
+          <div class="eyebrow" style="margin-bottom:10px">Descrição científica</div>
+          <p style="font-family:var(--serif-text);font-size:15px;line-height:1.6;color:var(--ink)">
+            Variação de <em>brilho</em> notável em Betelgeuse durante a segunda metade da noite; a curva de magnitude aparente declina <span class="mono" style="color:var(--ember)">0,31 mag</span> em relação à observação v·02, confirmando tendência registrada desde setembro.
+          </p>
+        </div>
+        <div style="position:absolute;bottom:16px;left:32px;right:32px;display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:10px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute)">
+          <span>Pesquisadora · Emanuelly Borges</span>
+          <span>Ne cede malis</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- tokens section -->
+  <div class="eyebrow" style="margin-top:56px">Tokens de interface · <em>Lexicon visibile</em></div>
+  <div class="tokens" style="margin-top:16px">
+    <div class="trw hd"><span>Token</span><span>Valor</span><span>Swatch</span><span>Uso</span></div>
+    <div class="trw"><span class="nm">--ink</span><span class="hx">#1A2547</span><span class="ch" style="background:#1A2547"></span><span class="ds">Tipografia principal, estrutura, fundos noturnos (login).</span></div>
+    <div class="trw"><span class="nm">--paper</span><span class="hx">#F4EFE4</span><span class="ch" style="background:#F4EFE4"></span><span class="ds">Fundo padrão do sistema; substitui o preto default.</span></div>
+    <div class="trw"><span class="nm">--paper-deep</span><span class="hx">#ECE5D3</span><span class="ch" style="background:#ECE5D3"></span><span class="ds">Painéis, barras laterais, cabeçalhos de tabela.</span></div>
+    <div class="trw"><span class="nm">--ember</span><span class="hx">#B8542B</span><span class="ch" style="background:#B8542B"></span><span class="ds">Ação primária, versão, nota crítica. Máx. 4% de tela.</span></div>
+    <div class="trw"><span class="nm">--gold</span><span class="hx">#C9A04A</span><span class="ch" style="background:#C9A04A"></span><span class="ds">Turno Mane (manhã), badges de estações e marcos.</span></div>
+    <div class="trw"><span class="nm">--verdigris</span><span class="hx">#516B5D</span><span class="ch" style="background:#516B5D"></span><span class="ds">Status ativo, confirmações, turno Nox em badges.</span></div>
+    <div class="trw"><span class="nm">--rule-bold</span><span class="hx">#1A254755</span><span class="ch" style="background:#1A254755"></span><span class="ds">Divisores principais entre seções e tabelas.</span></div>
+    <div class="trw"><span class="nm">--ink-mute</span><span class="hx">#5A6487</span><span class="ch" style="background:#5A6487"></span><span class="ds">Texto secundário, rótulos mono, metadados.</span></div>
+  </div>
+</section>
+
+<!-- ═════════════ COLOPHON ═════════════ -->
+<footer class="colophon">
+  <div>
+    <div class="eyebrow" style="margin-bottom:10px">Colófon · <em>Colophon</em></div>
+    <p>Este manual foi composto em <em>Cormorant Garamond</em>, <em>Newsreader</em> e <em>JetBrains Mono</em>, sobre o traço de um pergaminho imaginado. Derivado do documento de requisitos do SIGSN, v.2.0 — Sistema de Gestão do Observatório Sidereus Nuncius. Trabalho original, sem recriação de marcas existentes.</p>
+  </div>
+  <div>
+    <div style="color:var(--ink);margin-bottom:10px">Versão</div>
+    <div style="font-family:var(--serif-display);font-size:22px;font-style:italic;color:var(--ink);letter-spacing:.02em">v 1.0 · MMXXVI</div>
+  </div>
+  <div>
+    <div style="color:var(--ink);margin-bottom:10px">Ne cede malis</div>
+    <div style="font-family:var(--serif-display);font-size:22px;font-style:italic;color:var(--ember);letter-spacing:.02em">✦</div>
+  </div>
+</footer>
+
+</div>
+</body>
+</html>
