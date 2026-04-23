@@ -209,6 +209,7 @@ async function seedDatabase() {
   ]);
 
   const projetos = await Projeto.bulkCreate([
+    // ── 4 projetos base ──────────────────────────────────────────────────────
     {
       titulo: 'Projeto Aster',
       dataInicio: '2025-05-01',
@@ -242,6 +243,62 @@ async function seedDatabase() {
       dataTermino: '2026-01-31',
       status: 'ativo',
       areaDePesquisa: 'Superfície lunar',
+      grupoDePesquisaId: grupos[3].id,
+      coordenadorId: coordenadores[3].id,
+    },
+    // ── 6 projetos extras para atingir o limite de 10 ────────────────────────
+    // RN2 (Projeto): coordenador 1 terá 2 projetos ativos após este item
+    {
+      titulo: 'Projeto Vega',
+      dataInicio: '2025-09-01',
+      dataTermino: '2026-02-28',
+      status: 'ativo',
+      areaDePesquisa: 'Espectroscopia estelar',
+      grupoDePesquisaId: grupos[1].id,
+      coordenadorId: coordenadores[0].id,
+    },
+    {
+      titulo: 'Projeto Altair',
+      dataInicio: '2025-09-15',
+      dataTermino: '2026-03-15',
+      status: 'ativo',
+      areaDePesquisa: 'Fotometria diferencial',
+      grupoDePesquisaId: grupos[2].id,
+      coordenadorId: coordenadores[1].id,
+    },
+    {
+      titulo: 'Projeto Rigel',
+      dataInicio: '2025-10-01',
+      dataTermino: '2026-04-01',
+      status: 'ativo',
+      areaDePesquisa: 'Radioastronomia',
+      grupoDePesquisaId: grupos[0].id,
+      coordenadorId: coordenadores[3].id,
+    },
+    {
+      titulo: 'Projeto Sirius',
+      dataInicio: '2025-10-15',
+      dataTermino: '2026-04-15',
+      status: 'ativo',
+      areaDePesquisa: 'Astrometria',
+      grupoDePesquisaId: grupos[1].id,
+      coordenadorId: coordenadores[3].id,
+    },
+    {
+      titulo: 'Projeto Canopus',
+      dataInicio: '2025-11-01',
+      dataTermino: '2026-05-01',
+      status: 'ativo',
+      areaDePesquisa: 'Astronomia de raios-X',
+      grupoDePesquisaId: grupos[2].id,
+      coordenadorId: coordenadores[3].id,
+    },
+    {
+      titulo: 'Projeto Arcturus',
+      dataInicio: '2025-11-15',
+      dataTermino: '2026-05-15',
+      status: 'ativo',
+      areaDePesquisa: 'Astrofísica de alta energia',
       grupoDePesquisaId: grupos[3].id,
       coordenadorId: coordenadores[3].id,
     },
@@ -288,6 +345,16 @@ async function seedDatabase() {
       descricao: 'Registro inicial da constelação.',
       instrumentoUtilizado: 'Telescópio refrator 120mm',
       versaoObservacao: 1,
+      projetoId: projetos[0].id,
+      constelacaoId: constelacoes[0].id,
+    },
+    // RN2 (Observação): 2ª observação do mesmo projeto + constelação no mesmo dia;
+    // a 3ª tentativa via POST deve ser bloqueada pelo limite diário
+    {
+      dataObservacao: '2025-09-10',
+      descricao: 'Segunda observação do mesmo conjunto no mesmo dia.',
+      instrumentoUtilizado: 'Câmera CCD',
+      versaoObservacao: 2,
       projetoId: projetos[0].id,
       constelacaoId: constelacoes[0].id,
     },
@@ -388,6 +455,29 @@ async function seedDatabase() {
       observacoes: 'Sessão com conteúdo exclusivo.',
       guiaId: guias[3].id,
       caravanaId: caravanas[3].id,
+    },
+    // RN2 (Agendamento): 3 agendamentos no turno NOITE do dia 2026-06-11;
+    // o 4º POST nesse mesmo turno+dia deve ser bloqueado pelo limite
+    {
+      dataVisita: '2026-06-11 20:00:00',
+      valorVisita: 350.0,
+      observacoes: 'Agendamento noturno 1/3.',
+      guiaId: guias[2].id,
+      caravanaId: caravanas[0].id,
+    },
+    {
+      dataVisita: '2026-06-11 21:00:00',
+      valorVisita: 350.0,
+      observacoes: 'Agendamento noturno 2/3.',
+      guiaId: guias[2].id,
+      caravanaId: caravanas[1].id,
+    },
+    {
+      dataVisita: '2026-06-11 22:00:00',
+      valorVisita: 350.0,
+      observacoes: 'Agendamento noturno 3/3.',
+      guiaId: guias[2].id,
+      caravanaId: caravanas[2].id,
     },
   ]);
 }

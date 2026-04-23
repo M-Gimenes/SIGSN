@@ -15,7 +15,12 @@ class ObservacaoController {
 
   static async create(req, res, next) {
     ObservacaoService.create(req)
-      .then((obj) => res.json(obj))
+      .then((obj) =>
+        res.status(201).json({
+          mensagem: `Observação criada com versão ${obj.versaoObservacao} (atribuída automaticamente).`,
+          observacao: obj,
+        })
+      )
       .catch(next);
   }
 

@@ -471,7 +471,7 @@
           }
         },
         {
-          "name": "Criar — RN 1 (constelação não informada)",
+          "name": "Criar — RN 1 (versão auto-incrementada — 3ª observação do projeto 1 + constelação 1)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -479,7 +479,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"dataObservacao\": \"2026-05-01\",\n  \"descricao\": \"Observação sem constelação definida.\",\n  \"instrumentoUtilizado\": \"Telescópio refletor 200mm\",\n  \"projetoId\": 1\n}"
+              "raw": "{\n  \"dataObservacao\": \"2026-05-15\",\n  \"descricao\": \"Terceira observação do mesmo projeto e constelação; versão deve ser 3.\",\n  \"instrumentoUtilizado\": \"Telescópio refletor 200mm\",\n  \"projetoId\": 1,\n  \"constelacaoId\": 1\n}"
             }
           }
         },
