@@ -58,12 +58,22 @@ SIGSN is an astronomy observatory management system. It manages research groups,
 - `GrupoDePesquisa` ↔ `Pesquisador`: many-to-many through the `grupo_pesquisador` join table.
 - `Projeto` belongs to `GrupoDePesquisa` and `Coordenador`; has many `Observacao`.
 - `Observacao` belongs to `Projeto` and `Constelacao`.
-- `Agendamento` belongs to `Guia`, `Coordenador`, and `Caravana` (one-to-one with Caravana).
+- `Agendamento` belongs to `Guia` and `Caravana` only — there is **no** `coordenadorId` on Agendamento.
 
-**Scheduling business rules** (enforced in `AgendamentoService`):
+**Business rules by entity:**
 
-- A `dataVisita` timestamp must be unique (no two bookings at the same exact date+time).
+*Agendamento* (enforced in `AgendamentoService`):
+- Guia must exist and have `disponibilidade` (MANHA/TARDE/NOITE) matching the shift of `dataVisita`.
 - Max **3 agendamentos** per day per shift (Manhã: 06–12 h, Tarde: 12–18 h, Noite: 18–06 h).
+
+*Observacao* (enforced in `ObservacaoService`):
+- `constelacaoId` is mandatory (explicit business rule, not just a model constraint).
+- Max **2 observações** per day for the same `projetoId` + `constelacaoId` combination.
+- `versaoObservacao` is **auto-assigned** (sequential per projeto+constelação pair) — never send it in the request body.
+
+*Projeto* (enforced in `ProjetoService`):
+- Max **10 projetos** with `status = 'ativo'` simultaneously across the whole system.
+- A single `Coordenador` can be responsible for at most **2 active projects** at a time.
 
 **Adding a new entity** follows this pattern:
 1. Create `models/EntityName.js` with `static init(sequelize)` and `static associate(models)`.
@@ -73,5 +83,11 @@ SIGSN is an astronomy observatory management system. It manages research groups,
 5. Add routes to `routes.js`.
 
 **Active routes (all CRUD):** `/agendamentos`, `/caravanas`, `/constelacoes`, `/coordenadores`, `/grupos-de-pesquisa`, `/guias`, `/observacoes`, `/pesquisadores`, `/projetos`.
+
+**Gotchas:**
+- `PessoaController.js` exists in `controllers/` but is **not registered** in `routes.js` — it returns 501 for all methods. Use `CoordenadorController`, `PesquisadorController`, or `GuiaController` instead.
+- `Guia.disponibilidade` must be exactly `'MANHA'`, `'TARDE'`, or `'NOITE'` (uppercase, without accent) — it must match the shift computed from `dataVisita` when creating an `Agendamento`.
+- `Caravana.tipoCaravana` must be one of: `'Escolar'`, `'Universitária'`, `'Turística'`, `'Institucional'`.
+- `Caravana.quantidadeVisitantes` is capped at 50.
 
 **Frontend:** `../frontend/SIGSN.html` — single-file static frontend (path relative to `backend/`).
