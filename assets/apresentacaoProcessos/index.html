@@ -284,7 +284,7 @@
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.create</h3>
-          <pre class="no-border-top"><code><span class="cmt">// AgendamentoService.js</span>
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="cmt">// AgendamentoService.js</span>
 <span class="kw">static async</span> create(req) {
   <span class="kw">const</span> { dataVisita, valorVisita, observacoes,
           guiaId, caravanaId } = req.body;
@@ -335,7 +335,7 @@
     <p class="event-excerpt"><strong>Duas regras protegem a integridade da agenda.</strong> Ambas operam <em>dentro da mesma transação</em> de criação/atualização — qualquer violação aborta a operação antes do <span class="hl hl-tx-success">INSERT</span>.</p>
     <div class="grid-layout">
       <div class="col-left">
-        <div class="rules-cards">
+        <div class="rules-cards" style="justify-content: flex-start">
           <div class="rule-card">
             <div class="num">i</div>
             <div class="body">
@@ -355,7 +355,7 @@
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>Função orquestradora</h3>
-          <pre class="no-border-top"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
   <span class="kw">const</span> erros = <span class="kw">await</span> validarCampos(Agendamento, dados);
 
   <span class="kw">const</span> guia = <span class="kw">await</span> Guia.findByPk(
@@ -401,10 +401,10 @@
   <div class="slide-body">
     <p class="event-excerpt"><strong>Regra 1.</strong> Compara em memória o turno disponível do guia com o turno derivado da hora da visita. <em>Não há SQL adicional</em> além do <span class="hl hl-tx-neutral">findByPk</span> já feito antes — a regra é puramente de domínio.</p>
     <div class="grid-layout">
-      <div class="col-left">
+      <div class="col-left" style="justify-content: flex-start">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.js · Regra 1</h3>
-          <pre class="no-border-top"><code><span class="cmt">// Regra 1: guia precisa estar disponível no turno escolhido.</span>
+          <pre class="no-border-top" style="font-size: 14px; text-align: left; font-weight: 100"><code><span class="cmt">// Regra 1: guia precisa estar disponível no turno escolhido.</span>
 <span class="kw">async function</span> validarDisponibilidadeGuia(guia, turno) {
   <span class="kw">if</span> (<span class="hl hl-rule-1">guia.disponibilidade !== turno</span>) {
     <span class="kw">throw new</span> ValidationError(
@@ -477,7 +477,7 @@ LIMIT  1;</code></pre>
       <div class="col-left">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.js · Regra 2</h3>
-          <pre class="no-border-top"><code><span class="kw">const</span> MAX_AGENDAMENTOS_POR_TURNO = <span class="hl hl-rule-2">3</span>;
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">const</span> MAX_AGENDAMENTOS_POR_TURNO = <span class="hl hl-rule-2">3</span>;
 
 <span class="kw">async function</span> validarLimiteAgendamentosPorTurno(
     visitDate, turno, excludeId, transaction) {
@@ -698,7 +698,7 @@ WHERE  date(data_visita) = '2026-05-12';</code></pre>
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.create + validar</h3>
-          <pre class="no-border-top"><code><span class="kw">static async</span> create(req) {
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">static async</span> create(req) {
   <span class="kw">const</span> dados = { ...req.body, status: req.body.status ?? <span class="str">'ativo'</span> };
   <span class="kw">return</span> <span class="hl hl-tx-start">sequelize.transaction</span>(<span class="kw">async</span> (transaction) =&gt; {
     <span class="kw">await</span> <span class="hl hl-tx-neutral">validarRegrasDeNegocio</span>(dados, <span class="kw">null</span>, transaction);
@@ -754,7 +754,7 @@ WHERE  date(data_visita) = '2026-05-12';</code></pre>
     <p class="event-excerpt"><strong>Duas regras de capacidade.</strong> A regra global (10 projetos ativos no observatório) e a regra individual (2 ativos por coordenador) operam <em>em conjunto</em>. A função <em>exclude</em> remove o próprio id da contagem em operações de update.</p>
     <div class="grid-layout">
       <div class="col-left">
-        <div class="rules-cards">
+        <div class="rules-cards" style="justify-content: flex-start">
           <div class="rule-card">
             <div class="num">i</div>
             <div class="body">
@@ -774,7 +774,7 @@ WHERE  date(data_visita) = '2026-05-12';</code></pre>
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>Helper compartilhado</h3>
-          <pre class="no-border-top"><code><span class="kw">import</span> { Op } <span class="kw">from</span> <span class="str">'sequelize'</span>;
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">import</span> { Op } <span class="kw">from</span> <span class="str">'sequelize'</span>;
 
 <span class="kw">const</span> MAX_PROJETOS_ATIVOS              = <span class="hl hl-rule-1">10</span>;
 <span class="kw">const</span> MAX_PROJETOS_ATIVOS_POR_COORDENADOR = <span class="hl hl-rule-2">2</span>;
@@ -820,7 +820,7 @@ WHERE  date(data_visita) = '2026-05-12';</code></pre>
       <div class="col-left">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.js · Regra 1</h3>
-          <pre class="no-border-top"><code><span class="kw">async function</span> validarLimiteProjetosAtivos(excludeId, transaction) {
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">async function</span> validarLimiteProjetosAtivos(excludeId, transaction) {
   <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-1">Projeto.count</span>({
     where: {
       status: <span class="str">'ativo'</span>,
@@ -891,7 +891,7 @@ WHERE  status = 'ativo'
       <div class="col-left">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.js · Regra 2</h3>
-          <pre class="no-border-top"><code><span class="kw">async function</span> validarLimiteProjetosPorCoordenador(
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">async function</span> validarLimiteProjetosPorCoordenador(
     coordenadorId, excludeId, transaction) {
 
   <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-2">Projeto.count</span>({
@@ -1107,7 +1107,7 @@ WHERE  status         = 'ativo'
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.create</h3>
-          <pre class="no-border-top"><code><span class="kw">static async</span> create(req) {
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">static async</span> create(req) {
   <span class="kw">const</span> { dataObservacao, descricao, instrumentoUtilizado,
           projetoId, constelacaoId } = req.body;
   <span class="kw">const</span> dados = { dataObservacao, descricao,
@@ -1158,7 +1158,7 @@ WHERE  status         = 'ativo'
     <p class="event-excerpt"><strong>Limite + versionamento, juntos.</strong> A Regra 1 protege a integridade (no máximo duas observações por dia no mesmo par). A Regra 2 substitui input do usuário pelo cálculo automático de versão sequencial.</p>
     <div class="grid-layout">
       <div class="col-left">
-        <div class="rules-cards">
+        <div class="rules-cards" style="justify-content: flex-start">
           <div class="rule-card">
             <div class="num">i</div>
             <div class="body">
@@ -1178,7 +1178,7 @@ WHERE  status         = 'ativo'
       <div class="col-right">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>Função orquestradora</h3>
-          <pre class="no-border-top"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
   <span class="kw">const</span> erros = <span class="kw">await</span> validarCampos(Observacao, dados);
   <span class="kw">if</span> (!dados.constelacaoId)
     erros.push(<span class="str">'Constelação observada deve ser informada.'</span>);
@@ -1228,7 +1228,7 @@ WHERE  status         = 'ativo'
       <div class="col-left">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.js · Regra 1</h3>
-          <pre class="no-border-top"><code><span class="kw">const</span> MAX_POR_DIA = <span class="hl hl-rule-1">2</span>;
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="kw">const</span> MAX_POR_DIA = <span class="hl hl-rule-1">2</span>;
 
 <span class="kw">async function</span> validarLimiteDiario(dados, excludeId, transaction) {
   <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-1">Observacao.count</span>({
@@ -1301,7 +1301,7 @@ WHERE  projeto_id     = $projetoId
       <div class="col-left">
         <div class="data-box no-pad">
           <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.js · Regra 2</h3>
-          <pre class="no-border-top"><code><span class="cmt">// Regra 2: versão é sequencial por (projeto, constelação).</span>
+          <pre class="no-border-top" style="font-size: 14px"><code><span class="cmt">// Regra 2: versão é sequencial por (projeto, constelação).</span>
 <span class="kw">async function</span> calcularProximaVersao(dados, excludeId, transaction) {
   <span class="kw">const</span> max = Number(<span class="kw">await</span> <span class="hl hl-rule-2">Observacao.max</span>(
     <span class="str">'versaoObservacao'</span>, {
