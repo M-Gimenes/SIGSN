@@ -3,1570 +3,1184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SIGSN – Observatório Sidereus Nuncius</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>SIGSN — Observatório Sidereus Nuncius</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --obs-bg:      #04050f;
-  --obs-bg2:     #080b1a;
-  --obs-bg3:     #0c1028;
-  --obs-panel:   rgba(12,18,50,0.9);
-  --obs-border:  rgba(100,140,255,0.18);
-  --obs-border2: rgba(100,140,255,0.35);
-  --obs-accent:  #4f8cff;
-  --obs-purple:  #a78bfa;
-  --obs-cyan:    #38bdf8;
-  --obs-gold:    #f5c842;
-  --obs-text:    #e8eaf6;
-  --obs-muted:   #8fa3cc;
-  --obs-dim:     #4d6490;
-  --obs-danger:  #f87171;
-  --obs-success: #34d399;
+  --ink:        #1a2547;
+  --ink-soft:   #2d3a5f;
+  --ink-mute:   #5a6487;
+  --paper:      #f4efe4;
+  --paper-deep: #ece5d3;
+  --paper-warm: #e8dfc7;
+  --ember:      #b8542b;
+  --gold:       #c9a04a;
+  --verdigris:  #516b5d;
+  --rule:       #1a254722;
+  --rule-bold:  #1a254755;
+  --serif-display: 'Cormorant Garamond', 'Garamond', serif;
+  --serif-text:    'Newsreader', 'Georgia', serif;
+  --mono:          'JetBrains Mono', ui-monospace, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  min-height: 100vh;
-  background: var(--obs-bg);
-  color: var(--obs-text);
-  font-family: 'Raleway', sans-serif;
+  height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif-text);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+body {
+  background-image:
+    radial-gradient(ellipse at 12% 8%, #ecdfbb55, transparent 50%),
+    radial-gradient(ellipse at 92% 85%, #d8c79855, transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.14  0 0 0 0 0.28  0 0 0 0.025 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ─── layout ─── */
+.app { display: flex; height: 100vh; }
+
+/* ─── sidebar ─── */
+#sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  background: var(--paper-deep);
+  border-right: 1px solid var(--rule-bold);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* ── Starfield ── */
-#stars-canvas {
-  position: fixed; inset: 0;
-  pointer-events: none; z-index: 0;
-}
-
-/* ── Sidebar ── */
-#sidebar {
-  position: fixed; top: 0; left: 0; bottom: 0;
-  width: 240px;
-  background: rgba(8,12,35,0.97);
-  border-right: 1px solid var(--obs-border);
-  z-index: 100;
-  display: flex; flex-direction: column;
-  overflow-y: auto;
-}
-
 .sidebar-brand {
-  padding: 1.5rem 1.25rem;
-  border-bottom: 1px solid var(--obs-border);
-  text-align: center;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--rule-bold);
 }
-.sidebar-brand .brand-icon { font-size: 2rem; display: block; }
-.sidebar-brand h1 {
-  font-family: 'Cinzel', serif;
-  font-size: .875rem; letter-spacing: .2em;
-  color: var(--obs-accent); margin: .25rem 0 0;
+.sidebar-brand .mk {
+  display: flex; align-items: center; gap: 10px;
 }
+.sidebar-brand .mk svg { width: 32px; height: 32px; color: var(--ink); }
+.sidebar-brand .mk .wm {
+  font-family: var(--serif-display); font-size: 22px;
+  letter-spacing: .22em; font-weight: 600; color: var(--ink);
+}
+.sidebar-brand .mk .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ember); margin-top: 2px; }
 .sidebar-brand small {
-  font-size: .6rem; color: var(--obs-dim);
-  letter-spacing: .15em; text-transform: uppercase;
+  display: block; font-family: var(--mono); font-size: 8.5px;
+  letter-spacing: .24em; color: var(--ink-mute); margin-top: 6px;
+  text-transform: uppercase;
 }
 
-.sidebar-user {
-  padding: .875rem 1.25rem;
-  border-bottom: 1px solid var(--obs-border);
-  display: flex; align-items: center; gap: .625rem;
+.sidebar-nav { flex: 1; padding: 8px 0; }
+.nav-section {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .24em;
+  color: var(--ink-mute); text-transform: uppercase; padding: 14px 16px 5px;
 }
-.user-avatar {
-  width: 2.125rem; height: 2.125rem; border-radius: 50%;
-  background: linear-gradient(135deg, var(--obs-accent), var(--obs-purple));
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: .875rem; flex-shrink: 0;
+.nav-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 16px; font-family: var(--serif-text); font-size: 14px;
+  color: var(--ink-soft); text-decoration: none; cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background .12s, color .12s;
+  user-select: none;
 }
-.user-name { font-size: .75rem; font-weight: 600; color: var(--obs-text); }
-.user-role {
-  font-size: .6rem; color: var(--obs-accent);
-  background: rgba(79,140,255,.12); padding: .1rem .375rem;
-  border-radius: .25rem; letter-spacing: .1em; display: inline-block;
-  margin-top: .125rem;
+.nav-link:hover { background: #1a25470a; color: var(--ink); }
+.nav-link.active {
+  color: var(--ink); border-left-color: var(--ember);
+  background: #1a254710; font-weight: 500;
+}
+.nav-link svg { width: 15px; height: 15px; flex-shrink: 0; color: var(--ink-mute); }
+.nav-link.active svg { color: var(--ember); }
+.nav-link span { flex: 1; }
+
+.sidebar-foot {
+  padding: 14px 16px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--ink-mute);
+  line-height: 1.8;
 }
 
-.sidebar-nav { flex: 1; padding: .5rem 0; }
-.nav-section-label {
-  padding: .5rem 1.125rem .25rem;
-  font-size: .6rem; letter-spacing: .15em;
-  color: var(--obs-dim); text-transform: uppercase;
-}
-.sidebar-link {
-  display: flex; align-items: center; gap: .625rem;
-  padding: .5625rem 1.25rem;
-  color: var(--obs-muted); font-size: .8125rem;
-  text-decoration: none; cursor: pointer; width: 100%;
-  background: transparent; text-align: left;
-  border: none; border-left: 3px solid transparent;
-  transition: all .15s;
-}
-.sidebar-link:hover { color: var(--obs-text); background: rgba(79,140,255,.07); }
-.sidebar-link.active {
-  color: var(--obs-accent); background: rgba(79,140,255,.1);
-  border-left-color: var(--obs-accent); font-weight: 600;
-}
-.sidebar-link .link-icon { font-size: 1rem; width: 1.25rem; text-align: center; }
-
-.sidebar-footer {
-  padding: .875rem 1.25rem;
-  border-top: 1px solid var(--obs-border);
+/* ─── main area ─── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
-/* ── App wrapper ── */
-#app-wrapper { margin-left: 240px; min-height: 100vh; position: relative; z-index: 1; }
-
-/* ── Login ── */
-#login-screen {
-  position: fixed; inset: 0; z-index: 500;
-  display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, #0a1040 0%, #04050f 70%);
-}
-.login-card {
-  background: rgba(8,12,35,.97);
-  border: 1px solid var(--obs-border2);
-  border-radius: 1rem; padding: 3rem 3.25rem;
-  width: 100%; max-width: 420px;
-  box-shadow: 0 8px 40px rgba(10,20,80,.7), 0 0 24px rgba(79,140,255,.2);
-  position: relative; overflow: hidden;
-}
-.login-card::before {
-  content: ''; position: absolute;
-  top: -60px; left: 50%; transform: translateX(-50%);
-  width: 200px; height: 120px;
-  background: radial-gradient(ellipse, rgba(79,140,255,.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-/* ── Form overrides ── */
-.form-control, .form-select {
-  background-color: rgba(255,255,255,.04) !important;
-  border-color: var(--obs-border) !important;
-  color: var(--obs-text) !important;
-  font-family: 'Raleway', sans-serif;
-}
-.form-control:focus, .form-select:focus {
-  border-color: var(--obs-accent) !important;
-  box-shadow: 0 0 0 .2rem rgba(79,140,255,.15) !important;
-  background-color: rgba(255,255,255,.06) !important;
-}
-.form-label {
-  font-size: .6875rem; letter-spacing: .1em;
-  color: var(--obs-muted); text-transform: uppercase; margin-bottom: .375rem;
-}
-.form-select option { background: #0c1028; }
-.form-control::placeholder { color: var(--obs-dim) !important; }
-textarea.form-control { resize: vertical; min-height: 70px; }
-
-/* ── Buttons ── */
-.btn-obs {
-  font-family: 'Raleway', sans-serif; font-weight: 600;
-  font-size: .8125rem; letter-spacing: .075em; text-transform: uppercase;
-  transition: all .2s; border: none;
-}
-.btn-obs-primary {
-  background: linear-gradient(135deg, var(--obs-accent), var(--obs-purple));
-  color: #fff; box-shadow: 0 4px 20px rgba(79,140,255,.25);
-}
-.btn-obs-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(79,140,255,.4); color: #fff; }
-.btn-obs-secondary {
-  background: rgba(255,255,255,.07); border: 1px solid var(--obs-border) !important;
-  color: var(--obs-muted);
-}
-.btn-obs-secondary:hover { background: rgba(255,255,255,.12); color: var(--obs-text); }
-.btn-obs-danger {
-  background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.25) !important;
-  color: var(--obs-danger);
-}
-.btn-obs-danger:hover { background: rgba(248,113,113,.2); color: var(--obs-danger); }
-
-/* ── Page header ── */
-.page-header {
+/* ─── topbar ─── */
+.topbar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 1.75rem;
+  padding: 0 32px; height: 56px;
+  border-bottom: 1px solid var(--rule-bold);
+  background: var(--paper);
+  flex-shrink: 0;
 }
-.page-heading {
-  font-family: 'Cinzel', serif; font-size: 1.25rem;
-  font-weight: 600; color: var(--obs-text); letter-spacing: .05em; margin: 0;
+.breadcrumb {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--ink-mute);
+  display: flex; align-items: center; gap: 8px;
 }
-.page-sub { font-size: .75rem; color: var(--obs-muted); margin-top: .25rem; }
+.breadcrumb span { color: var(--ember); }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
 
-/* ── Stat cards ── */
-.stat-card {
-  background: var(--obs-panel);
-  border: 1px solid var(--obs-border); border-radius: 1rem;
-  padding: 1.375rem 1.5rem; position: relative; overflow: hidden;
-  transition: border-color .2s;
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--ember); color: var(--paper);
+  border: none; padding: 7px 14px; cursor: pointer;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em;
+  text-transform: uppercase; font-weight: 500;
+  transition: opacity .12s;
 }
-.stat-card:hover { border-color: var(--obs-border2); }
-.stat-card::before {
-  content: ''; position: absolute;
-  top: -1.25rem; right: -1.25rem;
-  width: 5rem; height: 5rem; border-radius: 50%;
-  background: radial-gradient(circle, var(--card-glow, rgba(79,140,255,.15)) 0%, transparent 70%);
-}
-.stat-label { font-size: .625rem; letter-spacing: .15em; color: var(--obs-dim); text-transform: uppercase; }
-.stat-value { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; line-height: 1.2; margin: .375rem 0 .25rem; }
-.stat-description { font-size: .6875rem; color: var(--obs-muted); }
-.stat-icon { position: absolute; top: 1.25rem; right: 1.375rem; font-size: 1.625rem; opacity: .45; }
+.btn-primary:hover { opacity: .88; }
+.btn-primary svg { width: 12px; height: 12px; }
 
-/* ── Panel ── */
-.obs-panel {
-  background: var(--obs-panel);
-  border: 1px solid var(--obs-border); border-radius: 1rem; overflow: hidden;
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; color: var(--ink-mute);
+  border: 1px solid var(--rule-bold); padding: 6px 12px; cursor: pointer;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: border-color .12s, color .12s;
 }
-.obs-panel-header {
-  padding: 1rem 1.375rem; border-bottom: 1px solid var(--obs-border);
-  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
-}
-.obs-panel-title {
-  font-family: 'Cinzel', serif; font-size: .875rem;
-  letter-spacing: .05em; margin: 0; font-weight: 600;
-}
-.panel-footer {
-  padding: .625rem 1.125rem; font-size: .6875rem;
-  color: var(--obs-dim); border-top: 1px solid var(--obs-border);
+.btn-ghost:hover { border-color: var(--ink-mute); color: var(--ink); }
+
+/* ─── content ─── */
+#content {
+  flex: 1; overflow-y: auto; padding: 28px 32px;
 }
 
-/* ── Table ── */
-.obs-table { width: 100%; border-collapse: collapse; margin: 0; }
-.obs-table thead tr { background: rgba(79,140,255,.06); }
-.obs-table th {
-  padding: .75rem 1.125rem;
-  font-size: .625rem; letter-spacing: .1em; text-transform: uppercase;
-  color: var(--obs-muted); font-weight: 600;
-  border-bottom: 1px solid var(--obs-border); white-space: nowrap;
+/* entity header */
+.entity-header {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 1px solid var(--rule-bold); padding-bottom: 14px;
+  margin-bottom: 20px;
 }
-.obs-table td {
-  padding: .8125rem 1.125rem;
-  font-size: .8125rem; color: var(--obs-text);
-  border-bottom: 1px solid rgba(100,140,255,.07);
+.entity-header h1 {
+  font-family: var(--serif-display); font-size: 36px;
+  font-weight: 500; letter-spacing: .01em; line-height: 1;
 }
-.obs-table tbody tr:last-child td { border-bottom: none; }
-.obs-table tbody tr:hover td { background: rgba(79,140,255,.04); }
-
-/* ── Badges ── */
-.badge-obs {
-  display: inline-block; padding: .1875rem .625rem; border-radius: 1.25rem;
-  font-size: .625rem; font-weight: 700; letter-spacing: .075em; text-transform: uppercase;
+.entity-header h1 em { font-style: italic; color: var(--ember); }
+.entity-header .meta {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--ink-mute); margin-top: 4px;
 }
-.badge-success { background: rgba(52,211,153,.12); color: var(--obs-success); border: 1px solid rgba(52,211,153,.2); }
-.badge-danger  { background: rgba(248,113,113,.12); color: var(--obs-danger); border: 1px solid rgba(248,113,113,.2); }
-.badge-primary { background: rgba(79,140,255,.12);  color: var(--obs-accent);  border: 1px solid rgba(79,140,255,.2);  }
-.badge-purple  { background: rgba(167,139,250,.12); color: var(--obs-purple);  border: 1px solid rgba(167,139,250,.2); }
-.badge-gold    { background: rgba(245,200,66,.12);  color: var(--obs-gold);    border: 1px solid rgba(245,200,66,.2);  }
 
-/* ── Modal overrides ── */
-.modal-content {
-  background: var(--obs-bg3);
-  border: 1px solid var(--obs-border2); border-radius: 1rem;
-  color: var(--obs-text);
+/* data table */
+.table-wrap {
+  border: 1px solid var(--rule-bold);
+  overflow-x: auto;
 }
-.modal-header { border-bottom-color: var(--obs-border); padding: 1.25rem 1.5rem; }
-.modal-footer { border-top-color: var(--obs-border); }
-.modal-title { font-family: 'Cinzel', serif; font-size: .9375rem; letter-spacing: .05em; }
-.btn-close { filter: invert(1) opacity(.5); }
-
-/* ── Toast ── */
-.obs-toast {
-  background: rgba(6,10,30,.97);
-  border-left: 3px solid var(--obs-accent);
-  border-radius: .625rem; padding: .8125rem 1.125rem;
-  font-size: .8125rem; color: var(--obs-text);
-  min-width: 16rem; box-shadow: 0 8px 40px rgba(10,20,80,.7);
-  animation: fadeIn .3s ease;
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--mono); font-size: 12px;
+  background: #fffdf7cc;
 }
-.obs-toast.toast-success { border-left-color: var(--obs-success); }
-.obs-toast.toast-error   { border-left-color: var(--obs-danger); }
-
-/* ── Empty state ── */
-.empty-state { text-align: center; padding: 3.5rem 1.5rem; }
-.empty-state .empty-icon { font-size: 2.5rem; opacity: .35; display: block; margin-bottom: .875rem; }
-
-/* ── Search ── */
-.search-input {
-  background: rgba(255,255,255,.05); border: 1px solid var(--obs-border);
-  border-radius: .5rem; padding: .4375rem .875rem;
-  color: var(--obs-text); font-size: .8125rem;
-  font-family: 'Raleway', sans-serif; width: 12.5rem;
-  outline: none; transition: border .2s;
+.data-table th {
+  text-align: left; padding: 10px 14px;
+  font-size: 9px; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-mute); background: var(--paper-deep);
+  border-bottom: 1px solid var(--rule-bold); white-space: nowrap;
 }
-.search-input:focus { border-color: var(--obs-accent); }
-.search-input::placeholder { color: var(--obs-dim); }
+.data-table td {
+  padding: 10px 14px; border-bottom: 1px dashed var(--rule);
+  color: var(--ink-soft); vertical-align: middle;
+}
+.data-table td:first-child { color: var(--ember); font-weight: 500; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #1a25470a; }
 
-/* ── Animations ── */
-@keyframes fadeUp { from { opacity: 0; transform: translateY(1.25rem); } to { opacity: 1; transform: none; } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.page-enter { animation: fadeUp .3s ease; }
+.pill {
+  display: inline-block; padding: 1px 8px;
+  border: 1px solid currentColor; border-radius: 999px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.pill-ativo { color: var(--verdigris); }
+.pill-concluido { color: var(--ink-mute); }
+.pill-suspenso { color: var(--gold); }
+.pill-manha { color: var(--gold); }
+.pill-tarde { color: var(--ember); }
+.pill-noite { color: var(--verdigris); }
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(79,140,255,.25); border-radius: 3px; }
+.row-actions { display: flex; gap: 6px; }
+.btn-action {
+  background: transparent; border: none; cursor: pointer;
+  padding: 3px; color: var(--ink-mute); line-height: 1;
+  transition: color .12s;
+}
+.btn-action:hover { color: var(--ink); }
+.btn-action.danger:hover { color: var(--ember); }
+.btn-action svg { width: 14px; height: 14px; display: block; }
 
-/* ── Coming soon ── */
-.coming-soon {
+/* empty state */
+.empty {
+  text-align: center; padding: 56px 20px;
+  font-family: var(--serif-display); font-style: italic;
+  font-size: 22px; color: var(--ink-mute);
+}
+.empty small {
+  display: block; margin-top: 6px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--ink-mute); opacity: .7;
+  font-style: normal;
+}
+
+/* loading */
+.loading {
+  text-align: center; padding: 48px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .24em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+
+/* ─── welcome / home ─── */
+.welcome {
+  max-width: 760px;
+}
+.welcome-mark {
+  width: 80px; height: 80px; color: var(--ink); margin-bottom: 28px;
+}
+.welcome h1 {
+  font-family: var(--serif-display); font-size: 52px; font-weight: 500;
+  letter-spacing: .01em; line-height: .96; margin-bottom: 16px;
+}
+.welcome h1 em { font-style: italic; color: var(--ember); }
+.welcome p {
+  font-size: 17px; color: var(--ink-soft); line-height: 1.6;
+  font-style: italic; max-width: 56ch; margin-bottom: 28px;
+}
+.welcome-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+  background: var(--rule-bold); border: 1px solid var(--rule-bold);
+}
+.welcome-card {
+  background: #fffdf7cc; padding: 20px 18px;
+  cursor: pointer; transition: background .12s;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.welcome-card:hover { background: #fffdf7; }
+.welcome-card svg { width: 22px; height: 22px; color: var(--ember); }
+.welcome-card .wc-name {
+  font-family: var(--serif-display); font-size: 20px; font-weight: 500;
+}
+.welcome-card .wc-desc {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--ink-mute);
+}
+
+/* ─── toast ─── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--ink); color: var(--paper);
+  padding: 12px 18px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .18em;
+  text-transform: uppercase;
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s;
+  z-index: 1000; max-width: 360px;
+}
+#toast.error { background: var(--ember); }
+#toast.show { opacity: 1; pointer-events: auto; }
+
+/* ─── modal ─── */
+.modal-backdrop {
+  position: fixed; inset: 0; background: #1a254788;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500; opacity: 0; pointer-events: none;
+  transition: opacity .18s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 10% 5%, #ecdfbb44, transparent 50%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.14  0 0 0 0 0.28  0 0 0 0.02 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  border: 1px solid var(--rule-bold);
+  width: 540px; max-width: 96vw; max-height: 88vh;
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 20rem; gap: .75rem;
+  transform: translateY(12px);
+  transition: transform .18s;
+  position: relative;
 }
-.coming-soon i { font-size: 3rem; opacity: .25; color: var(--obs-muted); }
+.modal-backdrop.open .modal { transform: translateY(0); }
+.modal::before, .modal::after {
+  content: ''; position: absolute; width: 14px; height: 14px;
+  border: 1px solid var(--rule-bold);
+}
+.modal::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.modal::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
 
-/* ── Info note inside form ── */
-.form-note {
-  background: rgba(79,140,255,.06); border: 1px solid var(--obs-border);
-  border-radius: .5rem; padding: .75rem 1rem; font-size: .75rem; color: var(--obs-muted);
+.modal-head {
+  padding: 20px 24px 14px;
+  border-bottom: 1px solid var(--rule-bold);
+  flex-shrink: 0;
+}
+.modal-head h2 {
+  font-family: var(--serif-display); font-size: 26px; font-weight: 500;
+}
+.modal-head h2 em { font-style: italic; color: var(--ember); }
+.modal-head .eyebrow {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--ink-mute); margin-bottom: 6px;
+}
+.modal-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.modal-foot {
+  padding: 14px 24px; border-top: 1px solid var(--rule);
+  display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0;
+}
+
+/* form */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block; font-family: var(--mono); font-size: 9px;
+  letter-spacing: .28em; text-transform: uppercase; color: var(--ink-mute);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%; background: transparent;
+  border: none; border-bottom: 1px solid var(--rule-bold);
+  padding: 7px 2px;
+  font-family: var(--serif-text); font-size: 14px;
+  color: var(--ink); outline: none;
+  transition: border-color .12s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-bottom-color: var(--ember);
+}
+.field select {
+  appearance: none; cursor: pointer;
+  background: var(--paper);
+}
+.field textarea { resize: vertical; min-height: 72px; }
+.fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.field-error { font-family: var(--mono); font-size: 9px; color: var(--ember); margin-top: 4px; letter-spacing: .08em; }
+
+/* delete confirm */
+.confirm-msg {
+  font-family: var(--serif-text); font-size: 16px; line-height: 1.55;
+  color: var(--ink-soft); font-style: italic; padding: 8px 0;
+}
+.confirm-id {
+  display: inline-block; font-family: var(--mono); font-size: 11px;
+  color: var(--ember); background: #b8542b14;
+  padding: 2px 8px; margin: 2px 0;
+}
+
+.btn-danger {
+  background: var(--ember); color: var(--paper);
+  border: none; padding: 7px 14px; cursor: pointer;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: opacity .12s;
+}
+.btn-danger:hover { opacity: .88; }
+
+.btn-cancel {
+  background: transparent; color: var(--ink-mute);
+  border: 1px solid var(--rule-bold); padding: 6px 14px; cursor: pointer;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.btn-cancel:hover { color: var(--ink); border-color: var(--ink-mute); }
+
+/* count badge */
+.count-badge {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  color: var(--paper); background: var(--ink-mute);
+  padding: 1px 7px; border-radius: 999px; margin-left: 6px;
+  vertical-align: middle;
 }
 </style>
 </head>
 <body>
 
-<!-- Starfield -->
-<canvas id="stars-canvas" aria-hidden="true"></canvas>
+<!-- ═══ SVG DEFS ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <symbol id="mark-seal" viewBox="0 0 120 120">
+    <g transform="translate(60 60)">
+      <circle r="54" fill="none" stroke="currentColor" stroke-width="1.25"/>
+      <circle r="48" fill="none" stroke="currentColor" stroke-width=".75" stroke-dasharray="1 3"/>
+      <text x="0" y="18" font-family="Cormorant Garamond, serif" font-weight="500" font-size="52" text-anchor="middle" fill="currentColor" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+      <polygon points="0,-54 1.2,-49 4,-47 1.2,-45 0,-40 -1.2,-45 -4,-47 -1.2,-49" fill="currentColor"/>
+    </g>
+  </symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 12L12 3l9 9"/><path d="M5 10v9h5v-5h4v5h5v-9"/>
+  </symbol>
+  <symbol id="ic-schedule" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="5" width="18" height="16"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>
+  </symbol>
+  <symbol id="ic-caravan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="7" width="14" height="9"/><path d="M17 10h3l1 3v3h-4"/><circle cx="8" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+  </symbol>
+  <symbol id="ic-constellation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="4,18 8,9 14,14 19,5"/><circle cx="4" cy="18" r="1.4" fill="currentColor"/><circle cx="8" cy="9" r="1.4" fill="currentColor"/><circle cx="14" cy="14" r="1.4" fill="currentColor"/><circle cx="19" cy="5" r="1.4" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/><polygon points="12,5 14,12 12,19 10,12" fill="currentColor" stroke="none"/>
+  </symbol>
+  <symbol id="ic-group" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="8" cy="9" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M2 20c.7-3 3.5-5 6-5s5.3 2 6 5"/><path d="M14 19c.5-2 2.2-3.5 4.5-3.5"/>
+  </symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 5c3-1 6-1 8 0v15c-2-1-5-1-8 0z"/><path d="M20 5c-3-1-6-1-8 0v15c2-1 5-1 8 0z"/>
+  </symbol>
+  <symbol id="ic-telescope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 8l10-3 7 2-3 10-10 3z"/><line x1="10" y1="13" x2="14" y2="16"/><line x1="10" y1="13" x2="7" y2="20"/><line x1="14" y1="16" x2="17" y2="20"/>
+  </symbol>
+  <symbol id="ic-researcher" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="3.5"/><path d="M4 20c1-4 5-6 8-6s7 2 8 6"/>
+  </symbol>
+  <symbol id="ic-project" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 6h6l2 2h10v11H3z"/>
+  </symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </symbol>
+  <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+  </symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </symbol>
+</defs>
+</svg>
 
-<!-- ════════════════════════════════════
-     LOGIN
-════════════════════════════════════ -->
-<div id="login-screen" role="dialog" aria-modal="true" aria-labelledby="login-title">
-  <div class="login-card">
-    <span role="img" aria-label="Telescópio" style="font-size:3rem;display:block;text-align:center;margin-bottom:.5rem">🔭</span>
-    <h1 id="login-title" style="font-family:'Cinzel',serif;font-size:1.375rem;letter-spacing:.2em;color:var(--obs-accent);font-weight:600;text-align:center">SIGSN</h1>
-    <p style="font-size:.6875rem;color:var(--obs-muted);letter-spacing:.15em;text-align:center;margin-top:.25rem;margin-bottom:2rem">OBSERVATÓRIO SIDEREUS NUNCIUS</p>
+<!-- ═══ TOAST ═══ -->
+<div id="toast"></div>
 
-    <form id="login-form" novalidate onsubmit="event.preventDefault();doLogin()">
-      <div class="mb-3">
-        <label for="login-user" class="form-label">Login</label>
-        <input type="text" id="login-user" class="form-control" placeholder="seu.login" autocomplete="username" value="coordenador" required>
-      </div>
-      <div class="mb-4">
-        <label for="login-pass" class="form-label">Senha</label>
-        <input type="password" id="login-pass" class="form-control" placeholder="••••••••" autocomplete="current-password" value="123456" required>
-      </div>
-      <div id="login-error" class="d-none mb-3 p-2 rounded" role="alert"
-        style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--obs-danger);font-size:.8125rem"></div>
-      <button type="submit" class="btn btn-obs btn-obs-primary w-100 py-2">
-        <i class="bi bi-rocket-takeoff me-2"></i>Entrar no Sistema
-      </button>
-    </form>
-    <p class="text-center mt-3" style="font-size:.6875rem;color:var(--obs-dim)">
-      Dica: <strong style="color:var(--obs-muted)">coordenador / 123456</strong> ou <strong style="color:var(--obs-muted)">pesquisador / 123456</strong>
-    </p>
-  </div>
-</div>
+<!-- ═══ APP ═══ -->
+<div class="app">
 
-<!-- ════════════════════════════════════
-     APP
-════════════════════════════════════ -->
-<div id="app" class="d-none">
-
-  <!-- Sidebar -->
-  <nav id="sidebar" aria-label="Navegação principal">
+  <!-- sidebar -->
+  <nav id="sidebar">
     <div class="sidebar-brand">
-      <span class="brand-icon" role="img" aria-label="Telescópio">🔭</span>
-      <h1>SIGSN</h1>
-      <small>Sidereus Nuncius</small>
+      <div class="mk">
+        <svg viewBox="0 0 120 120"><use href="#mark-seal"/></svg>
+        <span class="wm">SIGSN</span>
+        <span class="dot"></span>
+      </div>
+      <small>Observatório Sidereus Nuncius</small>
     </div>
-    <div class="sidebar-user">
-      <div class="user-avatar" id="side-avatar" aria-hidden="true">C</div>
-      <div>
-        <div class="user-name" id="side-name">Usuário</div>
-        <span class="user-role" id="side-role">PERFIL</span>
+
+    <div class="sidebar-nav">
+      <div class="nav-section">Sistema</div>
+      <div class="nav-link active" data-entity="home">
+        <svg><use href="#ic-home"/></svg>
+        <span>Início</span>
+      </div>
+
+      <div class="nav-section">Visitas</div>
+      <div class="nav-link" data-entity="agendamentos">
+        <svg><use href="#ic-schedule"/></svg>
+        <span>Agendamentos</span>
+      </div>
+      <div class="nav-link" data-entity="caravanas">
+        <svg><use href="#ic-caravan"/></svg>
+        <span>Caravanas</span>
+      </div>
+      <div class="nav-link" data-entity="guias">
+        <svg><use href="#ic-book"/></svg>
+        <span>Guias</span>
+      </div>
+
+      <div class="nav-section">Pesquisa</div>
+      <div class="nav-link" data-entity="projetos">
+        <svg><use href="#ic-project"/></svg>
+        <span>Projetos</span>
+      </div>
+      <div class="nav-link" data-entity="observacoes">
+        <svg><use href="#ic-telescope"/></svg>
+        <span>Observações</span>
+      </div>
+      <div class="nav-link" data-entity="grupos-de-pesquisa">
+        <svg><use href="#ic-group"/></svg>
+        <span>Grupos de Pesquisa</span>
+      </div>
+      <div class="nav-link" data-entity="pesquisadores">
+        <svg><use href="#ic-researcher"/></svg>
+        <span>Pesquisadores</span>
+      </div>
+
+      <div class="nav-section">Catálogo</div>
+      <div class="nav-link" data-entity="coordenadores">
+        <svg><use href="#ic-compass"/></svg>
+        <span>Coordenadores</span>
+      </div>
+      <div class="nav-link" data-entity="constelacoes">
+        <svg><use href="#ic-constellation"/></svg>
+        <span>Constelações</span>
       </div>
     </div>
-    <div class="sidebar-nav" id="sidebar-nav"></div>
-    <div class="sidebar-footer">
-      <button class="btn btn-obs btn-obs-secondary w-100 btn-sm" onclick="doLogout()">
-        <i class="bi bi-box-arrow-left me-2"></i>Sair do Sistema
-      </button>
+
+    <div class="sidebar-foot">
+      Galileu Galilei, prop.<br>
+      R. Pedro Américo, 02<br>
+      SIGSN · v 2.0 · MMXXVI
     </div>
   </nav>
 
-  <!-- Main -->
-  <div id="app-wrapper">
-    <main id="main-content" class="p-4" role="main" aria-live="polite"></main>
+  <!-- main -->
+  <div id="main">
+    <div class="topbar">
+      <div class="breadcrumb" id="breadcrumb">
+        Observatório <span>·</span> Início
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-ghost" id="btn-refresh" title="Recarregar">
+          <svg width="12" height="12"><use href="#ic-refresh"/></svg>
+          Recarregar
+        </button>
+        <button class="btn-primary" id="btn-new" style="display:none">
+          <svg width="12" height="12"><use href="#ic-plus"/></svg>
+          Novo registro
+        </button>
+      </div>
+    </div>
+
+    <div id="content">
+      <!-- rendered by JS -->
+    </div>
   </div>
 </div>
 
-<!-- Toast container -->
-<div id="toast-container" aria-live="polite" aria-atomic="true"
-  style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.625rem"></div>
+<!-- ═══ MODAL ═══ -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" id="modal">
+    <div class="modal-head">
+      <div class="eyebrow" id="modal-eyebrow">Registro</div>
+      <h2 id="modal-title">Novo</h2>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div id="modal-form"></div>
+      <div id="modal-errors" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" id="btn-cancel">Cancelar</button>
+      <button class="btn-primary" id="btn-save">Salvar</button>
+    </div>
+  </div>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ═══ DELETE MODAL ═══ -->
+<div class="modal-backdrop" id="delete-backdrop">
+  <div class="modal" id="delete-modal" style="width:420px">
+    <div class="modal-head">
+      <div class="eyebrow">Confirmar exclusão</div>
+      <h2><em>Remover</em> registro</h2>
+    </div>
+    <div class="modal-body">
+      <div id="delete-msg" class="confirm-msg"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" id="btn-delete-cancel">Cancelar</button>
+      <button class="btn-danger" id="btn-delete-confirm">Confirmar exclusão</button>
+    </div>
+  </div>
+</div>
+
 <script>
-'use strict';
+const API = 'http://localhost:3333';
 
-// ════════════════════════════════════════════════════════
-// STARFIELD
-// ════════════════════════════════════════════════════════
-(function () {
-  const c = document.getElementById('stars-canvas');
-  const ctx = c.getContext('2d');
-  let stars = [];
-  function resize() {
-    c.width = innerWidth; c.height = innerHeight;
-    stars = Array.from({ length: 220 }, () => ({
-      x: Math.random() * c.width, y: Math.random() * c.height,
-      r: Math.random() * 1.4 + 0.2,
-      a: Math.random(), da: (Math.random() - .5) * .005,
-    }));
-  }
-  function draw() {
-    ctx.clearRect(0, 0, c.width, c.height);
-    for (const s of stars) {
-      s.a = Math.max(.05, Math.min(1, s.a + s.da));
-      if (s.a <= .05 || s.a >= 1) s.da *= -1;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(200,220,255,${s.a})`; ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  }
-  window.addEventListener('resize', resize);
-  resize(); draw();
-})();
+// ─── entity definitions ───────────────────────────────────────────────────
 
-// ════════════════════════════════════════════════════════
-// STATE  —  field names match backend models exactly
-// ════════════════════════════════════════════════════════
-const state = {
-  coordenadores: [
-    { id:1, nome:'Fernanda Souza', cpf:'444.555.666-77', telefone:'(28)99444-4444', email:'fernanda@obs.br', especialidade:'Gestão Científica', login:'coordenador', senha:'123456', status:true, funcao:'coordenador' },
-    { id:2, nome:'Roberto Neves',  cpf:'555.666.777-88', telefone:'(28)99555-5555', email:'roberto@obs.br',  especialidade:'Astrometria',       login:'roberto',     senha:'123456', status:true, funcao:'coordenador' },
-  ],
-  pesquisadores: [
-    { id:1, nome:'Emanuelly Borges', cpf:'666.777.888-99', telefone:'(28)99666-6666', email:'emanuelly@obs.br', especialidade:'Astronomia',  login:'pesquisador', senha:'123456', status:true, funcao:'pesquisador' },
-    { id:2, nome:'Matheus Gimenes',  cpf:'777.888.999-00', telefone:'(28)99777-7777', email:'matheus@obs.br',   especialidade:'Astrofísica', login:'matheus',     senha:'123456', status:true, funcao:'pesquisador' },
-    { id:3, nome:'Larissa Paganini', cpf:'888.999.000-11', telefone:'(28)99888-8888', email:'larissa@obs.br',   especialidade:'Cosmologia',  login:'larissa',     senha:'123456', status:true, funcao:'pesquisador' },
-  ],
-  guias: [
-    { id:1, nome:'João Silva',  cpf:'111.222.333-44', telefone:'(28)99111-1111', email:'joao@obs.br',   especialidade:'Astronomia Observacional', login:'joao',   senha:'123456', status:true,  funcao:'guia', disponibilidade:'MANHA' },
-    { id:2, nome:'Ana Costa',   cpf:'222.333.444-55', telefone:'(28)99222-2222', email:'ana@obs.br',    especialidade:'Astrofísica',              login:'ana',    senha:'123456', status:true,  funcao:'guia', disponibilidade:'NOITE' },
-    { id:3, nome:'Carlos Lima', cpf:'333.444.555-66', telefone:'(28)99333-3333', email:'carlos@obs.br', especialidade:'Cosmologia',               login:'carlos', senha:'123456', status:false, funcao:'guia', disponibilidade:'TARDE' },
-  ],
-  caravanas: [
-    { id:1, nome:'Escola Alfa',   tipoCaravana:'Escolar',       instituicao:'Colégio Alfa',  responsavel:'Maria Silva',   telefone:'(28)99999-1111', quantidadeVisitantes:40, observacoes:'Turma do 5º ano' },
-    { id:2, nome:'Turma 2026',    tipoCaravana:'Universitária', instituicao:'Univ. Federal', responsavel:'Prof. Carlos',  telefone:'(28)99999-2222', quantidadeVisitantes:35, observacoes:'' },
-    { id:3, nome:'Grupo Solar',   tipoCaravana:'Turística',     instituicao:'Turismo RJ',    responsavel:'Ana Lima',      telefone:'(28)99999-3333', quantidadeVisitantes:28, observacoes:'' },
-    { id:4, nome:'Estudantes TI', tipoCaravana:'Institucional', instituicao:'IFES',          responsavel:'Mariana Souza', telefone:'(28)99999-4444', quantidadeVisitantes:45, observacoes:'Visita técnica' },
-  ],
-  constelacoes: [
-    { id:1, nome:'Orion',           hemisferio:'Norte', periodoVisibilidade:'Novembro – Fevereiro', principaisEstrelas:'Betelgeuse, Rigel, Bellatrix',  descricao:'Uma das constelações mais reconhecíveis do céu invernal.', curiosidades:'Mencionada em Homero e na Bíblia.' },
-    { id:2, nome:'Ursa Maior',      hemisferio:'Norte', periodoVisibilidade:'Todo o ano',           principaisEstrelas:'Dubhe, Merak, Phecda',          descricao:'Contém o Carro, asterismo mais famoso do hemisfério norte.', curiosidades:'Guiou navegadores por séculos.' },
-    { id:3, nome:'Cruzeiro do Sul', hemisferio:'Sul',   periodoVisibilidade:'Março – Junho',         principaisEstrelas:'Acrux, Mimosa, Gacrux',         descricao:'Símbolo do hemisfério sul, presente em várias bandeiras.', curiosidades:'Aparece na bandeira do Brasil.' },
-    { id:4, nome:'Libra',           hemisferio:'Sul',   periodoVisibilidade:'Maio – Agosto',          principaisEstrelas:'Zubenelgenubi, Zubeneschamali', descricao:'Constelação do zodíaco associada à balança.', curiosidades:'Única sem figura animal.' },
-  ],
-  gruposPesquisa: [
-    { id:1, nome:'PING', areaDePesquisa:'TI', dataCriacao:'2023-01-15', descricao:'Grupo de pesquisa em inteligência espacial', status:true,  pesquisadores:[1,2] },
-    { id:2, nome:'LEDS', areaDePesquisa:'TI', dataCriacao:'2023-06-20', descricao:'Laboratório de exploração de dados siderais',  status:true,  pesquisadores:[2,3] },
-  ],
-  projetos: [
-    { id:1, titulo:'LCA', dataInicio:'2024-01-01', dataTermino:'2026-12-31', grupoDePesquisaId:1, coordenadorId:1, areaDePesquisa:'Astronomia Observacional', status:'ativo' },
-    { id:2, titulo:'CGA', dataInicio:'2024-03-01', dataTermino:'2026-06-30', grupoDePesquisaId:2, coordenadorId:2, areaDePesquisa:'Galáxias',                  status:'ativo' },
-  ],
-  agendamentos: [
-    { id:1, dataVisita:'2026-04-20T09:00:00', caravanaId:1, guiaId:1, valorVisita:800,  observacoes:'' },
-    { id:2, dataVisita:'2026-04-21T14:30:00', caravanaId:2, guiaId:2, valorVisita:1200, observacoes:'' },
-    { id:3, dataVisita:'2026-04-22T10:00:00', caravanaId:3, guiaId:1, valorVisita:600,  observacoes:'' },
-    { id:4, dataVisita:'2026-04-23T20:00:00', caravanaId:4, guiaId:2, valorVisita:1500, observacoes:'Sessão especial telescópio' },
-  ],
-  observacoes: [
-    { id:1, dataObservacao:'2025-12-13', projetoId:1, constelacaoId:1, descricao:'Observação de Betelgeuse com variação de brilho notável.',  instrumentoUtilizado:'Telescópio refletor', versaoObservacao:1 },
-    { id:2, dataObservacao:'2025-12-14', projetoId:1, constelacaoId:1, descricao:'Acompanhamento da variação de Betelgeuse.',                 instrumentoUtilizado:'Telescópio refrator', versaoObservacao:2 },
-    { id:3, dataObservacao:'2025-12-20', projetoId:2, constelacaoId:2, descricao:'Mapeamento da Ursa Maior.',                                  instrumentoUtilizado:'Telescópio refletor', versaoObservacao:1 },
-    { id:4, dataObservacao:'2025-12-25', projetoId:1, constelacaoId:3, descricao:'Observação do Cruzeiro do Sul.',                             instrumentoUtilizado:'Telescópio refrator', versaoObservacao:3 },
-  ],
-  _next: { coordenadores:3, pesquisadores:4, guias:4, caravanas:5, constelacoes:5, gruposPesquisa:3, projetos:3, agendamentos:5, observacoes:5 },
-};
-
-// ════════════════════════════════════════════════════════
-// TURNO LOGIC  (Manhã 6-12h · Tarde 12-18h · Noite 18-6h)
-// ════════════════════════════════════════════════════════
-const TURNOS = {
-  MANHA: { label:'Manhã',  badge:'badge-primary' },
-  TARDE: { label:'Tarde',  badge:'badge-gold'    },
-  NOITE: { label:'Noite',  badge:'badge-purple'  },
-};
-function getTurno(dataVisita) {
-  const h = new Date(dataVisita).getHours();
-  if (h >= 6 && h < 12) return 'MANHA';
-  if (h >= 12 && h < 18) return 'TARDE';
-  return 'NOITE';
-}
-
-// ════════════════════════════════════════════════════════
-// HELPERS
-// ════════════════════════════════════════════════════════
-const fmt = (d) => { if (!d) return '–'; const p = String(d).slice(0,10).split('-'); return p.length===3 ? `${p[2]}/${p[1]}/${p[0]}` : d; };
-const fmtDt = (dt) => { if (!dt) return '–'; const d = new Date(dt); const h = String(d.getHours()).padStart(2,'0'); const m = String(d.getMinutes()).padStart(2,'0'); return `${fmt(dt.slice(0,10))} ${h}:${m}`; };
-const fmtR$ = (v) => v != null ? `R$ ${Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2})}` : '–';
-const getById = (arr, id) => arr.find(x => x.id === id) ?? null;
-const getName = (arr, id) => { const o = getById(arr, id); return o ? (o.nome ?? o.titulo ?? '–') : '–'; };
-const nextId  = (key) => state._next[key]++;
-const fv      = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
-const statusBadge = (v) => v ? '<span class="badge-obs badge-success">Ativo</span>' : '<span class="badge-obs badge-danger">Inativo</span>';
-const projetoBadge = (s) => {
-  const m = { ativo:'badge-success', concluido:'badge-primary', suspenso:'badge-danger' };
-  const l = { ativo:'Ativo', concluido:'Concluído', suspenso:'Suspenso' };
-  return `<span class="badge-obs ${m[s]??'badge-danger'}">${l[s]??s}</span>`;
-};
-
-// ════════════════════════════════════════════════════════
-// TOAST
-// ════════════════════════════════════════════════════════
-function toast(msg, type='info') {
-  const icons = { success:'check-circle', error:'x-circle', info:'info-circle' };
-  const colors = { success:'var(--obs-success)', error:'var(--obs-danger)', info:'var(--obs-accent)' };
-  const el = document.createElement('div');
-  el.className = `obs-toast toast-${type}`;
-  el.setAttribute('role','alert');
-  el.innerHTML = `<i class="bi bi-${icons[type]??'info-circle'} me-2" style="color:${colors[type]}"></i>${msg}`;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => { el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),300); }, 3200);
-}
-
-// ════════════════════════════════════════════════════════
-// AUTH
-// ════════════════════════════════════════════════════════
-let currentUser = null;
-let currentPage = 'dashboard';
-
-function doLogin() {
-  const u = document.getElementById('login-user').value.trim();
-  const p = document.getElementById('login-pass').value.trim();
-  const errEl = document.getElementById('login-error');
-
-  const all = [
-    ...state.coordenadores.map(x => ({...x, tipo:'coordenador'})),
-    ...state.pesquisadores.map(x => ({...x, tipo:'pesquisador'})),
-    ...state.guias.map(x => ({...x, tipo:'guia'})),
-  ];
-  const user = all.find(x => x.login === u && x.senha === p && x.status === true);
-
-  if (!user) {
-    errEl.textContent = 'Login ou senha inválidos, ou usuário inativo.';
-    errEl.classList.remove('d-none');
-    return;
-  }
-  errEl.classList.add('d-none');
-  currentUser = user;
-  document.getElementById('side-name').textContent = user.nome.split(' ')[0];
-  document.getElementById('side-role').textContent = user.tipo.toUpperCase();
-  document.getElementById('side-avatar').textContent = user.nome.charAt(0).toUpperCase();
-  document.getElementById('login-screen').classList.add('d-none');
-  document.getElementById('app').classList.remove('d-none');
-  buildNav();
-  navigate('dashboard');
-}
-
-function doLogout() {
-  document.getElementById('login-screen').classList.remove('d-none');
-  document.getElementById('app').classList.add('d-none');
-  currentUser = null; currentPage = 'dashboard';
-}
-
-// ════════════════════════════════════════════════════════
-// NAVIGATION
-// ════════════════════════════════════════════════════════
-const NAV_CONFIG = {
-  coordenador: [
-    { section:'Principal' },
-    { id:'dashboard',      icon:'bi-grid-1x2-fill',    label:'Dashboard'          },
-    { id:'agendamentos',   icon:'bi-calendar-check',   label:'Agendamentos'       },
-    { section:'Cadastros' },
-    { id:'caravanas',      icon:'bi-bus-front-fill',    label:'Caravanas'          },
-    { id:'guias',          icon:'bi-person-badge-fill', label:'Guias / Monitores'  },
-    { id:'gruposPesquisa', icon:'bi-diagram-3-fill',    label:'Grupos de Pesquisa' },
-    { id:'projetos',       icon:'bi-folder2-open',      label:'Projetos'           },
-    { id:'constelacoes',   icon:'bi-stars',             label:'Constelações'       },
-    { section:'Usuários' },
-    { id:'coordenadores',  icon:'bi-mortarboard-fill',  label:'Coordenadores'      },
-    { id:'pesquisadores',  icon:'bi-person-gear',        label:'Pesquisadores'      },
-  ],
-  pesquisador: [
-    { section:'Principal' },
-    { id:'dashboard',     icon:'bi-grid-1x2-fill', label:'Dashboard'    },
-    { section:'Atividades' },
-    { id:'observacoes',   icon:'bi-telescope',     label:'Observações'  },
-    { section:'Consultas' },
-    { id:'constelacoes',  icon:'bi-stars',         label:'Constelações' },
-    { id:'projetos',      icon:'bi-folder2-open',  label:'Projetos'     },
-  ],
-  guia: [
-    { section:'Principal' },
-    { id:'dashboard',     icon:'bi-grid-1x2-fill',   label:'Dashboard'    },
-    { section:'Atividades' },
-    { id:'agendamentos',  icon:'bi-calendar-check',  label:'Agendamentos' },
-    { id:'caravanas',     icon:'bi-bus-front-fill',   label:'Caravanas'    },
-  ],
-};
-
-function buildNav() {
-  const items = NAV_CONFIG[currentUser?.tipo] ?? [];
-  document.getElementById('sidebar-nav').innerHTML = items.map(item => {
-    if (item.section) return `<p class="nav-section-label">${item.section}</p>`;
-    return `<button class="sidebar-link" id="nav-${item.id}" onclick="navigate('${item.id}')">
-      <i class="bi ${item.icon} link-icon" aria-hidden="true"></i>${item.label}
-    </button>`;
-  }).join('');
-}
-
-function navigate(page) {
-  currentPage = page;
-  document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
-  document.getElementById('nav-' + page)?.classList.add('active');
-
-  const pages = {
-    dashboard:      renderDashboard,
-    agendamentos:   () => renderCRUD('agendamentos'),
-    caravanas:      () => renderCRUD('caravanas'),
-    guias:          () => renderCRUD('guias'),
-    constelacoes:   () => renderCRUD('constelacoes'),
-    coordenadores:  () => renderCRUD('coordenadores'),
-    pesquisadores:  () => renderCRUD('pesquisadores'),
-    gruposPesquisa: () => renderCRUD('gruposPesquisa'),
-    projetos:       () => renderCRUD('projetos'),
-    observacoes:    () => renderCRUD('observacoes'),
-  };
-
-  const mc = document.getElementById('main-content');
-  mc.innerHTML = pages[page]
-    ? `<section class="page-enter">${pages[page]()}</section>`
-    : `<section class="page-enter"><div class="coming-soon"><i class="bi bi-tools"></i><p style="color:var(--obs-muted)">Página em desenvolvimento</p></div></section>`;
-  mc.scrollTop = 0;
-}
-
-// ════════════════════════════════════════════════════════
-// DASHBOARD
-// ════════════════════════════════════════════════════════
-function renderDashboard() {
-  const totalVisitantes = state.agendamentos.reduce((s,a) => {
-    const c = getById(state.caravanas, a.caravanaId);
-    return s + (c?.quantidadeVisitantes ?? 0);
-  }, 0);
-
-  const proximos = [...state.agendamentos]
-    .sort((a,b) => new Date(a.dataVisita) - new Date(b.dataVisita))
-    .slice(0, 4);
-
-  const recentObs = [...state.observacoes]
-    .sort((a,b) => b.dataObservacao.localeCompare(a.dataObservacao))
-    .slice(0, 5);
-
-  const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-
-  const stats = [
-    { label:'Agendamentos',  value:state.agendamentos.length,                              sub:'Visitas cadastradas',     icon:'bi-calendar-check',  color:'var(--obs-accent)',  glow:'rgba(79,140,255,.2)'  },
-    { label:'Visitantes',    value:totalVisitantes,                                         sub:'Total acumulado',         icon:'bi-people-fill',      color:'var(--obs-success)', glow:'rgba(52,211,153,.2)'  },
-    { label:'Observações',   value:state.observacoes.length,                               sub:'Registros científicos',   icon:'bi-telescope',        color:'var(--obs-purple)',  glow:'rgba(167,139,250,.2)' },
-    { label:'Projetos Ativos',value:state.projetos.filter(p=>p.status==='ativo').length,   sub:'Em andamento',            icon:'bi-folder2-open',     color:'var(--obs-gold)',    glow:'rgba(245,200,66,.2)'  },
-  ];
-
-  return `
-  <header class="page-header">
-    <div>
-      <h2 class="page-heading"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</h2>
-      <p class="page-sub">Visão geral do Observatório Sidereus Nuncius</p>
-    </div>
-  </header>
-
-  <div class="row g-3 mb-4">
-    ${stats.map(s => `
-    <div class="col-sm-6 col-xl-3">
-      <article class="stat-card" style="--card-glow:${s.glow}">
-        <span class="stat-label">${s.label}</span>
-        <p class="stat-value" style="color:${s.color}">${s.value}</p>
-        <span class="stat-description">${s.sub}</span>
-        <i class="bi ${s.icon} stat-icon" aria-hidden="true"></i>
-      </article>
-    </div>`).join('')}
-  </div>
-
-  <div class="row g-3 mb-3">
-    <div class="col-xl-7">
-      <article class="obs-panel h-100">
-        <header class="obs-panel-header">
-          <h3 class="obs-panel-title"><i class="bi bi-calendar-event me-2" style="color:var(--obs-accent)"></i>Próximas Visitas</h3>
-          <button class="btn btn-obs btn-obs-secondary btn-sm" onclick="navigate('agendamentos')">Ver todas</button>
-        </header>
-        <ul class="list-unstyled mb-0" aria-label="Próximas visitas agendadas">
-          ${proximos.map(a => {
-            const car = getById(state.caravanas, a.caravanaId);
-            const gu  = getById(state.guias, a.guiaId);
-            const tk  = TURNOS[getTurno(a.dataVisita)];
-            const d   = a.dataVisita.slice(0,10).split('-');
-            return `<li style="display:flex;align-items:center;gap:1rem;padding:.875rem 1.375rem;border-bottom:1px solid rgba(100,140,255,.07)">
-              <div style="text-align:center;min-width:3.25rem;background:rgba(79,140,255,.08);border-radius:.5rem;padding:.5rem .375rem;flex-shrink:0">
-                <span style="font-family:'Cinzel',serif;font-size:1.25rem;font-weight:700;color:var(--obs-accent);line-height:1;display:block">${d[2]}</span>
-                <span style="font-size:.5625rem;color:var(--obs-dim);letter-spacing:.1em;text-transform:uppercase">${MESES[parseInt(d[1])-1]}</span>
-              </div>
-              <div style="flex:1;min-width:0">
-                <strong style="font-size:.875rem;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${car?.nome??'–'}</strong>
-                <span style="font-size:.75rem;color:var(--obs-muted)">${car?.instituicao??'–'} · ${gu?.nome??'–'}</span>
-              </div>
-              <div style="text-align:right;flex-shrink:0">
-                <span class="badge-obs ${tk.badge}">${tk.label}</span>
-                <div style="font-size:.6875rem;color:var(--obs-dim);margin-top:.25rem">${a.dataVisita.slice(11,16)}h</div>
-              </div>
-            </li>`;
-          }).join('')}
-        </ul>
-      </article>
-    </div>
-
-    <div class="col-xl-5">
-      <article class="obs-panel h-100">
-        <header class="obs-panel-header">
-          <h3 class="obs-panel-title"><i class="bi bi-bar-chart-fill me-2" style="color:var(--obs-gold)"></i>Resumo</h3>
-        </header>
-        <ul class="list-unstyled mb-0">
-          ${[
-            ['bi-bus-front-fill',   'Caravanas',          state.caravanas.length,       'var(--obs-accent)'],
-            ['bi-person-badge-fill','Guias / Monitores',  state.guias.length,            'var(--obs-success)'],
-            ['bi-stars',            'Constelações',       state.constelacoes.length,     'var(--obs-purple)'],
-            ['bi-diagram-3-fill',   'Grupos de Pesquisa', state.gruposPesquisa.length,   'var(--obs-gold)'],
-            ['bi-person-gear',      'Pesquisadores',      state.pesquisadores.length,    'var(--obs-cyan)'],
-            ['bi-mortarboard-fill', 'Coordenadores',      state.coordenadores.length,    'var(--obs-muted)'],
-          ].map(([icon,label,val,color]) => `
-          <li style="display:flex;align-items:center;gap:.75rem;padding:.5625rem 1.375rem;border-bottom:1px solid rgba(100,140,255,.07)">
-            <i class="bi ${icon}" style="color:${color};font-size:1.0625rem;width:1.25rem;text-align:center" aria-hidden="true"></i>
-            <span style="flex:1;font-size:.8125rem;color:var(--obs-muted)">${label}</span>
-            <strong style="color:${color};font-size:.9375rem">${val}</strong>
-          </li>`).join('')}
-        </ul>
-      </article>
-    </div>
-  </div>
-
-  <div class="row g-3">
-    <div class="col-12">
-      <article class="obs-panel">
-        <header class="obs-panel-header">
-          <h3 class="obs-panel-title"><i class="bi bi-telescope me-2" style="color:var(--obs-purple)"></i>Observações Recentes</h3>
-          <button class="btn btn-obs btn-obs-secondary btn-sm" onclick="navigate('observacoes')">Ver todas</button>
-        </header>
-        <div style="overflow-x:auto">
-          <table class="obs-table" aria-label="Observações recentes">
-            <thead><tr><th scope="col">Data</th><th scope="col">Constelação</th><th scope="col">Projeto</th><th scope="col">Instrumento</th><th scope="col">Versão</th></tr></thead>
-            <tbody>
-              ${recentObs.map(o => {
-                const con = getById(state.constelacoes, o.constelacaoId);
-                const pr  = getById(state.projetos, o.projetoId);
-                return `<tr>
-                  <td>${fmt(o.dataObservacao)}</td>
-                  <td><strong style="color:var(--obs-purple)">${con?.nome??'–'}</strong></td>
-                  <td>${pr?.titulo??'–'}</td>
-                  <td>${o.instrumentoUtilizado}</td>
-                  <td><span class="badge-obs badge-gold">v${o.versaoObservacao}</span></td>
-                </tr>`;
-              }).join('')}
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </div>
-  </div>`;
-}
-
-// ════════════════════════════════════════════════════════
-// CRUD CONFIG  —  todos os campos seguem o backend
-// ════════════════════════════════════════════════════════
-const CRUD = {
-
-  caravanas: {
-    title:'Caravanas', icon:'bi-bus-front-fill', key:'caravanas',
-    cols:[
-      { h:'Nome',         f:r => r.nome },
-      { h:'Tipo',         f:r => `<span class="badge-obs badge-primary">${r.tipoCaravana}</span>` },
-      { h:'Instituição',  f:r => r.instituicao },
-      { h:'Responsável',  f:r => r.responsavel },
-      { h:'Visitantes',   f:r => r.quantidadeVisitantes },
-    ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label for="f-nome" class="form-label">Nome da Caravana *</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}" placeholder="Ex: Escola Alfa">
-        </div>
-        <div class="col-md-4">
-          <label for="f-tipoCaravana" class="form-label">Tipo *</label>
-          <select id="f-tipoCaravana" class="form-select">
-            ${['Escolar','Universitária','Turística','Institucional'].map(t=>`<option ${r.tipoCaravana===t?'selected':''}>${t}</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-instituicao" class="form-label">Instituição / Org. Responsável *</label>
-          <input id="f-instituicao" class="form-control" value="${r.instituicao??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-responsavel" class="form-label">Responsável pela Caravana *</label>
-          <input id="f-responsavel" class="form-control" value="${r.responsavel??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-telefone" class="form-label">Telefone de Contato *</label>
-          <input id="f-telefone" class="form-control" value="${r.telefone??''}" placeholder="(28) 99999-9999">
-        </div>
-        <div class="col-md-6">
-          <label for="f-quantidadeVisitantes" class="form-label">Qtd. Visitantes * (1 – 50)</label>
-          <input id="f-quantidadeVisitantes" type="number" min="1" max="50" class="form-control" value="${r.quantidadeVisitantes??''}">
-        </div>
-        <div class="col-12">
-          <label for="f-observacoes" class="form-label">Observações</label>
-          <textarea id="f-observacoes" class="form-control">${r.observacoes??''}</textarea>
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:                 fv('f-nome'),
-      tipoCaravana:         fv('f-tipoCaravana'),
-      instituicao:          fv('f-instituicao'),
-      responsavel:          fv('f-responsavel'),
-      telefone:             fv('f-telefone'),
-      quantidadeVisitantes: parseInt(fv('f-quantidadeVisitantes'))||0,
-      observacoes:          fv('f-observacoes'),
-    }),
-    validate:(d) => {
-      if (!d.nome||!d.tipoCaravana||!d.instituicao||!d.responsavel||!d.telefone) return 'Preencha todos os campos obrigatórios.';
-      if (d.quantidadeVisitantes < 1 || d.quantidadeVisitantes > 50) return 'Quantidade de visitantes deve ser entre 1 e 50.';
-      return null;
-    },
-  },
-
-  guias: {
-    title:'Guias / Monitores', icon:'bi-person-badge-fill', key:'guias',
-    cols:[
-      { h:'Nome',            f:r => r.nome },
-      { h:'CPF',             f:r => r.cpf },
-      { h:'E-mail',          f:r => r.email },
-      { h:'Disponibilidade', f:r => { const t=TURNOS[r.disponibilidade]; return t?`<span class="badge-obs ${t.badge}">${t.label}</span>`:r.disponibilidade; }},
-      { h:'Status',          f:r => statusBadge(r.status) },
-    ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-nome" class="form-label">Nome Completo *</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-cpf" class="form-label">CPF *</label>
-          <input id="f-cpf" class="form-control" value="${r.cpf??''}" placeholder="000.000.000-00">
-        </div>
-        <div class="col-md-6">
-          <label for="f-telefone" class="form-label">Telefone *</label>
-          <input id="f-telefone" class="form-control" value="${r.telefone??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-email" class="form-label">E-mail *</label>
-          <input id="f-email" type="email" class="form-control" value="${r.email??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-especialidade" class="form-label">Especialidade *</label>
-          <input id="f-especialidade" class="form-control" value="${r.especialidade??''}">
-        </div>
-        <div class="col-md-3">
-          <label for="f-disponibilidade" class="form-label">Disponibilidade *</label>
-          <select id="f-disponibilidade" class="form-select">
-            <option value="MANHA" ${r.disponibilidade==='MANHA'?'selected':''}>Manhã (06h–12h)</option>
-            <option value="TARDE" ${r.disponibilidade==='TARDE'?'selected':''}>Tarde (12h–18h)</option>
-            <option value="NOITE" ${r.disponibilidade==='NOITE'?'selected':''}>Noite (18h–06h)</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label for="f-status" class="form-label">Status *</label>
-          <select id="f-status" class="form-select">
-            <option value="true"  ${r.status===true?'selected':''}>Ativo</option>
-            <option value="false" ${r.status===false?'selected':''}>Inativo</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-login" class="form-label">Login *</label>
-          <input id="f-login" class="form-control" value="${r.login??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-senha" class="form-label">Senha *</label>
-          <input id="f-senha" type="password" class="form-control" value="${r.senha??''}">
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:fv('f-nome'), cpf:fv('f-cpf'), telefone:fv('f-telefone'), email:fv('f-email'),
-      especialidade:fv('f-especialidade'),
-      disponibilidade:fv('f-disponibilidade'),
-      status:fv('f-status')==='true',
-      login:fv('f-login'), senha:fv('f-senha'), funcao:'guia',
-    }),
-    validate:(d,id) => {
-      if (!d.nome||!d.cpf||!d.telefone||!d.email||!d.especialidade||!d.login||!d.senha) return 'Preencha todos os campos obrigatórios.';
-      if (state.guias.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado.';
-      return null;
-    },
-  },
+const ENTITIES = {
+  home: { label: 'Início', icon: 'ic-home' },
 
   agendamentos: {
-    title:'Agendamentos', icon:'bi-calendar-check', key:'agendamentos',
-    cols:[
-      { h:'Data / Hora', f:r => `<strong>${fmtDt(r.dataVisita)}</strong>` },
-      { h:'Turno',       f:r => { const t=TURNOS[getTurno(r.dataVisita)]; return `<span class="badge-obs ${t.badge}">${t.label}</span>`; }},
-      { h:'Caravana',    f:r => getName(state.caravanas, r.caravanaId) },
-      { h:'Guia',        f:r => getName(state.guias, r.guiaId) },
-      { h:'Valor',       f:r => fmtR$(r.valorVisita) },
+    label: 'Agendamentos', icon: 'ic-schedule',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'dataVisita', label: 'Data da Visita', fmt: (v) => v ? v.replace('T',' ').slice(0,16) : '—' },
+      { key: 'valorVisita', label: 'Valor', fmt: (v) => v != null ? `R$ ${Number(v).toFixed(2)}` : '—' },
+      { key: r => r.guia?.nome || r.guiaId, label: 'Guia' },
+      { key: r => r.caravana?.nome || r.caravanaId, label: 'Caravana' },
+      { key: r => r.caravana?.tipoCaravana || '—', label: 'Tipo' },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-dataVisita" class="form-label">Data e Hora da Visita * <small style="text-transform:none;letter-spacing:0">(define o turno automaticamente)</small></label>
-          <input id="f-dataVisita" type="datetime-local" class="form-control" value="${r.dataVisita?r.dataVisita.slice(0,16):''}">
-          <div class="form-note mt-2">
-            <i class="bi bi-info-circle me-1"></i>
-            <strong>Manhã</strong> 06h–12h · <strong>Tarde</strong> 12h–18h · <strong>Noite</strong> 18h–06h · Máx. 3 por turno/dia
-          </div>
-        </div>
-        <div class="col-md-6">
-          <label for="f-caravanaId" class="form-label">Caravana *</label>
-          <select id="f-caravanaId" class="form-select">
-            ${state.caravanas.map(c=>`<option value="${c.id}" ${r.caravanaId===c.id?'selected':''}>${c.nome} (${c.quantidadeVisitantes} visitantes)</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-guiaId" class="form-label">Guia Responsável *</label>
-          <select id="f-guiaId" class="form-select">
-            ${state.guias.filter(g=>g.status===true).map(g=>{
-              const t=TURNOS[g.disponibilidade];
-              return `<option value="${g.id}" ${r.guiaId===g.id?'selected':''}>${g.nome} — ${t?.label??g.disponibilidade}</option>`;
-            }).join('')}
-          </select>
-          <small style="font-size:.6875rem;color:var(--obs-dim)">A disponibilidade do guia deve ser compatível com o turno da visita.</small>
-        </div>
-        <div class="col-md-6">
-          <label for="f-valorVisita" class="form-label">Valor da Visita (R$)</label>
-          <input id="f-valorVisita" type="number" min="0" step="0.01" class="form-control" value="${r.valorVisita??''}">
-        </div>
-        <div class="col-12">
-          <label for="f-observacoes" class="form-label">Observações</label>
-          <textarea id="f-observacoes" class="form-control">${r.observacoes??''}</textarea>
-        </div>
-      </div>`,
-    collect:() => ({
-      dataVisita:  fv('f-dataVisita') ? new Date(fv('f-dataVisita')).toISOString() : '',
-      caravanaId:  parseInt(fv('f-caravanaId')),
-      guiaId:      parseInt(fv('f-guiaId')),
-      valorVisita: parseFloat(fv('f-valorVisita'))||0,
-      observacoes: fv('f-observacoes'),
+    form: buildAgendamentoForm,
+    bodyFn: agendamentoBody,
+  },
+
+  caravanas: {
+    label: 'Caravanas', icon: 'ic-caravan',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'tipoCaravana', label: 'Tipo' },
+      { key: 'quantidadeVisitantes', label: 'Visitantes' },
+      { key: 'escola', label: 'Escola/Org.' },
+    ],
+    form: buildSimpleForm([
+      { name: 'nome', label: 'Nome', required: true },
+      { name: 'escola', label: 'Escola / Organização' },
+      { name: 'quantidadeVisitantes', label: 'Quantidade de Visitantes', type: 'number', required: true },
+      { name: 'tipoCaravana', label: 'Tipo de Caravana', type: 'select',
+        options: ['Escolar','Universitária','Turística','Institucional'], required: true },
+    ]),
+    bodyFn: (data) => ({
+      nome: data.nome, escola: data.escola,
+      quantidadeVisitantes: Number(data.quantidadeVisitantes),
+      tipoCaravana: data.tipoCaravana,
     }),
-    validate:(d,id) => {
-      if (!d.dataVisita||!d.caravanaId||!d.guiaId) return 'Preencha todos os campos obrigatórios.';
-      const turno = getTurno(d.dataVisita);
-      const guia  = getById(state.guias, d.guiaId);
-      if (guia && guia.disponibilidade !== turno)
-        return `Guia "${guia.nome}" disponível no turno ${TURNOS[guia.disponibilidade]?.label}, incompatível com ${TURNOS[turno]?.label}.`;
-      if (state.agendamentos.find(a => a.dataVisita===d.dataVisita && a.id!==id))
-        return 'Já existe agendamento nesta data e horário exato.';
-      const dia = d.dataVisita.slice(0,10);
-      const n = state.agendamentos.filter(a => a.dataVisita.slice(0,10)===dia && getTurno(a.dataVisita)===turno && a.id!==id).length;
-      if (n >= 3) return `Limite de 3 agendamentos por turno/dia atingido (${TURNOS[turno].label}).`;
-      return null;
-    },
   },
 
   constelacoes: {
-    title:'Constelações', icon:'bi-stars', key:'constelacoes',
-    cols:[
-      { h:'Nome',       f:r => r.nome },
-      { h:'Hemisfério', f:r => `<span class="badge-obs badge-primary">${r.hemisferio}</span>` },
-      { h:'Visibilidade',f:r => r.periodoVisibilidade },
-      { h:'Principais Estrelas', f:r => r.principaisEstrelas },
+    label: 'Constelações', icon: 'ic-constellation',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'hemisferio', label: 'Hemisfério' },
+      { key: 'abreviacao', label: 'Abreviação' },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-8">
-          <label for="f-nome" class="form-label">Nome da Constelação * (2–50 caracteres)</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}" minlength="2" maxlength="50">
-        </div>
-        <div class="col-md-4">
-          <label for="f-hemisferio" class="form-label">Hemisfério *</label>
-          <select id="f-hemisferio" class="form-select">
-            <option ${r.hemisferio==='Norte'?'selected':''}>Norte</option>
-            <option ${r.hemisferio==='Sul'?'selected':''}>Sul</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-periodoVisibilidade" class="form-label">Período de Visibilidade *</label>
-          <input id="f-periodoVisibilidade" class="form-control" value="${r.periodoVisibilidade??''}" placeholder="Ex: Novembro – Fevereiro">
-        </div>
-        <div class="col-md-6">
-          <label for="f-principaisEstrelas" class="form-label">Principais Estrelas *</label>
-          <input id="f-principaisEstrelas" class="form-control" value="${r.principaisEstrelas??''}">
-        </div>
-        <div class="col-12">
-          <label for="f-descricao" class="form-label">Descrição Astronômica *</label>
-          <textarea id="f-descricao" class="form-control" rows="3">${r.descricao??''}</textarea>
-        </div>
-        <div class="col-12">
-          <label for="f-curiosidades" class="form-label">Curiosidades Históricas</label>
-          <textarea id="f-curiosidades" class="form-control" rows="2">${r.curiosidades??''}</textarea>
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:fv('f-nome'), hemisferio:fv('f-hemisferio'),
-      periodoVisibilidade:fv('f-periodoVisibilidade'),
-      principaisEstrelas:fv('f-principaisEstrelas'),
-      descricao:fv('f-descricao'), curiosidades:fv('f-curiosidades'),
-    }),
-    validate:(d,id) => {
-      if (!d.nome||!d.periodoVisibilidade||!d.principaisEstrelas||!d.descricao) return 'Preencha todos os campos obrigatórios.';
-      if (d.nome.length<2||d.nome.length>50) return 'Nome deve ter entre 2 e 50 caracteres.';
-      if (state.constelacoes.find(x=>x.nome.toLowerCase()===d.nome.toLowerCase()&&x.id!==id)) return 'Nome já cadastrado.';
-      return null;
-    },
+    form: buildSimpleForm([
+      { name: 'nome', label: 'Nome', required: true },
+      { name: 'abreviacao', label: 'Abreviação (3 letras)' },
+      { name: 'hemisferio', label: 'Hemisfério', type: 'select',
+        options: ['Norte','Sul','Equatorial'], required: true },
+    ]),
+    bodyFn: (data) => ({ nome: data.nome, abreviacao: data.abreviacao, hemisferio: data.hemisferio }),
   },
 
   coordenadores: {
-    title:'Coordenadores', icon:'bi-mortarboard-fill', key:'coordenadores',
-    cols:[
-      { h:'Nome',          f:r => r.nome },
-      { h:'CPF',           f:r => r.cpf },
-      { h:'E-mail',        f:r => r.email },
-      { h:'Especialidade', f:r => r.especialidade },
-      { h:'Login',         f:r => `<code style="color:var(--obs-cyan);font-size:.75rem">${r.login}</code>` },
-      { h:'Status',        f:r => statusBadge(r.status) },
+    label: 'Coordenadores', icon: 'ic-compass',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'login', label: 'Login' },
+      { key: 'especialidade', label: 'Especialidade' },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-nome" class="form-label">Nome Completo *</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-cpf" class="form-label">CPF *</label>
-          <input id="f-cpf" class="form-control" value="${r.cpf??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-telefone" class="form-label">Telefone *</label>
-          <input id="f-telefone" class="form-control" value="${r.telefone??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-email" class="form-label">E-mail *</label>
-          <input id="f-email" type="email" class="form-control" value="${r.email??''}">
-        </div>
-        <div class="col-md-8">
-          <label for="f-especialidade" class="form-label">Especialidade *</label>
-          <input id="f-especialidade" class="form-control" value="${r.especialidade??''}">
-        </div>
-        <div class="col-md-4">
-          <label for="f-status" class="form-label">Status *</label>
-          <select id="f-status" class="form-select">
-            <option value="true"  ${r.status===true?'selected':''}>Ativo</option>
-            <option value="false" ${r.status===false?'selected':''}>Inativo</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-login" class="form-label">Login *</label>
-          <input id="f-login" class="form-control" value="${r.login??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-senha" class="form-label">Senha *</label>
-          <input id="f-senha" type="password" class="form-control" value="${r.senha??''}">
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:fv('f-nome'), cpf:fv('f-cpf'), telefone:fv('f-telefone'), email:fv('f-email'),
-      especialidade:fv('f-especialidade'), login:fv('f-login'), senha:fv('f-senha'),
-      status:fv('f-status')==='true', funcao:'coordenador',
-    }),
-    validate:(d,id) => {
-      if (!d.nome||!d.cpf||!d.email||!d.login||!d.senha) return 'Preencha todos os campos obrigatórios.';
-      if (state.coordenadores.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado.';
-      return null;
-    },
+    form: buildPessoaForm([
+      { name: 'especialidade', label: 'Especialidade' },
+    ]),
+    bodyFn: pessoaBody,
   },
 
-  pesquisadores: {
-    title:'Pesquisadores', icon:'bi-person-gear', key:'pesquisadores',
-    cols:[
-      { h:'Nome',          f:r => r.nome },
-      { h:'CPF',           f:r => r.cpf },
-      { h:'Especialidade', f:r => r.especialidade },
-      { h:'Login',         f:r => `<code style="color:var(--obs-cyan);font-size:.75rem">${r.login}</code>` },
-      { h:'Status',        f:r => statusBadge(r.status) },
+  'grupos-de-pesquisa': {
+    label: 'Grupos de Pesquisa', icon: 'ic-group',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'areaDeAtuacao', label: 'Área de Atuação' },
+      { key: 'status', label: 'Status', fmt: pill },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-nome" class="form-label">Nome Completo *</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-cpf" class="form-label">CPF *</label>
-          <input id="f-cpf" class="form-control" value="${r.cpf??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-telefone" class="form-label">Telefone *</label>
-          <input id="f-telefone" class="form-control" value="${r.telefone??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-email" class="form-label">E-mail *</label>
-          <input id="f-email" type="email" class="form-control" value="${r.email??''}">
-        </div>
-        <div class="col-md-8">
-          <label for="f-especialidade" class="form-label">Especialidade *</label>
-          <input id="f-especialidade" class="form-control" value="${r.especialidade??''}">
-        </div>
-        <div class="col-md-4">
-          <label for="f-status" class="form-label">Status *</label>
-          <select id="f-status" class="form-select">
-            <option value="true"  ${r.status===true?'selected':''}>Ativo</option>
-            <option value="false" ${r.status===false?'selected':''}>Inativo</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-login" class="form-label">Login *</label>
-          <input id="f-login" class="form-control" value="${r.login??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-senha" class="form-label">Senha *</label>
-          <input id="f-senha" type="password" class="form-control" value="${r.senha??''}">
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:fv('f-nome'), cpf:fv('f-cpf'), telefone:fv('f-telefone'), email:fv('f-email'),
-      especialidade:fv('f-especialidade'), login:fv('f-login'), senha:fv('f-senha'),
-      status:fv('f-status')==='true', funcao:'pesquisador',
-    }),
-    validate:(d,id) => {
-      if (!d.nome||!d.cpf||!d.email||!d.login||!d.senha) return 'Preencha todos os campos obrigatórios.';
-      if (state.pesquisadores.find(x=>x.cpf===d.cpf&&x.id!==id)) return 'CPF já cadastrado.';
-      return null;
-    },
+    form: buildSimpleForm([
+      { name: 'nome', label: 'Nome', required: true },
+      { name: 'areaDeAtuacao', label: 'Área de Atuação' },
+      { name: 'status', label: 'Status', type: 'select',
+        options: ['ativo','inativo'], required: true },
+    ]),
+    bodyFn: (data) => ({ nome: data.nome, areaDeAtuacao: data.areaDeAtuacao, status: data.status }),
   },
 
-  gruposPesquisa: {
-    title:'Grupos de Pesquisa', icon:'bi-diagram-3-fill', key:'gruposPesquisa',
-    cols:[
-      { h:'Nome',          f:r => r.nome },
-      { h:'Área',          f:r => r.areaDePesquisa },
-      { h:'Pesquisadores', f:r => `${r.pesquisadores.length} vinculado(s)` },
-      { h:'Data Criação',  f:r => fmt(r.dataCriacao) },
-      { h:'Status',        f:r => statusBadge(r.status) },
+  guias: {
+    label: 'Guias', icon: 'ic-book',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'login', label: 'Login' },
+      { key: 'especialidade', label: 'Especialidade' },
+      { key: 'disponibilidade', label: 'Disponibilidade', fmt: pill },
+      { key: 'status', label: 'Status', fmt: pill },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-nome" class="form-label">Nome do Grupo * (3–30 caracteres)</label>
-          <input id="f-nome" class="form-control" value="${r.nome??''}" minlength="3" maxlength="30">
-        </div>
-        <div class="col-md-6">
-          <label for="f-areaDePesquisa" class="form-label">Área de Pesquisa *</label>
-          <input id="f-areaDePesquisa" class="form-control" value="${r.areaDePesquisa??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-dataCriacao" class="form-label">Data de Criação *</label>
-          <input id="f-dataCriacao" type="date" class="form-control" value="${r.dataCriacao??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-status" class="form-label">Status *</label>
-          <select id="f-status" class="form-select">
-            <option value="true"  ${r.status===true?'selected':''}>Ativo</option>
-            <option value="false" ${r.status===false?'selected':''}>Inativo</option>
-          </select>
-        </div>
-        <div class="col-12">
-          <label for="f-pesquisadores" class="form-label">Pesquisadores Vinculados *</label>
-          <select id="f-pesquisadores" class="form-select" multiple style="min-height:6.25rem">
-            ${state.pesquisadores.map(p=>`<option value="${p.id}" ${(r.pesquisadores??[]).includes(p.id)?'selected':''}>${p.nome}</option>`).join('')}
-          </select>
-          <small style="font-size:.6875rem;color:var(--obs-dim)">Segure Ctrl (ou Cmd) para selecionar múltiplos</small>
-        </div>
-        <div class="col-12">
-          <label for="f-descricao" class="form-label">Descrição</label>
-          <textarea id="f-descricao" class="form-control">${r.descricao??''}</textarea>
-        </div>
-      </div>`,
-    collect:() => ({
-      nome:fv('f-nome'), areaDePesquisa:fv('f-areaDePesquisa'),
-      dataCriacao:fv('f-dataCriacao'), status:fv('f-status')==='true',
-      pesquisadores:Array.from(document.getElementById('f-pesquisadores').selectedOptions).map(o=>parseInt(o.value)),
-      descricao:fv('f-descricao'),
-    }),
-    validate:(d) => {
-      if (!d.nome||!d.areaDePesquisa||!d.dataCriacao) return 'Preencha todos os campos obrigatórios.';
-      if (d.nome.length<3||d.nome.length>30) return 'Nome deve ter entre 3 e 30 caracteres.';
-      if (d.pesquisadores.length===0) return 'Selecione ao menos um pesquisador.';
-      return null;
-    },
-  },
-
-  projetos: {
-    title:'Projetos', icon:'bi-folder2-open', key:'projetos',
-    cols:[
-      { h:'Título',      f:r => `<strong>${r.titulo}</strong>` },
-      { h:'Grupo',       f:r => getName(state.gruposPesquisa, r.grupoDePesquisaId) },
-      { h:'Coordenador', f:r => getName(state.coordenadores, r.coordenadorId) },
-      { h:'Início',      f:r => fmt(r.dataInicio) },
-      { h:'Término',     f:r => fmt(r.dataTermino) },
-      { h:'Status',      f:r => projetoBadge(r.status) },
-    ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-12">
-          <label for="f-titulo" class="form-label">Título do Projeto * (3–30 caracteres)</label>
-          <input id="f-titulo" class="form-control" value="${r.titulo??''}" minlength="3" maxlength="30">
-        </div>
-        <div class="col-md-6">
-          <label for="f-dataInicio" class="form-label">Data de Início *</label>
-          <input id="f-dataInicio" type="date" class="form-control" value="${r.dataInicio??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-dataTermino" class="form-label">Data de Término *</label>
-          <input id="f-dataTermino" type="date" class="form-control" value="${r.dataTermino??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-grupoDePesquisaId" class="form-label">Grupo de Pesquisa *</label>
-          <select id="f-grupoDePesquisaId" class="form-select">
-            ${state.gruposPesquisa.map(g=>`<option value="${g.id}" ${r.grupoDePesquisaId===g.id?'selected':''}>${g.nome}</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-coordenadorId" class="form-label">Coordenador *</label>
-          <select id="f-coordenadorId" class="form-select">
-            ${state.coordenadores.map(c=>`<option value="${c.id}" ${r.coordenadorId===c.id?'selected':''}>${c.nome}</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-8">
-          <label for="f-areaDePesquisa" class="form-label">Área de Pesquisa *</label>
-          <input id="f-areaDePesquisa" class="form-control" value="${r.areaDePesquisa??''}">
-        </div>
-        <div class="col-md-4">
-          <label for="f-status" class="form-label">Status *</label>
-          <select id="f-status" class="form-select">
-            <option value="ativo"     ${r.status==='ativo'?'selected':''}>Ativo</option>
-            <option value="concluido" ${r.status==='concluido'?'selected':''}>Concluído</option>
-            <option value="suspenso"  ${r.status==='suspenso'?'selected':''}>Suspenso</option>
-          </select>
-        </div>
-      </div>`,
-    collect:() => ({
-      titulo:fv('f-titulo'), dataInicio:fv('f-dataInicio'), dataTermino:fv('f-dataTermino'),
-      grupoDePesquisaId:parseInt(fv('f-grupoDePesquisaId')),
-      coordenadorId:parseInt(fv('f-coordenadorId')),
-      areaDePesquisa:fv('f-areaDePesquisa'), status:fv('f-status'),
-    }),
-    validate:(d) => {
-      if (!d.titulo||!d.dataInicio||!d.dataTermino||!d.grupoDePesquisaId) return 'Preencha todos os campos obrigatórios.';
-      if (d.titulo.length<3||d.titulo.length>30) return 'Título deve ter entre 3 e 30 caracteres.';
-      if (d.dataTermino<d.dataInicio) return 'Data de término não pode ser anterior ao início.';
-      return null;
-    },
+    form: buildPessoaForm([
+      { name: 'especialidade', label: 'Especialidade' },
+      { name: 'disponibilidade', label: 'Disponibilidade', type: 'select',
+        options: ['MANHA','TARDE','NOITE'], required: true },
+      { name: 'status', label: 'Status', type: 'select',
+        options: ['Ativo','Inativo'], required: true },
+    ]),
+    bodyFn: pessoaBody,
   },
 
   observacoes: {
-    title:'Observações', icon:'bi-telescope', key:'observacoes',
-    cols:[
-      { h:'Data',        f:r => fmt(r.dataObservacao) },
-      { h:'Projeto',     f:r => getName(state.projetos, r.projetoId) },
-      { h:'Constelação', f:r => getName(state.constelacoes, r.constelacaoId) },
-      { h:'Instrumento', f:r => r.instrumentoUtilizado },
-      { h:'Versão',      f:r => `<span class="badge-obs badge-gold">v${r.versaoObservacao}</span>` },
+    label: 'Observações', icon: 'ic-telescope',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'dataObservacao', label: 'Data', fmt: (v) => v ? v.slice(0,10) : '—' },
+      { key: r => r.projeto?.titulo || r.projetoId, label: 'Projeto' },
+      { key: r => r.constelacao?.nome || r.constelacaoId, label: 'Constelação' },
+      { key: 'versaoObservacao', label: 'Versão' },
+      { key: 'instrumentoUtilizado', label: 'Instrumento' },
     ],
-    form:(r={}) => `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label for="f-dataObservacao" class="form-label">Data da Observação *</label>
-          <input id="f-dataObservacao" type="date" class="form-control" value="${r.dataObservacao??''}">
-        </div>
-        <div class="col-md-6">
-          <label for="f-projetoId" class="form-label">Projeto Vinculado * (apenas ativos)</label>
-          <select id="f-projetoId" class="form-select">
-            ${state.projetos.filter(p=>p.status==='ativo').map(p=>`<option value="${p.id}" ${r.projetoId===p.id?'selected':''}>${p.titulo}</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-constelacaoId" class="form-label">Constelação Observada *</label>
-          <select id="f-constelacaoId" class="form-select">
-            ${state.constelacoes.map(c=>`<option value="${c.id}" ${r.constelacaoId===c.id?'selected':''}>${c.nome}</option>`).join('')}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="f-instrumentoUtilizado" class="form-label">Instrumento Utilizado *</label>
-          <input id="f-instrumentoUtilizado" class="form-control" value="${r.instrumentoUtilizado??''}" placeholder="Ex: Telescópio refletor">
-        </div>
-        <div class="col-12">
-          <label for="f-descricao" class="form-label">Descrição Científica *</label>
-          <textarea id="f-descricao" class="form-control" rows="3">${r.descricao??''}</textarea>
-        </div>
-        <div class="col-12">
-          <div class="form-note">
-            <i class="bi bi-gear-fill me-1"></i>
-            <strong>Versão da observação</strong> — preenchida automaticamente pelo sistema (incremento por projeto/constelação)
-          </div>
-        </div>
-      </div>`,
-    collect:() => ({
-      dataObservacao:fv('f-dataObservacao'),
-      projetoId:parseInt(fv('f-projetoId')),
-      constelacaoId:parseInt(fv('f-constelacaoId')),
-      instrumentoUtilizado:fv('f-instrumentoUtilizado'),
-      descricao:fv('f-descricao'),
-    }),
-    validate:(d,id) => {
-      if (!d.dataObservacao||!d.projetoId||!d.constelacaoId||!d.instrumentoUtilizado||!d.descricao) return 'Preencha todos os campos obrigatórios.';
-      const proj = getById(state.projetos, d.projetoId);
-      if (!proj||proj.status!=='ativo') return 'O projeto deve ter status ativo.';
-      if (d.dataObservacao<proj.dataInicio||d.dataObservacao>proj.dataTermino) return 'Data fora do período do projeto.';
-      if (state.observacoes.find(o=>o.dataObservacao===d.dataObservacao&&o.projetoId===d.projetoId&&o.constelacaoId===d.constelacaoId&&o.id!==id))
-        return 'Já existe observação desta constelação neste dia/projeto.';
-      return null;
-    },
-    beforeSave:(d) => {
-      const max = Math.max(0, ...state.observacoes.filter(o=>o.projetoId===d.projetoId&&o.constelacaoId===d.constelacaoId).map(o=>o.versaoObservacao));
-      d.versaoObservacao = max + 1;
-    },
+    form: buildObservacaoForm,
+    bodyFn: observacaoBody,
+  },
+
+  pesquisadores: {
+    label: 'Pesquisadores', icon: 'ic-researcher',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nome', label: 'Nome' },
+      { key: 'login', label: 'Login' },
+      { key: 'titulacao', label: 'Titulação' },
+      { key: r => (r.grupos || []).map(g => g.nome).join(', ') || '—', label: 'Grupos' },
+    ],
+    form: buildPessoaForm([
+      { name: 'titulacao', label: 'Titulação', type: 'select',
+        options: ['Graduação','Especialização','Mestrado','Doutorado','Pós-Doutorado'] },
+    ]),
+    bodyFn: pessoaBody,
+  },
+
+  projetos: {
+    label: 'Projetos', icon: 'ic-project',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'titulo', label: 'Título' },
+      { key: 'status', label: 'Status', fmt: pill },
+      { key: r => r.grupoDePesquisa?.nome || r.grupoDePesquisaId, label: 'Grupo' },
+      { key: r => r.coordenador?.nome || r.coordenadorId, label: 'Coordenador' },
+      { key: 'dataInicio', label: 'Início', fmt: (v) => v ? v.slice(0,10) : '—' },
+    ],
+    form: buildProjetoForm,
+    bodyFn: projetoBody,
   },
 };
 
-// ════════════════════════════════════════════════════════
-// CRUD RENDERER
-// ════════════════════════════════════════════════════════
-function renderCRUD(key) {
-  const cfg  = CRUD[key];
-  const data = state[cfg.key];
-  const canEdit = currentUser?.tipo === 'coordenador';
+// ─── form builders ────────────────────────────────────────────────────────
 
-  return `
-  <header class="page-header">
-    <div>
-      <h2 class="page-heading"><i class="bi ${cfg.icon} me-2"></i>${cfg.title}</h2>
-      <p class="page-sub">Gerenciamento de ${cfg.title.toLowerCase()}</p>
-    </div>
-    ${canEdit ? `<button class="btn btn-obs btn-obs-primary btn-sm" onclick="openForm('${key}',null)">
-      <i class="bi bi-plus-lg me-1"></i>Inserir
-    </button>` : ''}
-  </header>
-
-  <article class="obs-panel">
-    <header class="obs-panel-header">
-      <h3 class="obs-panel-title">${cfg.title}</h3>
-      <input class="search-input" placeholder="🔍 Buscar…" oninput="filterTable(this,'tbl-${key}')" aria-label="Buscar em ${cfg.title}">
-    </header>
-    <div style="overflow-x:auto">
-      <table class="obs-table" id="tbl-${key}" aria-label="${cfg.title}">
-        <thead>
-          <tr>
-            ${cfg.cols.map(c=>`<th scope="col">${c.h}</th>`).join('')}
-            <th scope="col">Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${data.length === 0
-            ? `<tr><td colspan="${cfg.cols.length+1}"><div class="empty-state"><span class="empty-icon">🔭</span><p style="color:var(--obs-muted)">Nenhum registro encontrado</p></div></td></tr>`
-            : data.map(r => `<tr>
-                ${cfg.cols.map(c=>`<td>${c.f(r)}</td>`).join('')}
-                <td>
-                  <div class="d-flex gap-1">
-                    <button class="btn btn-obs btn-obs-secondary btn-sm" onclick="openView('${key}',${r.id})" aria-label="Visualizar"><i class="bi bi-eye"></i></button>
-                    ${canEdit ? `
-                    <button class="btn btn-obs btn-obs-secondary btn-sm" onclick="openForm('${key}',${r.id})" aria-label="Editar"><i class="bi bi-pencil"></i></button>
-                    <button class="btn btn-obs btn-obs-danger btn-sm" onclick="deleteRecord('${key}',${r.id})" aria-label="Remover"><i class="bi bi-trash3"></i></button>
-                    ` : ''}
-                  </div>
-                </td>
-              </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-    <footer class="panel-footer">Total: <strong style="color:var(--obs-muted)">${data.length}</strong> registro(s)</footer>
-  </article>`;
+function buildSimpleForm(fields) {
+  return async function(record) {
+    return fields.map(f => fieldHTML(f, record)).join('');
+  };
 }
 
-function filterTable(inp, tableId) {
-  const q = inp.value.toLowerCase();
-  document.querySelectorAll(`#${tableId} tbody tr`).forEach(tr => {
-    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-}
-
-// ════════════════════════════════════════════════════════
-// FORM MODAL
-// ════════════════════════════════════════════════════════
-function openForm(key, id) {
-  const cfg  = CRUD[key];
-  const r    = id ? getById(state[cfg.key], id) : {};
-  const isEdit = !!id;
-
-  document.getElementById('crud-modal')?.remove();
-  const div = document.createElement('div');
-  div.className = 'modal fade'; div.id = 'crud-modal';
-  div.setAttribute('tabindex','-1'); div.setAttribute('aria-modal','true');
-  div.setAttribute('role','dialog'); div.setAttribute('aria-labelledby','crud-modal-title');
-  div.innerHTML = `
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="crud-modal-title">
-            <i class="bi ${isEdit?'bi-pencil-square':'bi-plus-circle'} me-2"></i>${isEdit?'Editar':'Inserir'} ${cfg.title}
-          </h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <div class="modal-body">
-          <form id="crud-form" novalidate onsubmit="event.preventDefault();saveRecord('${key}',${id??'null'})">
-            ${cfg.form(r??{})}
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-obs btn-obs-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-obs btn-obs-primary" onclick="saveRecord('${key}',${id??'null'})">
-            <i class="bi bi-floppy me-1"></i>Salvar
-          </button>
-        </div>
-      </div>
-    </div>`;
-  document.body.appendChild(div);
-  const modal = new bootstrap.Modal(div);
-  div.addEventListener('hidden.bs.modal', () => div.remove());
-  modal.show();
-}
-
-function saveRecord(key, id) {
-  const cfg = CRUD[key];
-  const d   = cfg.collect();
-  const err = cfg.validate(d, id);
-  if (err) { toast(err, 'error'); return; }
-  if (cfg.beforeSave) cfg.beforeSave(d);
-  if (id) {
-    const idx = state[cfg.key].findIndex(x => x.id === id);
-    if (idx >= 0) state[cfg.key][idx] = { ...state[cfg.key][idx], ...d };
-    toast('Registro atualizado com sucesso!', 'success');
-  } else {
-    d.id = nextId(cfg.key);
-    state[cfg.key].push(d);
-    toast('Registro inserido com sucesso!', 'success');
+function fieldHTML(f, record) {
+  const val = record ? (record[f.name] ?? '') : '';
+  if (f.type === 'select') {
+    const opts = f.options.map(o =>
+      `<option value="${o}" ${val == o ? 'selected' : ''}>${o}</option>`
+    ).join('');
+    return `<div class="field"><label>${f.label}${f.required ? ' *' : ''}</label>
+      <select name="${f.name}">${f.required ? '' : '<option value="">— selecione —</option>'}${opts}</select></div>`;
   }
-  bootstrap.Modal.getInstance(document.getElementById('crud-modal'))?.hide();
-  navigate(currentPage);
+  if (f.type === 'textarea') {
+    return `<div class="field"><label>${f.label}</label>
+      <textarea name="${f.name}">${escHtml(String(val))}</textarea></div>`;
+  }
+  return `<div class="field"><label>${f.label}${f.required ? ' *' : ''}</label>
+    <input type="${f.type||'text'}" name="${f.name}" value="${escAttr(String(val))}"></div>`;
 }
 
-function deleteRecord(key, id) {
-  const cfg = CRUD[key];
-  const constraints = {
-    caravanas:     () => state.agendamentos.find(a=>a.caravanaId===id)      ? 'Caravana vinculada a agendamento.' : null,
-    guias:         () => state.agendamentos.find(a=>a.guiaId===id)          ? 'Guia vinculado a agendamento.' : null,
-    constelacoes:  () => state.observacoes.find(o=>o.constelacaoId===id)    ? 'Constelação vinculada a observações.' : null,
-    projetos:      () => state.observacoes.find(o=>o.projetoId===id)        ? 'Projeto vinculado a observações.' : null,
-    gruposPesquisa:() => state.projetos.find(p=>p.grupoDePesquisaId===id)   ? 'Grupo vinculado a projetos.' : null,
-    coordenadores: () => state.projetos.find(p=>p.coordenadorId===id)       ? 'Coordenador vinculado a projetos.' : null,
+function buildPessoaForm(extra) {
+  return buildSimpleForm([
+    { name: 'nome', label: 'Nome', required: true },
+    { name: 'login', label: 'Login', required: true },
+    { name: 'senha', label: 'Senha', type: 'password' },
+    ...extra,
+  ]);
+}
+
+function pessoaBody(data) {
+  const body = { nome: data.nome, login: data.login };
+  if (data.senha) body.senha = data.senha;
+  // extra fields
+  ['especialidade','disponibilidade','status','titulacao'].forEach(k => {
+    if (data[k] !== undefined && data[k] !== '') body[k] = data[k];
+  });
+  return body;
+}
+
+async function buildAgendamentoForm(record) {
+  const [guias, caravanas] = await Promise.all([
+    apiFetch('/guias'), apiFetch('/caravanas')
+  ]);
+  const gOpts = (guias||[]).map(g =>
+    `<option value="${g.id}" ${record?.guiaId==g.id?'selected':''}>${g.nome} (${g.disponibilidade})</option>`
+  ).join('');
+  const cOpts = (caravanas||[]).map(c =>
+    `<option value="${c.id}" ${record?.caravanaId==c.id?'selected':''}>${c.nome}</option>`
+  ).join('');
+  const dv = record?.dataVisita ? record.dataVisita.slice(0,16) : '';
+  return `
+    <div class="field"><label>Data e Hora da Visita *</label>
+      <input type="datetime-local" name="dataVisita" value="${escAttr(dv)}"></div>
+    <div class="field"><label>Valor da Visita</label>
+      <input type="number" step="0.01" name="valorVisita" value="${escAttr(String(record?.valorVisita??''))}"></div>
+    <div class="field"><label>Guia *</label>
+      <select name="guiaId"><option value="">— selecione —</option>${gOpts}</select></div>
+    <div class="field"><label>Caravana *</label>
+      <select name="caravanaId"><option value="">— selecione —</option>${cOpts}</select></div>
+    <div class="field"><label>Observações</label>
+      <textarea name="observacoes">${escHtml(String(record?.observacoes||''))}</textarea></div>
+  `;
+}
+function agendamentoBody(data) {
+  return {
+    dataVisita: data.dataVisita,
+    valorVisita: data.valorVisita ? Number(data.valorVisita) : undefined,
+    observacoes: data.observacoes || undefined,
+    guiaId: Number(data.guiaId),
+    caravanaId: Number(data.caravanaId),
   };
-  const blocked = constraints[key]?.();
-  if (blocked) { toast('Remoção bloqueada: ' + blocked, 'error'); return; }
-  showConfirm('Remover Registro', 'Esta ação não pode ser desfeita.', () => {
-    state[cfg.key] = state[cfg.key].filter(x => x.id !== id);
-    toast('Registro removido.', 'success');
-    navigate(currentPage);
+}
+
+async function buildObservacaoForm(record) {
+  const [projetos, constelacoes] = await Promise.all([
+    apiFetch('/projetos'), apiFetch('/constelacoes')
+  ]);
+  const pOpts = (projetos||[]).map(p =>
+    `<option value="${p.id}" ${record?.projetoId==p.id?'selected':''}>${p.titulo}</option>`
+  ).join('');
+  const cOpts = (constelacoes||[]).map(c =>
+    `<option value="${c.id}" ${record?.constelacaoId==c.id?'selected':''}>${c.nome}</option>`
+  ).join('');
+  return `
+    <div class="field"><label>Data de Observação *</label>
+      <input type="date" name="dataObservacao" value="${escAttr(String(record?.dataObservacao||'').slice(0,10))}"></div>
+    <div class="field"><label>Projeto *</label>
+      <select name="projetoId"><option value="">— selecione —</option>${pOpts}</select></div>
+    <div class="field"><label>Constelação *</label>
+      <select name="constelacaoId"><option value="">— selecione —</option>${cOpts}</select></div>
+    <div class="field"><label>Instrumento Utilizado</label>
+      <input type="text" name="instrumentoUtilizado" value="${escAttr(String(record?.instrumentoUtilizado||''))}"></div>
+    <div class="field"><label>Descrição</label>
+      <textarea name="descricao">${escHtml(String(record?.descricao||''))}</textarea></div>
+  `;
+}
+function observacaoBody(data) {
+  return {
+    dataObservacao: data.dataObservacao,
+    projetoId: Number(data.projetoId),
+    constelacaoId: Number(data.constelacaoId),
+    instrumentoUtilizado: data.instrumentoUtilizado || undefined,
+    descricao: data.descricao || undefined,
+  };
+}
+
+async function buildProjetoForm(record) {
+  const [grupos, coordenadores] = await Promise.all([
+    apiFetch('/grupos-de-pesquisa'), apiFetch('/coordenadores')
+  ]);
+  const gOpts = (grupos||[]).map(g =>
+    `<option value="${g.id}" ${record?.grupoDePesquisaId==g.id?'selected':''}>${g.nome}</option>`
+  ).join('');
+  const cOpts = (coordenadores||[]).map(c =>
+    `<option value="${c.id}" ${record?.coordenadorId==c.id?'selected':''}>${c.nome}</option>`
+  ).join('');
+  return `
+    <div class="field"><label>Título *</label>
+      <input type="text" name="titulo" value="${escAttr(String(record?.titulo||''))}"></div>
+    <div class="field"><label>Status</label>
+      <select name="status">
+        <option value="ativo" ${record?.status=='ativo'?'selected':''}>ativo</option>
+        <option value="concluido" ${record?.status=='concluido'?'selected':''}>concluido</option>
+        <option value="suspenso" ${record?.status=='suspenso'?'selected':''}>suspenso</option>
+      </select></div>
+    <div class="field"><label>Grupo de Pesquisa *</label>
+      <select name="grupoDePesquisaId"><option value="">— selecione —</option>${gOpts}</select></div>
+    <div class="field"><label>Coordenador *</label>
+      <select name="coordenadorId"><option value="">— selecione —</option>${cOpts}</select></div>
+    <div class="fields-row">
+      <div class="field"><label>Data de Início</label>
+        <input type="date" name="dataInicio" value="${escAttr(String(record?.dataInicio||'').slice(0,10))}"></div>
+      <div class="field"><label>Data de Término</label>
+        <input type="date" name="dataTermino" value="${escAttr(String(record?.dataTermino||'').slice(0,10))}"></div>
+    </div>
+    <div class="field"><label>Descrição</label>
+      <textarea name="descricao">${escHtml(String(record?.descricao||''))}</textarea></div>
+  `;
+}
+function projetoBody(data) {
+  return {
+    titulo: data.titulo,
+    status: data.status || 'ativo',
+    grupoDePesquisaId: Number(data.grupoDePesquisaId),
+    coordenadorId: Number(data.coordenadorId),
+    dataInicio: data.dataInicio || undefined,
+    dataTermino: data.dataTermino || undefined,
+    descricao: data.descricao || undefined,
+  };
+}
+
+// ─── pill helper ─────────────────────────────────────────────────────────
+
+function pill(v) {
+  if (!v) return '—';
+  const cls = {
+    ativo:'pill-ativo', inativo:'pill-concluido', concluido:'pill-concluido',
+    suspenso:'pill-suspenso', MANHA:'pill-manha', TARDE:'pill-tarde',
+    NOITE:'pill-noite', Ativo:'pill-ativo', Inativo:'pill-concluido',
+  }[v] || '';
+  return `<span class="pill ${cls}">${v}</span>`;
+}
+
+// ─── state ───────────────────────────────────────────────────────────────
+
+let currentEntity = 'home';
+let currentData = [];
+let deleteTarget = null;
+let editTarget = null;
+
+// ─── routing ─────────────────────────────────────────────────────────────
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    const entity = link.dataset.entity;
+    navigate(entity);
+  });
+});
+
+function navigate(entity) {
+  currentEntity = entity;
+  document.querySelectorAll('.nav-link').forEach(l =>
+    l.classList.toggle('active', l.dataset.entity === entity)
+  );
+  const def = ENTITIES[entity];
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = `Observatório <span>·</span> ${def.label}`;
+  const btnNew = document.getElementById('btn-new');
+  btnNew.style.display = entity === 'home' ? 'none' : '';
+  render();
+}
+
+document.getElementById('btn-refresh').addEventListener('click', render);
+document.getElementById('btn-new').addEventListener('click', () => openModal(null));
+
+// ─── render ──────────────────────────────────────────────────────────────
+
+async function render() {
+  if (currentEntity === 'home') { renderHome(); return; }
+  const content = document.getElementById('content');
+  content.innerHTML = `<div class="loading">Carregando...</div>`;
+  const data = await apiFetch('/' + currentEntity);
+  if (!data) return;
+  currentData = data;
+  const def = ENTITIES[currentEntity];
+  let html = `
+    <div class="entity-header">
+      <div>
+        <h1>${def.label} <em id="count-badge"></em></h1>
+        <div class="meta">Gestão · Observatório Sidereus Nuncius</div>
+      </div>
+    </div>
+    <div class="table-wrap">
+  `;
+  if (!data.length) {
+    html += `</div><div class="empty">Nenhum registro encontrado.<small>Use "Novo registro" para criar o primeiro.</small></div>`;
+  } else {
+    html += `<table class="data-table"><thead><tr>`;
+    def.columns.forEach(col => {
+      html += `<th>${col.label}</th>`;
+    });
+    html += `<th></th></tr></thead><tbody>`;
+    data.forEach(row => {
+      html += `<tr>`;
+      def.columns.forEach(col => {
+        let val;
+        if (typeof col.key === 'function') val = col.key(row);
+        else val = row[col.key];
+        const display = col.fmt ? col.fmt(val) : (val != null ? escHtml(String(val)) : '—');
+        html += `<td>${display}</td>`;
+      });
+      html += `<td><div class="row-actions">
+        <button class="btn-action" title="Editar" data-id="${row.id}" data-action="edit">
+          <svg><use href="#ic-edit"/></svg></button>
+        <button class="btn-action danger" title="Excluir" data-id="${row.id}" data-action="delete">
+          <svg><use href="#ic-trash"/></svg></button>
+      </div></td></tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+  html += `</div>`;
+  content.innerHTML = html;
+
+  if (data.length) {
+    document.querySelector('.entity-header h1 em').innerHTML =
+      `<span class="count-badge">${data.length}</span>`;
+  }
+
+  content.querySelectorAll('[data-action="edit"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const rec = currentData.find(r => String(r.id) === btn.dataset.id);
+      if (rec) openModal(rec);
+    });
+  });
+  content.querySelectorAll('[data-action="delete"]').forEach(btn => {
+    btn.addEventListener('click', () => openDelete(btn.dataset.id));
   });
 }
 
-// ════════════════════════════════════════════════════════
-// VIEW MODAL
-// ════════════════════════════════════════════════════════
-function openView(key, id) {
-  const cfg = CRUD[key];
-  const r   = getById(state[cfg.key], id);
-  if (!r) return;
-
-  const SKIP = new Set(['id','senha','funcao']);
-  const LABELS = {
-    nome:'Nome', cpf:'CPF', telefone:'Telefone', email:'E-mail',
-    especialidade:'Especialidade', login:'Login', status:'Status',
-    disponibilidade:'Disponibilidade', tipoCaravana:'Tipo',
-    instituicao:'Instituição', responsavel:'Responsável',
-    quantidadeVisitantes:'Qtd. Visitantes', observacoes:'Observações',
-    dataVisita:'Data / Hora', caravanaId:'Caravana', guiaId:'Guia',
-    valorVisita:'Valor', dataObservacao:'Data', projetoId:'Projeto',
-    constelacaoId:'Constelação', instrumentoUtilizado:'Instrumento',
-    versaoObservacao:'Versão', descricao:'Descrição',
-    curiosidades:'Curiosidades', hemisferio:'Hemisfério',
-    periodoVisibilidade:'Visibilidade', principaisEstrelas:'Principais Estrelas',
-    titulo:'Título', dataInicio:'Início', dataTermino:'Término',
-    grupoDePesquisaId:'Grupo', coordenadorId:'Coordenador',
-    areaDePesquisa:'Área de Pesquisa', pesquisadores:'Pesquisadores',
-    dataCriacao:'Data Criação',
-  };
-
-  const rows = Object.entries(r).filter(([k]) => !SKIP.has(k)).map(([k, val]) => {
-    let disp = val ?? '–';
-    if (k==='caravanaId')          disp = getName(state.caravanas, val);
-    else if (k==='guiaId')         disp = getName(state.guias, val);
-    else if (k==='projetoId')      disp = getName(state.projetos, val);
-    else if (k==='constelacaoId')  disp = getName(state.constelacoes, val);
-    else if (k==='coordenadorId')  disp = getName(state.coordenadores, val);
-    else if (k==='grupoDePesquisaId') disp = getName(state.gruposPesquisa, val);
-    else if (k==='pesquisadores'&&Array.isArray(val)) disp = val.map(pid=>getName(state.pesquisadores,pid)).join(', ')||'–';
-    else if (k==='dataVisita')     disp = fmtDt(val);
-    else if (['dataObservacao','dataInicio','dataTermino','dataCriacao'].includes(k)) disp = fmt(val);
-    else if (k==='valorVisita')    disp = fmtR$(val);
-    else if (k==='status'&&typeof val==='boolean') disp = val ? 'Ativo' : 'Inativo';
-    else if (k==='status'&&typeof val==='string')  disp = {ativo:'Ativo',concluido:'Concluído',suspenso:'Suspenso'}[val]??val;
-    else if (k==='disponibilidade') disp = TURNOS[val]?.label ?? val;
-    return `<div class="col-md-6">
-      <p class="mb-0" style="font-size:.625rem;letter-spacing:.1em;color:var(--obs-dim);text-transform:uppercase">${LABELS[k]??k}</p>
-      <p class="mb-0 mt-1" style="font-size:.8125rem;color:var(--obs-text);word-break:break-word">${disp}</p>
-    </div>`;
+function renderHome() {
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="welcome">
+      <svg class="welcome-mark" viewBox="0 0 120 120"><use href="#mark-seal"/></svg>
+      <h1>Bem-vindo ao<br><em>Observatório.</em></h1>
+      <p>Sistema de Gestão do Observatório Sidereus Nuncius — gerencie agendamentos, pesquisas e observações astronômicas.</p>
+      <div class="welcome-grid">
+        ${[
+          ['agendamentos','ic-schedule','Agendamentos','Caravanas · Guias · Turnos'],
+          ['projetos','ic-project','Projetos','Pesquisa · Status · Coordenadores'],
+          ['observacoes','ic-telescope','Observações','Constelações · Versões · Datas'],
+          ['caravanas','ic-caravan','Caravanas','Tipos · Visitantes · Escolas'],
+          ['guias','ic-book','Guias','Disponibilidade · Especialidades'],
+          ['constelacoes','ic-constellation','Constelações','Catálogo · Hemisfério'],
+          ['coordenadores','ic-compass','Coordenadores','Gestão de projetos'],
+          ['grupos-de-pesquisa','ic-group','Grupos de Pesquisa','Áreas de Atuação'],
+          ['pesquisadores','ic-researcher','Pesquisadores','Titulações · Grupos'],
+        ].map(([e,ic,n,d]) => `
+          <div class="welcome-card" data-nav="${e}">
+            <svg width="22" height="22"><use href="#${ic}"/></svg>
+            <div class="wc-name">${n}</div>
+            <div class="wc-desc">${d}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  content.querySelectorAll('[data-nav]').forEach(card => {
+    card.addEventListener('click', () => navigate(card.dataset.nav));
   });
-
-  document.getElementById('view-modal')?.remove();
-  const div = document.createElement('div');
-  div.className = 'modal fade'; div.id = 'view-modal';
-  div.setAttribute('tabindex','-1'); div.setAttribute('aria-modal','true');
-  div.setAttribute('role','dialog'); div.setAttribute('aria-labelledby','view-modal-title');
-  div.innerHTML = `
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="view-modal-title">
-            <i class="bi bi-eye me-2"></i>Visualizar — ${cfg.title}
-          </h4>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">${rows.join('')}</div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-obs btn-obs-secondary" data-bs-dismiss="modal">Fechar</button>
-          ${currentUser?.tipo==='coordenador' ? `<button class="btn btn-obs btn-obs-primary" onclick="bootstrap.Modal.getInstance(document.getElementById('view-modal')).hide();openForm('${key}',${id})"><i class="bi bi-pencil me-1"></i>Editar</button>` : ''}
-        </div>
-      </div>
-    </div>`;
-  document.body.appendChild(div);
-  const modal = new bootstrap.Modal(div);
-  div.addEventListener('hidden.bs.modal', () => div.remove());
-  modal.show();
 }
 
-// ════════════════════════════════════════════════════════
-// CONFIRM DIALOG
-// ════════════════════════════════════════════════════════
-function showConfirm(title, msg, onConfirm) {
-  document.getElementById('confirm-modal')?.remove();
-  const div = document.createElement('div');
-  div.className = 'modal fade'; div.id = 'confirm-modal';
-  div.setAttribute('tabindex','-1'); div.setAttribute('aria-modal','true');
-  div.setAttribute('role','alertdialog'); div.setAttribute('aria-labelledby','confirm-title');
-  div.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content text-center p-2">
-        <div class="modal-body">
-          <i class="bi bi-exclamation-triangle" style="font-size:2.5rem;color:var(--obs-danger);display:block;margin-bottom:.75rem"></i>
-          <h5 id="confirm-title" class="modal-title mb-2">${title}</h5>
-          <p style="font-size:.8125rem;color:var(--obs-muted)">${msg}</p>
-        </div>
-        <div class="modal-footer justify-content-center border-0 pt-0">
-          <button class="btn btn-obs btn-obs-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-          <button id="confirm-yes" class="btn btn-obs btn-obs-danger btn-sm">Confirmar</button>
-        </div>
-      </div>
-    </div>`;
-  document.body.appendChild(div);
-  const modal = new bootstrap.Modal(div);
-  div.addEventListener('hidden.bs.modal', () => div.remove());
-  div.querySelector('#confirm-yes').addEventListener('click', () => { modal.hide(); onConfirm(); });
-  modal.show();
+// ─── modal ───────────────────────────────────────────────────────────────
+
+async function openModal(record) {
+  editTarget = record;
+  const def = ENTITIES[currentEntity];
+  const backdrop = document.getElementById('modal-backdrop');
+  document.getElementById('modal-eyebrow').textContent = def.label;
+  document.getElementById('modal-title').innerHTML =
+    record ? `Editar <em>registro</em>` : `Novo <em>registro</em>`;
+  document.getElementById('modal-errors').innerHTML = '';
+  document.getElementById('modal-form').innerHTML = '<div class="loading">Carregando formulário...</div>';
+  backdrop.classList.add('open');
+  const html = await def.form(record || null);
+  document.getElementById('modal-form').innerHTML = html;
 }
+
+document.getElementById('btn-cancel').addEventListener('click', closeModal);
+document.getElementById('modal-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeModal();
+});
+
+function closeModal() {
+  document.getElementById('modal-backdrop').classList.remove('open');
+  editTarget = null;
+}
+
+document.getElementById('btn-save').addEventListener('click', async () => {
+  const def = ENTITIES[currentEntity];
+  const form = document.getElementById('modal-form');
+  const data = {};
+  form.querySelectorAll('[name]').forEach(el => { data[el.name] = el.value; });
+  const body = def.bodyFn(data);
+  document.getElementById('modal-errors').innerHTML = '';
+
+  const method = editTarget ? 'PUT' : 'POST';
+  const url = editTarget
+    ? `${API}/${currentEntity}/${editTarget.id}`
+    : `${API}/${currentEntity}`;
+
+  try {
+    const res = await fetch(url, {
+      method, headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msgs = Array.isArray(json.errors) ? json.errors : [json.message || 'Erro desconhecido.'];
+      document.getElementById('modal-errors').innerHTML =
+        msgs.map(m => `<div class="field-error">✕ ${escHtml(m)}</div>`).join('');
+      return;
+    }
+    closeModal();
+    showToast(editTarget ? 'Registro atualizado.' : 'Registro criado.');
+    render();
+  } catch (e) {
+    document.getElementById('modal-errors').innerHTML =
+      `<div class="field-error">✕ Não foi possível conectar ao servidor.</div>`;
+  }
+});
+
+// ─── delete ───────────────────────────────────────────────────────────────
+
+function openDelete(id) {
+  deleteTarget = id;
+  const backdrop = document.getElementById('delete-backdrop');
+  document.getElementById('delete-msg').innerHTML =
+    `Esta ação removerá permanentemente o registro <span class="confirm-id">#${escHtml(id)}</span> de <strong>${ENTITIES[currentEntity].label}</strong>. A operação não pode ser desfeita.`;
+  backdrop.classList.add('open');
+}
+
+document.getElementById('btn-delete-cancel').addEventListener('click', () => {
+  document.getElementById('delete-backdrop').classList.remove('open');
+});
+document.getElementById('delete-backdrop').addEventListener('click', e => {
+  if (e.target === e.currentTarget)
+    document.getElementById('delete-backdrop').classList.remove('open');
+});
+document.getElementById('btn-delete-confirm').addEventListener('click', async () => {
+  document.getElementById('delete-backdrop').classList.remove('open');
+  try {
+    const res = await fetch(`${API}/${currentEntity}/${deleteTarget}`, { method: 'DELETE' });
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      showToast(json.message || 'Erro ao excluir.', true);
+    } else {
+      showToast('Registro removido.');
+      render();
+    }
+  } catch (e) {
+    showToast('Não foi possível conectar ao servidor.', true);
+  }
+});
+
+// ─── api ──────────────────────────────────────────────────────────────────
+
+async function apiFetch(path) {
+  try {
+    const res = await fetch(API + path);
+    if (!res.ok) {
+      showToast('Erro ao carregar ' + path, true);
+      return null;
+    }
+    return res.json();
+  } catch {
+    showToast('Servidor indisponível. Verifique se o backend está rodando na porta 3333.', true);
+    document.getElementById('content').innerHTML =
+      `<div class="empty">Servidor indisponível.<small>Execute npm run dev na pasta backend/</small></div>`;
+    return null;
+  }
+}
+
+// ─── toast ────────────────────────────────────────────────────────────────
+
+let toastTimer;
+function showToast(msg, error = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.toggle('error', error);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+}
+
+// ─── utils ────────────────────────────────────────────────────────────────
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return escHtml(s); }
+
+// ─── init ────────────────────────────────────────────────────────────────
+
+renderHome();
 </script>
 </body>
 </html>

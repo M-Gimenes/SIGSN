@@ -89,5 +89,18 @@ SIGSN is an astronomy observatory management system. It manages research groups,
 - `Guia.disponibilidade` must be exactly `'MANHA'`, `'TARDE'`, or `'NOITE'` (uppercase, without accent) — it must match the shift computed from `dataVisita` when creating an `Agendamento`.
 - `Caravana.tipoCaravana` must be one of: `'Escolar'`, `'Universitária'`, `'Turística'`, `'Institucional'`.
 - `Caravana.quantidadeVisitantes` is capped at 50.
+- All service write operations (create/update) wrap logic in `sequelize.transaction(async (transaction) => { ... })` — pass `{ transaction }` to every Sequelize call inside.
+- `underscored: true` is set globally: DB columns are `snake_case`, JS model attributes are `camelCase`. Sequelize maps them automatically; use camelCase in code.
+- Active DB dialect is **SQLite** (`database.sqlite` file, dev default). To switch to PostgreSQL, uncomment the second block in `backend/src/config/database-config.js`.
+- CORS is open (`cors()` with no restrictions) — the frontend can call the API from any local origin/port.
 
-**Frontend:** `../frontend/SIGSN.html` — single-file static frontend (path relative to `backend/`).
+**Frontend** (all paths relative to `backend/`):
+- `../frontend/SIGSN.html` — main CRUD frontend; serves all 9 entity routes against the API on port 3333.
+- `../frontend/Identidade Visual SIGSN.html` — brand identity guide (standalone, no backend needed).
+- `../frontend/deck-stage.js` — `<deck-stage>` web component for HTML presentation decks (keyboard nav, print-to-PDF).
+- `../frontend/apresentacao/` — 20-slide presentation deck (`index.html` + `styles.css`); references `../deck-stage.js`.
+
+**Visual identity tokens** (use for any new UI work):
+- Colors: `--ink #1a2547` · `--paper #f4efe4` · `--ember #b8542b` · `--gold #c9a04a` · `--verdigris #516b5d`
+- Fonts: Cormorant Garamond (headings/display) · Newsreader (body) · JetBrains Mono (data/code/labels)
+- Aesthetic: parchment + indigo ink (not dark dashboard); `MANHA/TARDE/NOITE` map to gold/ember/verdigris pills.
