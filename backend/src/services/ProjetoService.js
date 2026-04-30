@@ -63,7 +63,6 @@ async function validarRegrasDeNegocio(dados, excludeId, transaction) {
   if (dados.status !== 'ativo') return;
 
   // Regra 2 antes de Regra 1: a por-coordenador é mais específica e dá feedback mais útil.
-  // Ordem também permite testar as duas regras independentemente em qualquer estado.
   await validarLimiteProjetosPorCoordenador(dados.coordenadorId, excludeId, transaction);
   await validarLimiteProjetosAtivos(excludeId, transaction);
 }
