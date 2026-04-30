@@ -10,7 +10,7 @@ class Projeto extends Model {
           allowNull: false,
           validate: {
             notEmpty: { msg: 'Titulo do Projeto deve ser preenchido.' },
-            len: { args: [3, 30], msg: 'Título do Projeto deve ter entre 3 e 30 caracteres.' },
+            len: { args: [3, 50], msg: 'Título do Projeto deve ter entre 3 e 30 caracteres.' },
           },
         },
         dataInicio: {

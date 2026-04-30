@@ -10,7 +10,7 @@ class GrupoDePesquisa extends Model {
           allowNull: false,
           validate: {
             notEmpty: { msg: 'Nome do Grupo de Pesquisa deve ser preenchido.' },
-            len: { args: [3, 30], msg: 'Nome do Grupo de Pesquisa deve ter entre 3 e 30 caracteres.' },
+            len: { args: [3, 50], msg: 'Nome do Grupo de Pesquisa deve ter entre 3 e 30 caracteres.' },
           },
         },
         areaDePesquisa: {

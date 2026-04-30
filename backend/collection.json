@@ -601,7 +601,7 @@
           }
         },
         {
-          "name": "Criar — válido",
+          "name": "Criar — válido (status concluido para não impactar contagem de ativos)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -609,7 +609,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"titulo\": \"Projeto Nova Era\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 2\n}"
+              "raw": "{\n  \"titulo\": \"Projeto Nova Era\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"concluido\",\n  \"areaDePesquisa\": \"Astrometria\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 3\n}"
             }
           }
         },
@@ -627,7 +627,7 @@
           }
         },
         {
-          "name": "Criar — RN 1 (11º projeto ativo — excede limite de 10 simultâneos)",
+          "name": "Criar — RN 1 (excede limite global de 10 projetos ativos)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -635,7 +635,7 @@
             "body": {
               "mode": "raw",
               "options": { "raw": { "language": "json" } },
-              "raw": "{\n  \"titulo\": \"Projeto Décimo Primeiro\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astronomia Geral\",\n  \"grupoDePesquisaId\": 1,\n  \"coordenadorId\": 3\n}"
+              "raw": "{\n  \"titulo\": \"Projeto Décimo Primeiro\",\n  \"dataInicio\": \"2026-06-01\",\n  \"dataTermino\": \"2026-12-31\",\n  \"status\": \"ativo\",\n  \"areaDePesquisa\": \"Astronomia Geral\",\n  \"grupoDePesquisaId\": 4,\n  \"coordenadorId\": 6\n}"
             }
           }
         },
