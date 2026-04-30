@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGSN — Os Três Processos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=12">
+<script src="./deck-stage.js"></script>
+</head>
+<body style="margin:0;background:#1a2547">
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="mark-primary" viewBox="0 0 200 200">
+      <g transform="translate(100 100)">
+        <g fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round">
+          <circle r="86"/>
+          <line x1="-86" y1="0" x2="-82" y2="0"/><line x1="86" y1="0" x2="82" y2="0"/>
+          <line x1="0" y1="-86" x2="0" y2="-82"/><line x1="0" y1="86" x2="0" y2="82"/>
+          <ellipse rx="86" ry="34" transform="rotate(-24)"/>
+          <ellipse rx="86" ry="34" transform="rotate(24)"/>
+          <line x1="0" y1="-94" x2="0" y2="94" stroke-dasharray="1 4"/>
+          <circle r="64"/>
+        </g>
+        <circle r="52" fill="currentColor" opacity=".06"/>
+        <circle r="52" fill="none" stroke="currentColor" stroke-width="1"/>
+        <g font-family="Cormorant Garamond, Garamond, serif" font-weight="500" text-anchor="middle" fill="currentColor">
+          <text y="18" font-size="60" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+        </g>
+        <g fill="currentColor">
+          <polygon points="0,-86 1.6,-80 6,-78 1.6,-76 0,-70 -1.6,-76 -6,-78 -1.6,-80"/>
+          <circle cx="0" cy="-64" r="1.6"/><circle cx="64" cy="0" r="1.6"/>
+          <circle cx="0" cy="64" r="1.6"/><circle cx="-64" cy="0" r="1.6"/>
+        </g>
+      </g>
+    </symbol>
+    <symbol id="mark-seal" viewBox="0 0 120 120">
+      <g transform="translate(60 60)">
+        <circle r="54" fill="none" stroke="currentColor" stroke-width="1.25"/>
+        <circle r="48" fill="none" stroke="currentColor" stroke-width=".75" stroke-dasharray="1 3"/>
+        <text x="0" y="18" font-family="Cormorant Garamond, serif" font-weight="500" font-size="52" text-anchor="middle" fill="currentColor" letter-spacing="-1">S<tspan dx="2" font-style="italic">N</tspan></text>
+        <polygon points="0,-54 1.2,-49 4,-47 1.2,-45 0,-40 -1.2,-45 -4,-47 -1.2,-49" fill="currentColor"/>
+      </g>
+    </symbol>
+    <symbol id="ic-caravan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="7" width="14" height="9"/><path d="M17 10h3l1 3v3h-4"/><circle cx="8" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>
+    </symbol>
+    <symbol id="ic-project" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 5h12l4 4v10H4z"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="13" y2="15"/>
+    </symbol>
+    <symbol id="ic-telescope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 8l10-3 7 2-3 10-10 3z"/><line x1="10" y1="13" x2="14" y2="16"/><line x1="10" y1="13" x2="7" y2="20"/><line x1="14" y1="16" x2="17" y2="20"/>
+    </symbol>
+    <symbol id="constellation-orn" viewBox="0 0 400 400">
+      <g transform="translate(200 200)">
+        <g fill="none" stroke="currentColor" stroke-width=".75">
+          <circle r="180"/><circle r="140" stroke-dasharray="1 4"/><circle r="100"/>
+          <ellipse rx="180" ry="60" transform="rotate(-18)"/>
+          <ellipse rx="180" ry="60" transform="rotate(18)"/>
+          <line x1="-190" y1="0" x2="190" y2="0"/>
+          <line x1="0" y1="-190" x2="0" y2="190"/>
+        </g>
+        <g fill="currentColor">
+          <circle cx="-130" cy="-40" r="2.5"/><circle cx="-80" cy="-90" r="1.5"/><circle cx="-30" cy="-60" r="2"/>
+          <circle cx="40" cy="-100" r="1.5"/><circle cx="110" cy="-30" r="2.5"/><circle cx="70" cy="60" r="1.5"/>
+          <circle cx="-60" cy="110" r="2"/><circle cx="-110" cy="50" r="1.5"/>
+          <polygon points="0,-160 2,-152 8,-150 2,-148 0,-140 -2,-148 -8,-150 -2,-152"/>
+        </g>
+        <g stroke="currentColor" stroke-width=".5" fill="none">
+          <polyline points="-130,-40 -80,-90 -30,-60 40,-100 110,-30 70,60 -60,110 -110,50 -130,-40"/>
+        </g>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<deck-stage>
+
+<section class="cover" data-screen-label="01 Capa">
+  <svg class="seal-bg" aria-hidden="true"><use href="#constellation-orn"/></svg>
+  <div class="cover-inner">
+    <div class="lede">
+      <div class="deck-num">Atividade 09 · Back-End · Casos de Uso</div>
+      <h1 class="cover-title">Os três <em>processos</em><br>do observatório.</h1>
+      <p class="cover-sub">Implementação dos serviços de Agendamento, Projeto e Observação — com transações, regras de negócio e SQL gerado pelo ORM.</p>
+      <div class="miniworld">
+        <div class="label">Tema · Sistema de Gestão · SIGSN</div>
+        <div class="processes">
+          <div class="proc proc-agendamento" style="--c:var(--verdigris)">
+            <div class="pnum">i</div>
+            <div class="pname">Agendamento</div>
+            <div class="pdesc">Caravana × Guia × Data — registra a visita ao observatório.</div>
+          </div>
+          <div class="proc proc-projeto" style="--c:var(--gold)">
+            <div class="pnum">ii</div>
+            <div class="pname">Projeto</div>
+            <div class="pdesc">Grupo × Coordenador × Status — organiza a pesquisa.</div>
+          </div>
+          <div class="proc proc-observacao" style="--c:var(--ember)">
+            <div class="pnum">iii</div>
+            <div class="pname">Observação</div>
+            <div class="pdesc">Projeto × Constelação × Versão — registra o céu visto.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="colophon">
+      <div><svg class="stamp" aria-hidden="true"><use href="#mark-primary"/></svg></div>
+      <div>
+        <p class="latin">"Magna longeque admirabilia spectacula pandens."</p>
+        <div class="meta">
+          <div><strong>Observatório Sidereus Nuncius</strong></div>
+          <div>SIGSN · v 2.0</div>
+          <div>Larissa · Matheus · Emanuelly</div>
+          <div>MMXXVI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="proc-agendamento process-divider" data-screen-label="02 Agendamento — Capítulo I">
+  <div class="slide-top-rule"></div>
+  <div class="pd-content">
+    <div class="pd-roman">I</div>
+    <div class="pd-text">
+      <div class="pd-eyebrow">Capítulo Primeiro · Larissa Paganini</div>
+      <h1>De <em>Agendamento</em></h1>
+      <div class="pd-author">Caravanas, guias e a janela do céu.</div>
+      <p class="pd-desc">Registrar visitas ao observatório envolve casar a disponibilidade do guia com a data e horário escolhidos, respeitando o limite de três agendamentos por turno.</p>
+      <dl class="pd-meta">
+        <div><dt>Service</dt><dd>AgendamentoService.js</dd></div>
+        <div><dt>Modelo</dt><dd>Agendamento</dd></div>
+        <div><dt>RF</dt><dd>27 — 30</dd></div>
+        <div><dt>Regras</dt><dd>2</dd></div>
+      </dl>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Capítulo I · Folio 02</div>
+  </div>
+</section>
+
+<section class="proc-agendamento" data-screen-label="03 Agendamento — Visão Geral">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">i</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-caravan"/></svg>Processo · Agendamento</span>
+      </div>
+      <h1>Visão Geral do Processo</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Detalhes do Agendamento.</strong> Associa uma <em>Caravana</em> a um <em>Guia</em> em uma <em>data e horário</em> específicos. O turno (Manhã, Tarde, Noite) é derivado da hora da visita e usado para validar a regra de limite por turno.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: agendamentos</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>data_visita</th><th>valor</th><th>guia_id</th><th>caravana_id</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>2026-05-12 19:30</td><td>120.00</td><td>2</td><td>1</td></tr>
+              <tr><td>2</td><td>2026-05-12 20:00</td><td>120.00</td><td>3</td><td>2</td></tr>
+              <tr><td>3</td><td>2026-05-15 09:00</td><td>80.00</td><td>1</td><td>4</td></tr>
+              <tr><td>4</td><td>2026-05-15 14:30</td><td>80.00</td><td>2</td><td>5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: caravanas</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>nome</th><th>tipo</th><th>visitantes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Esc. Pedro Américo</td><td>Escolar</td><td>40</td></tr>
+              <tr><td>2</td><td>Univ. Federal ES</td><td>Universitária</td><td>28</td></tr>
+              <tr><td>4</td><td>Família Galilei</td><td>Turística</td><td>12</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: guias</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>nome</th><th>especialidade</th><th>disponibilidade</th><th>status</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Hipátia de Alexandria</td><td>Sistema Solar</td><td>MANHA</td><td>Ativo</td></tr>
+              <tr><td>2</td><td>Caroline Herschel</td><td>Estrelas Variáveis</td><td>NOITE</td><td>Ativo</td></tr>
+              <tr><td>3</td><td>Vera Rubin</td><td>Galáxias</td><td>NOITE</td><td>Ativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box" style="background: rgba(81,107,93,.06); height: 270.635px">
+          <h3><span class="glyph">§</span>Turnos derivados da hora</h3>
+          <table class="data-table">
+            <thead><tr><th>turno</th><th>intervalo</th><th>uso</th></tr></thead>
+            <tbody>
+              <tr><td>MANHA</td><td>06h — 12h</td><td>Visitas escolares</td></tr>
+              <tr><td>TARDE</td><td>12h — 18h</td><td>Visitas turísticas</td></tr>
+              <tr><td>NOITE</td><td>18h — 06h</td><td>Observação noturna</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Visão Geral · Folio 03</div>
+  </div>
+</section>
+
+<section class="proc-agendamento" data-screen-label="04 Agendamento — Fluxo de Transação">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">ii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-caravan"/></svg>Processo · Agendamento</span>
+      </div>
+      <h1>Fluxo de Transação</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Operação atômica.</strong> O <em>create</em> executa dentro de uma <em>transação</em> Sequelize: as validações usam a mesma conexão da gravação, e qualquer falha de regra dispara <span class="hl hl-tx-error">ValidationError</span> e desfaz a inserção.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="flow-diagram">
+          <h3><span class="glyph">§</span>Sequência da operação</h3>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">i</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">begin</span>Abrir transação</div>
+                <div class="step-detail">sequelize.transaction abre BEGIN no SQLite.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">ii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">read</span>Buscar guia + validar campos</div>
+                <div class="step-detail">Guia.findByPk · validarCampos(Agendamento, dados).</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">rule</span>Aplicar Regra 1 e Regra 2</div>
+                <div class="step-detail">disponibilidade do guia · limite por turno.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iv</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-ok">commit</span>Persistir e retornar</div>
+                <div class="step-detail">Agendamento.create · findByPk com include · COMMIT.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.create</h3>
+          <pre class="no-border-top"><code><span class="cmt">// AgendamentoService.js</span>
+<span class="kw">static async</span> create(req) {
+  <span class="kw">const</span> { dataVisita, valorVisita, observacoes,
+          guiaId, caravanaId } = req.body;
+  <span class="kw">const</span> dados = { dataVisita, valorVisita,
+                  observacoes, guiaId, caravanaId };
+
+  <span class="kw">return</span> <span class="hl hl-tx-start">sequelize.transaction</span>(<span class="kw">async</span> (transaction) =&gt; {
+    <span class="kw">await</span> <span class="hl hl-tx-neutral">validarRegrasDeNegocio</span>(
+      dados, <span class="kw">null</span>, transaction);
+    <span class="kw">const</span> { id } = <span class="kw">await</span> <span class="hl hl-tx-success">Agendamento.create</span>(
+      dados, { transaction });
+    <span class="kw">return</span> Agendamento.findByPk(
+      id, { include, transaction });
+  });
+}
+
+<span class="cmt">// → orquestrador validarRegrasDeNegocio:</span>
+<span class="cmt">//   carrega Guia, valida campos, deriva turno,</span>
+<span class="cmt">//   chama Regra 1 e Regra 2 (próximas folhas).</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Fluxo de Transação · Folio 04</div>
+  </div>
+</section>
+
+<section class="proc-agendamento" data-screen-label="05 Agendamento — Regras de Negócio">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-caravan"/></svg>Processo · Agendamento</span>
+      </div>
+      <h1>Regras de Negócio</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Duas regras protegem a integridade da agenda.</strong> Ambas operam <em>dentro da mesma transação</em> de criação/atualização — qualquer violação aborta a operação antes do <span class="hl hl-tx-success">INSERT</span>.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="rules-cards">
+          <div class="rule-card">
+            <div class="num">i</div>
+            <div class="body">
+              <div class="label">Regra 1 · Disponibilidade do Guia</div>
+              <div class="text">O guia selecionado deve ter <em>disponibilidade compatível</em> com o turno derivado da hora da visita (MANHA, TARDE, NOITE).</div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="num">ii</div>
+            <div class="body">
+              <div class="label">Regra 2 · Limite por turno</div>
+              <div class="text">Não pode haver mais que <em>3 agendamentos</em> para a mesma data dentro do mesmo turno (excluindo o próprio registro em update).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>Função orquestradora</h3>
+          <pre class="no-border-top"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
+  <span class="kw">const</span> erros = <span class="kw">await</span> validarCampos(Agendamento, dados);
+
+  <span class="kw">const</span> guia = <span class="kw">await</span> Guia.findByPk(
+    dados.guiaId, { transaction });
+  <span class="kw">if</span> (!guia) erros.push(<span class="str">'Guia não encontrado.'</span>);
+
+  <span class="kw">if</span> (erros.length) <span class="kw">throw new</span> ValidationError(erros);
+
+  <span class="kw">const</span> visitDate = <span class="kw">new</span> Date(dados.dataVisita);
+  <span class="kw">const</span> turno = getTurnoFromDate(visitDate);
+
+  <span class="kw">await</span> <span class="hl hl-rule-1">validarDisponibilidadeGuia</span>(guia, turno);
+  <span class="kw">await</span> <span class="hl hl-rule-2">validarLimiteAgendamentosPorTurno</span>(
+    visitDate, turno, excludeId, transaction);
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Regras de Negócio · Folio 05</div>
+  </div>
+</section>
+
+<section class="proc-agendamento" data-screen-label="06 Agendamento — Regra 1">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iv</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-caravan"/></svg>Processo · Agendamento</span>
+      </div>
+      <h1>Implementação da <em>Regra 1</em> · Disponibilidade do Guia</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 1.</strong> Compara em memória o turno disponível do guia com o turno derivado da hora da visita. <em>Não há SQL adicional</em> além do <span class="hl hl-tx-neutral">findByPk</span> já feito antes — a regra é puramente de domínio.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.js · Regra 1</h3>
+          <pre class="no-border-top"><code><span class="cmt">// Regra 1: guia precisa estar disponível no turno escolhido.</span>
+<span class="kw">async function</span> validarDisponibilidadeGuia(guia, turno) {
+  <span class="kw">if</span> (<span class="hl hl-rule-1">guia.disponibilidade !== turno</span>) {
+    <span class="kw">throw new</span> ValidationError(
+      <span class="str">`O guia "${guia.nome}" não tem disponibilidade
+       compatível com o horário selecionado.`</span>
+    );
+  }
+}
+
+<span class="cmt">// agendamentoTurno.js — turno derivado da hora local</span>
+<span class="kw">export function</span> getTurnoFromDate(date) {
+  <span class="kw">const</span> d = date <span class="kw">instanceof</span> Date ? date : <span class="kw">new</span> Date(date);
+  <span class="kw">const</span> h = d.getHours();
+  <span class="kw">if</span> (h &gt;= 6  &amp;&amp; h &lt; 12) <span class="kw">return</span> <span class="str">'MANHA'</span>;
+  <span class="kw">if</span> (h &gt;= 12 &amp;&amp; h &lt; 18) <span class="kw">return</span> <span class="str">'TARDE'</span>;
+  <span class="kw">return</span> <span class="str">'NOITE'</span>;
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL emitido pela busca prévia do guia</h4>
+          <p class="note">A regra em si não dispara consulta — só compara strings. O <em>SELECT</em> abaixo já foi emitido por <em>Guia.findByPk</em> antes da chamada:</p>
+          <pre><code>SELECT id, nome, especialidade,
+       disponibilidade, status
+FROM   guias
+WHERE  id = $guiaId
+LIMIT  1;</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenários de validação</h3>
+          <table class="data-table">
+            <thead><tr><th>guia.disponibilidade</th><th>data_visita</th><th>turno</th><th>resultado</th></tr></thead>
+            <tbody>
+              <tr class="hl-ok"><td>NOITE</td><td>19:30</td><td>NOITE</td><td>✓ aceito</td></tr>
+              <tr class="hl-warn"><td>MANHA</td><td>19:30</td><td>NOITE</td><td>✗ erro</td></tr>
+              <tr class="hl-ok"><td>TARDE</td><td>14:30</td><td>TARDE</td><td>✓ aceito</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Regra 1 · Folio 06</div>
+  </div>
+</section>
+
+<section class="proc-agendamento" data-screen-label="07 Agendamento — Regra 2">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">v</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-caravan"/></svg>Processo · Agendamento</span>
+      </div>
+      <h1>Implementação da <em>Regra 2</em> · Limite por turno</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 2.</strong> Conta agendamentos no mesmo dia e mesmo turno; em <em>update</em>, exclui o próprio id. O Sequelize aplica <span class="hl hl-tx-neutral">date(data_visita)</span> no SQL para comparar apenas a parte da data.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>AgendamentoService.js · Regra 2</h3>
+          <pre class="no-border-top"><code><span class="kw">const</span> MAX_AGENDAMENTOS_POR_TURNO = <span class="hl hl-rule-2">3</span>;
+
+<span class="kw">async function</span> validarLimiteAgendamentosPorTurno(
+    visitDate, turno, excludeId, transaction) {
+
+  <span class="kw">const</span> dayStr = formatLocalDateYYYYMMDD(visitDate);
+
+  <span class="kw">const</span> agendamentosNoDia = <span class="kw">await</span> <span class="hl hl-rule-2">Agendamento.findAll</span>({
+    attributes: [<span class="str">'id'</span>, <span class="str">'dataVisita'</span>],
+    where: sequelize.where(
+      sequelize.fn(<span class="str">'date'</span>, sequelize.col(<span class="str">'data_visita'</span>)),
+      dayStr),
+    transaction,
+  });
+
+  <span class="kw">const</span> totalNoTurno = agendamentosNoDia.filter((row) =&gt;
+    Number(row.id) !== Number(excludeId) &amp;&amp;
+    getTurnoFromDate(row.dataVisita) === turno
+  ).length;
+
+  <span class="kw">if</span> (totalNoTurno &gt;= <span class="hl hl-rule-2">MAX_AGENDAMENTOS_POR_TURNO</span>)
+    <span class="kw">throw new</span> ValidationError(
+      <span class="str">`Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO}
+       agendamentos para a mesma data no mesmo turno.`</span>);
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL Resultante (SQL tradicional)</h4>
+          <p class="note">A combinação <em>sequelize.where + sequelize.fn('date', col)</em> gera um filtro pela parte da data, ignorando a hora:</p>
+          <pre><code>SELECT id, data_visita
+FROM   agendamentos
+WHERE  date(data_visita) = '2026-05-12';</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenário · 4ª tentativa NOITE de 12/05</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>data_visita</th><th>turno</th><th>na contagem?</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>1</td><td>19:30</td><td>NOITE</td><td>conta</td></tr>
+              <tr class="hl-warn"><td>2</td><td>20:00</td><td>NOITE</td><td>conta</td></tr>
+              <tr class="hl-warn"><td>9</td><td>22:15</td><td>NOITE</td><td>conta · 3</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ a 4ª inserção NOITE viola a regra e é rejeitada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Agendamento</span>
+    </div>
+    <div>Regra 2 · Folio 07</div>
+  </div>
+</section>
+
+<section class="proc-projeto process-divider" data-screen-label="08 Projeto — Capítulo II">
+  <div class="slide-top-rule"></div>
+  <div class="pd-content">
+    <div class="pd-roman">II</div>
+    <div class="pd-text">
+      <div class="pd-eyebrow">Capítulo Segundo · Matheus Gimenes</div>
+      <h1>De <em>Projeto</em></h1>
+      <div class="pd-author">A organização da pesquisa em curso.</div>
+      <p class="pd-desc">Cada projeto vincula um Grupo de Pesquisa a um Coordenador, com janela de datas e status. O sistema impõe limites de carga simultânea — para o observatório como um todo e para cada coordenador.</p>
+      <dl class="pd-meta">
+        <div><dt>Service</dt><dd>ProjetoService.js</dd></div>
+        <div><dt>Modelo</dt><dd>Projeto</dd></div>
+        <div><dt>RF</dt><dd>31 — 34</dd></div>
+        <div><dt>Regras</dt><dd>2</dd></div>
+      </dl>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Capítulo II · Folio 08</div>
+  </div>
+</section>
+
+<section class="proc-projeto" data-screen-label="09 Projeto — Visão Geral">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">i</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-project"/></svg>Processo · Projeto</span>
+      </div>
+      <h1>Visão Geral do Processo</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Detalhes do Projeto.</strong> Vincula um <em>Grupo de Pesquisa</em> a um <em>Coordenador</em>, com janela de datas e status (<span class="hl hl-tx-neutral">ativo</span>, <span class="hl hl-tx-neutral">concluido</span>, <span class="hl hl-tx-neutral">suspenso</span>). Apenas projetos <em>ativos</em> entram nas validações de limite.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: projetos</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>titulo</th><th>status</th><th>grupo_id</th><th>coord_id</th></tr></thead>
+            <tbody>
+              <tr class="hl-ok"><td>1</td><td>Mapa de Júpiter</td><td>ativo</td><td>1</td><td>1</td></tr>
+              <tr class="hl-ok"><td>2</td><td>Variáveis Cefeidas</td><td>ativo</td><td>2</td><td>1</td></tr>
+              <tr><td>3</td><td>Cintura de Kuiper</td><td>concluido</td><td>1</td><td>2</td></tr>
+              <tr class="hl-ok"><td>4</td><td>Galáxias Anãs</td><td>ativo</td><td>3</td><td>2</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: coordenadores</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>nome</th><th>especialidade</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Galileu Galilei</td><td>Astronomia Solar</td></tr>
+              <tr><td>2</td><td>Cecilia Payne</td><td>Astrofísica Estelar</td></tr>
+              <tr><td>3</td><td>Subrahmanyan Chandrasekhar</td><td>Buracos Negros</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: grupos_de_pesquisa</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>nome</th><th>area</th><th>status</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Sistema Solar</td><td>Planetologia</td><td>ativo</td></tr>
+              <tr><td>2</td><td>Estelar</td><td>Astrofísica</td><td>ativo</td></tr>
+              <tr><td>3</td><td>Extragaláctico</td><td>Cosmologia</td><td>ativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box" style="background:rgba(201,160,74,.08)">
+          <h3><span class="glyph">§</span>Limites do processo</h3>
+          <table class="data-table">
+            <thead><tr><th>limite</th><th>valor</th><th>origem</th></tr></thead>
+            <tbody>
+              <tr><td>MAX_PROJETOS_ATIVOS</td><td>10</td><td>Regra 1</td></tr>
+              <tr><td>MAX_POR_COORDENADOR</td><td>2</td><td>Regra 2</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ ambos somente avaliados quando <em>status = 'ativo'</em>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Visão Geral · Folio 09</div>
+  </div>
+</section>
+
+<section class="proc-projeto" data-screen-label="10 Projeto — Fluxo de Transação">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">ii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-project"/></svg>Processo · Projeto</span>
+      </div>
+      <h1>Fluxo de Transação</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Curto-circuito útil.</strong> Quando o status NÃO é <em>'ativo'</em>, as regras 1 e 2 são puladas — projeto concluído ou suspenso não disputa cota. Em <em>update</em>, o id atual é excluído da contagem para não competir consigo mesmo.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="flow-diagram">
+          <h3><span class="glyph">§</span>Sequência da operação</h3>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">i</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">begin</span>Abrir transação</div>
+                <div class="step-detail">Promise.all carrega Grupo + Coordenador em paralelo.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">ii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">guard</span>Status ≠ 'ativo' ?</div>
+                <div class="step-detail">Se sim, retorna sem aplicar regras de limite.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">rule</span>Regra 2 antes da Regra 1</div>
+                <div class="step-detail">Mensagem por coordenador é mais específica.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iv</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-ok">commit</span>create + findByPk + COMMIT</div>
+                <div class="step-detail">Retorna projeto com grupo, coordenador e observações.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.create + validar</h3>
+          <pre class="no-border-top"><code><span class="kw">static async</span> create(req) {
+  <span class="kw">const</span> dados = { ...req.body, status: req.body.status ?? <span class="str">'ativo'</span> };
+  <span class="kw">return</span> <span class="hl hl-tx-start">sequelize.transaction</span>(<span class="kw">async</span> (transaction) =&gt; {
+    <span class="kw">await</span> <span class="hl hl-tx-neutral">validarRegrasDeNegocio</span>(dados, <span class="kw">null</span>, transaction);
+    <span class="kw">const</span> { id } = <span class="kw">await</span> <span class="hl hl-tx-success">Projeto.create</span>(dados, { transaction });
+    <span class="kw">return</span> Projeto.findByPk(id, { include, transaction });
+  });
+}
+
+<span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
+  <span class="kw">const</span> erros = <span class="kw">await</span> validarCampos(Projeto, dados);
+  <span class="kw">const</span> [grupo, coordenador] = <span class="kw">await</span> Promise.all([
+    GrupoDePesquisa.findByPk(dados.grupoDePesquisaId, { transaction }),
+    Coordenador.findByPk(dados.coordenadorId, { transaction }),
+  ]);
+  <span class="kw">if</span> (!grupo) erros.push(<span class="str">'Grupo de Pesquisa não encontrado.'</span>);
+  <span class="kw">if</span> (!coordenador) erros.push(<span class="str">'Coordenador não encontrado.'</span>);
+  <span class="kw">if</span> (erros.length) <span class="kw">throw new</span> <span class="hl hl-tx-error">ValidationError</span>(erros);
+
+  <span class="hl hl-tx-neutral">if (dados.status !== 'ativo') return;</span>  <span class="cmt">// curto-circuito</span>
+
+  <span class="kw">await</span> <span class="hl hl-rule-2">validarLimiteProjetosPorCoordenador</span>(
+    dados.coordenadorId, excludeId, transaction);          <span class="cmt">// Regra 2</span>
+  <span class="kw">await</span> <span class="hl hl-rule-1">validarLimiteProjetosAtivos</span>(excludeId, transaction);  <span class="cmt">// Regra 1</span>
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Fluxo de Transação · Folio 10</div>
+  </div>
+</section>
+
+<section class="proc-projeto" data-screen-label="11 Projeto — Regras de Negócio">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-project"/></svg>Processo · Projeto</span>
+      </div>
+      <h1>Regras de Negócio</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Duas regras de capacidade.</strong> A regra global (10 projetos ativos no observatório) e a regra individual (2 ativos por coordenador) operam <em>em conjunto</em>. A função <em>exclude</em> remove o próprio id da contagem em operações de update.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="rules-cards">
+          <div class="rule-card">
+            <div class="num">i</div>
+            <div class="body">
+              <div class="label">Regra 1 · Limite global</div>
+              <div class="text">Não pode existir mais que <em>10 projetos ativos simultaneamente</em> em todo o observatório.</div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="num">ii</div>
+            <div class="body">
+              <div class="label">Regra 2 · Limite por coordenador</div>
+              <div class="text">Um coordenador pode ser responsável por <em>no máximo 2 projetos ativos</em> simultaneamente.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>Helper compartilhado</h3>
+          <pre class="no-border-top"><code><span class="kw">import</span> { Op } <span class="kw">from</span> <span class="str">'sequelize'</span>;
+
+<span class="kw">const</span> MAX_PROJETOS_ATIVOS              = <span class="hl hl-rule-1">10</span>;
+<span class="kw">const</span> MAX_PROJETOS_ATIVOS_POR_COORDENADOR = <span class="hl hl-rule-2">2</span>;
+
+<span class="cmt">// Em update, exclui o próprio id da contagem.</span>
+<span class="kw">const</span> <span class="hl hl-tx-neutral">exclude</span> = (excludeId) =&gt;
+  excludeId != <span class="kw">null</span>
+    ? { id: { [<span class="hl hl-tx-neutral">Op.ne</span>]: excludeId } }
+    : {};
+
+<span class="cmt">// Regra 2 vai antes da Regra 1: a por-coordenador</span>
+<span class="cmt">// é mais específica e dá feedback mais útil ao usuário.</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Regras de Negócio · Folio 11</div>
+  </div>
+</section>
+
+<section class="proc-projeto" data-screen-label="12 Projeto — Regra 1">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iv</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-project"/></svg>Processo · Projeto</span>
+      </div>
+      <h1>Implementação da <em>Regra 1</em> · Limite global de 10 projetos</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 1.</strong> Usa <span class="hl hl-tx-neutral">Projeto.count</span> com filtro <em>status='ativo'</em>. O Sequelize emite um <span class="hl hl-tx-neutral">SELECT COUNT(*)</span> — leve, sem trazer linhas. Em update, o id atual é removido com <em>Op.ne</em>.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.js · Regra 1</h3>
+          <pre class="no-border-top"><code><span class="kw">async function</span> validarLimiteProjetosAtivos(excludeId, transaction) {
+  <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-1">Projeto.count</span>({
+    where: {
+      status: <span class="str">'ativo'</span>,
+      ...<span class="hl hl-tx-neutral">exclude</span>(excludeId),
+    },
+    transaction,
+  });
+
+  <span class="kw">if</span> (total &gt;= <span class="hl hl-rule-1">MAX_PROJETOS_ATIVOS</span>) {
+    <span class="kw">throw new</span> ValidationError(
+      <span class="str">`Não poderá existir mais que ${MAX_PROJETOS_ATIVOS}
+       projetos ativos simultaneamente.`</span>
+    );
+  }
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL Resultante (SQL tradicional)</h4>
+          <p class="note">Após a expansão do <em>where</em> e do <em>Op.ne</em> em update, o SQL é uma contagem direta:</p>
+          <pre><code>SELECT COUNT(*) AS count
+FROM   projetos
+WHERE  status = 'ativo'
+  AND  id != $excludeId;   -- ausente em create</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenário · 11ª inserção ativa</h3>
+          <table class="data-table">
+            <thead><tr><th>status</th><th>quantidade</th><th>conta?</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>ativo</td><td>10</td><td>todos</td></tr>
+              <tr><td>concluido</td><td>14</td><td>ignora</td></tr>
+              <tr><td>suspenso</td><td>3</td><td>ignora</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ <em>count = 10</em> &gt;= <em>MAX_PROJETOS_ATIVOS</em>: a 11ª criação <em>ativa</em> é rejeitada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Regra 1 · Folio 12</div>
+  </div>
+</section>
+
+<section class="proc-projeto" data-screen-label="13 Projeto — Regra 2">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">v</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-project"/></svg>Processo · Projeto</span>
+      </div>
+      <h1>Implementação da <em>Regra 2</em> · Máx. 2 ativos por coordenador</h1>
+    </div>
+  </div>
+
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 2.</strong> Mesma estrutura da Regra 1, mas filtrando <em>coordenadorId</em>. Composição de <span class="hl hl-tx-neutral">where</span> com <em>spread</em> permite reaproveitar o helper <em>exclude</em> sem duplicar código.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ProjetoService.js · Regra 2</h3>
+          <pre class="no-border-top"><code><span class="kw">async function</span> validarLimiteProjetosPorCoordenador(
+    coordenadorId, excludeId, transaction) {
+
+  <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-2">Projeto.count</span>({
+    where: {
+      status: <span class="str">'ativo'</span>,
+      <span class="hl hl-rule-2">coordenadorId</span>,
+      ...exclude(excludeId),
+    },
+    transaction,
+  });
+
+  <span class="kw">if</span> (total &gt;= <span class="hl hl-rule-2">MAX_PROJETOS_ATIVOS_POR_COORDENADOR</span>) {
+    <span class="kw">throw new</span> ValidationError(
+      <span class="str">`Um coordenador só poderá ser responsável por
+       no máximo ${MAX_PROJETOS_ATIVOS_POR_COORDENADOR}
+       projetos com status Ativo.`</span>
+    );
+  }
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL Resultante (SQL tradicional)</h4>
+          <p class="note">Sequelize compõe a cláusula <em>WHERE</em> a partir do objeto, mantendo os parâmetros bindados:</p>
+          <pre><code>SELECT COUNT(*) AS count
+FROM   projetos
+WHERE  status         = 'ativo'
+  AND  coordenador_id = $coordenadorId
+  AND  id            != $excludeId;   -- ausente em create</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenário · Galileu cria 3º ativo</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>titulo</th><th>status</th><th>coord_id</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>1</td><td>Mapa Júpiter</td><td>ativo</td><td>1</td></tr>
+              <tr class="hl-warn"><td>2</td><td>Cefeidas</td><td>ativo</td><td>1</td></tr>
+              <tr class="hl-ok"><td>9</td><td>Galáxias Anãs</td><td>ativo</td><td>2</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ <em>count = 2</em> para coord_id 1: novo ativo é rejeitado; coord_id 2 ainda tem cota.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Projeto</span>
+    </div>
+    <div>Regra 2 · Folio 13</div>
+  </div>
+</section>
+
+<section class="proc-observacao process-divider" data-screen-label="14 Observação — Capítulo III">
+  <div class="slide-top-rule"></div>
+  <div class="pd-content">
+    <div class="pd-roman">III</div>
+    <div class="pd-text">
+      <div class="pd-eyebrow">Capítulo Terceiro · Emanuelly Borges</div>
+      <h1>De <em>Observação</em></h1>
+      <div class="pd-author">O céu, registrado dia após dia.</div>
+      <p class="pd-desc">Cada observação é uma constelação vista por um projeto em uma data — com versão sequencial. O sistema impede mais de duas leituras diárias do mesmo par e versiona automaticamente.</p>
+      <dl class="pd-meta">
+        <div><dt>Service</dt><dd>ObservacaoService.js</dd></div>
+        <div><dt>Modelo</dt><dd>Observacao</dd></div>
+        <div><dt>RF</dt><dd>35 — 38</dd></div>
+        <div><dt>Regras</dt><dd>2</dd></div>
+      </dl>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Capítulo III · Folio 14</div>
+  </div>
+</section>
+
+<section class="proc-observacao" data-screen-label="15 Observação — Visão Geral">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">i</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-telescope"/></svg>Processo · Observação</span>
+      </div>
+      <h1>Visão Geral do Processo</h1>
+    </div>
+  </div>
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Detalhes da Observação.</strong> Liga um <em>Projeto</em> a uma <em>Constelação</em> em uma <em>data</em>, com <em>versão</em> sequencial dentro do par (projeto × constelação). Descrição científica e instrumento utilizado completam o registro.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: observacoes</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>data</th><th>projeto</th><th>constel.</th><th>versao</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>2026-04-10</td><td>1</td><td>3</td><td>1</td></tr>
+              <tr><td>2</td><td>2026-04-12</td><td>1</td><td>3</td><td>2</td></tr>
+              <tr><td>3</td><td>2026-04-12</td><td>1</td><td>3</td><td>3</td></tr>
+              <tr><td>4</td><td>2026-04-15</td><td>1</td><td>5</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: constelacoes</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>nome</th><th>hemisferio</th></tr></thead>
+            <tbody>
+              <tr><td>3</td><td>Órion</td><td>Equatorial</td></tr>
+              <tr><td>5</td><td>Cruzeiro do Sul</td><td>Sul</td></tr>
+              <tr><td>7</td><td>Andrômeda</td><td>Norte</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Tabela: projetos (referência)</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>titulo</th><th>status</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Mapa de Júpiter</td><td>ativo</td></tr>
+              <tr><td>2</td><td>Variáveis Cefeidas</td><td>ativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="data-box" style="background:rgba(184,84,43,.06)">
+          <h3><span class="glyph">§</span>Conceito · escopo (projeto, constelação)</h3>
+          <table class="data-table">
+            <thead><tr><th>par</th><th>data</th><th>versões existentes</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>(1, Órion)</td><td>2026-04-12</td><td>v2, v3 — cheio</td></tr>
+              <tr class="hl-ok"><td>(1, Cruzeiro)</td><td>2026-04-15</td><td>v1 — pode adicionar</td></tr>
+              <tr class="hl-ok"><td>(2, Órion)</td><td>2026-04-15</td><td>v1 — pode adicionar</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ regras 1 e 2 trabalham sempre dentro deste escopo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Visão Geral · Folio 15</div>
+  </div>
+</section>
+
+<section class="proc-observacao" data-screen-label="16 Observação — Fluxo de Transação">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">ii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-telescope"/></svg>Processo · Observação</span>
+      </div>
+      <h1>Fluxo de Transação</h1>
+    </div>
+  </div>
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Versionamento + limite no mesmo create.</strong> A regra 2 (versão automática) calcula <em>antes</em> do INSERT; a regra 1 (limite diário) valida e aborta se for o caso. Em <em>update</em>, mudar o vínculo (projeto/constelação) reabre o cálculo de versão.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="flow-diagram">
+          <h3><span class="glyph">§</span>Sequência da operação · create</h3>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-num">i</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">begin</span>Abrir transação + carregar refs</div>
+                <div class="step-detail">Promise.all: Projeto.findByPk · Constelacao.findByPk.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">ii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">rule</span>Regra 1 · validarLimiteDiario</div>
+                <div class="step-detail">COUNT no escopo (projeto, constelação, dia).</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iii</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-tx">rule</span>Regra 2 · calcularProximaVersao</div>
+                <div class="step-detail">MAX(versao) + 1 dentro do par projeto × constelação.</div>
+              </div>
+            </div>
+            <div class="flow-arrow"></div>
+            <div class="flow-step">
+              <div class="step-num">iv</div>
+              <div class="step-body">
+                <div class="step-title"><span class="step-tag tag-ok">commit</span>create({ ...dados, versaoObservacao })</div>
+                <div class="step-detail">Persiste com a versão calculada e dispara COMMIT.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.create</h3>
+          <pre class="no-border-top"><code><span class="kw">static async</span> create(req) {
+  <span class="kw">const</span> { dataObservacao, descricao, instrumentoUtilizado,
+          projetoId, constelacaoId } = req.body;
+  <span class="kw">const</span> dados = { dataObservacao, descricao,
+                  instrumentoUtilizado, projetoId, constelacaoId };
+
+  <span class="kw">return</span> <span class="hl hl-tx-start">sequelize.transaction</span>(<span class="kw">async</span> (transaction) =&gt; {
+    <span class="kw">await</span> <span class="hl hl-rule-1">validarRegrasDeNegocio</span>(dados, <span class="kw">null</span>, transaction);
+    <span class="kw">const</span> versaoObservacao = <span class="kw">await</span>
+      <span class="hl hl-rule-2">calcularProximaVersao</span>(dados, <span class="kw">null</span>, transaction);
+    <span class="kw">const</span> { id } = <span class="kw">await</span> <span class="hl hl-tx-success">Observacao.create</span>(
+      { ...dados, versaoObservacao }, { transaction });
+    <span class="kw">return</span> Observacao.findByPk(id, { include, transaction });
+  });
+}
+
+<span class="kw">const</span> <span class="hl hl-tx-neutral">escopoVinculo</span> = ({ projetoId, constelacaoId }, excludeId) =&gt; ({
+  projetoId,
+  constelacaoId,
+  ...(excludeId != <span class="kw">null</span> &amp;&amp; { id: { [Op.ne]: excludeId } }),
+});</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Fluxo de Transação · Folio 16</div>
+  </div>
+</section>
+
+<section class="proc-observacao" data-screen-label="17 Observação — Regras de Negócio">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iii</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-telescope"/></svg>Processo · Observação</span>
+      </div>
+      <h1>Regras de Negócio</h1>
+    </div>
+  </div>
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Limite + versionamento, juntos.</strong> A Regra 1 protege a integridade (no máximo duas observações por dia no mesmo par). A Regra 2 substitui input do usuário pelo cálculo automático de versão sequencial.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="rules-cards">
+          <div class="rule-card">
+            <div class="num">i</div>
+            <div class="body">
+              <div class="label">Regra 1 · Limite diário</div>
+              <div class="text">Não pode haver mais de <em>2 observações</em> da mesma constelação no mesmo dia associadas ao mesmo projeto.</div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <div class="num">ii</div>
+            <div class="body">
+              <div class="label">Regra 2 · Versão automática</div>
+              <div class="text">A versão é <em>sequencial</em> por (projeto, constelação): novo registro recebe <em>MAX(versao) + 1</em>. Se mudar o vínculo em update, recalcula.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>Função orquestradora</h3>
+          <pre class="no-border-top"><code><span class="kw">async function</span> validarRegrasDeNegocio(dados, excludeId, transaction) {
+  <span class="kw">const</span> erros = <span class="kw">await</span> validarCampos(Observacao, dados);
+  <span class="kw">if</span> (!dados.constelacaoId)
+    erros.push(<span class="str">'Constelação observada deve ser informada.'</span>);
+
+  <span class="kw">const</span> [projeto, constelacao] = <span class="kw">await</span> Promise.all([
+    Projeto.findByPk(dados.projetoId, { transaction }),
+    dados.constelacaoId &amp;&amp;
+      Constelacao.findByPk(dados.constelacaoId, { transaction }),
+  ]);
+  <span class="kw">if</span> (!projeto) erros.push(<span class="str">'Projeto não encontrado.'</span>);
+  <span class="kw">if</span> (dados.constelacaoId &amp;&amp; !constelacao)
+    erros.push(<span class="str">'Constelação não encontrada.'</span>);
+
+  <span class="kw">if</span> (erros.length) <span class="kw">throw new</span> ValidationError(erros);
+
+  <span class="kw">await</span> <span class="hl hl-rule-1">validarLimiteDiario</span>(dados, excludeId, transaction);
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Regras de Negócio · Folio 17</div>
+  </div>
+</section>
+
+<section class="proc-observacao" data-screen-label="18 Observação — Regra 1">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">iv</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-telescope"/></svg>Processo · Observação</span>
+      </div>
+      <h1>Implementação da <em>Regra 1</em> · Limite diário por par</h1>
+    </div>
+  </div>
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 1.</strong> Conta observações no escopo (projeto, constelação, dia). O <em>spread</em> de <em>escopoVinculo</em> evita repetição entre regra 1 e versionamento.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.js · Regra 1</h3>
+          <pre class="no-border-top"><code><span class="kw">const</span> MAX_POR_DIA = <span class="hl hl-rule-1">2</span>;
+
+<span class="kw">async function</span> validarLimiteDiario(dados, excludeId, transaction) {
+  <span class="kw">const</span> total = <span class="kw">await</span> <span class="hl hl-rule-1">Observacao.count</span>({
+    where: {
+      ...<span class="hl hl-tx-neutral">escopoVinculo</span>(dados, excludeId),
+      dataObservacao: dados.dataObservacao,
+    },
+    transaction,
+  });
+
+  <span class="kw">if</span> (total &gt;= <span class="hl hl-rule-1">MAX_POR_DIA</span>) {
+    <span class="kw">throw new</span> ValidationError(
+      <span class="str">`Não é permitido registrar mais de ${MAX_POR_DIA}
+       observações da mesma constelação no mesmo dia
+       associadas ao mesmo projeto.`</span>
+    );
+  }
+}</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL Resultante (SQL tradicional)</h4>
+          <pre><code>SELECT COUNT(*) AS count
+FROM   observacoes
+WHERE  projeto_id     = $projetoId
+  AND  constelacao_id = $constelacaoId
+  AND  data_observacao = $dataObservacao
+  AND  id            != $excludeId;   -- ausente em create</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenário · 3ª observação Órion · 12-04</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>data</th><th>projeto</th><th>constel.</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>2</td><td>04-12</td><td>1</td><td>3</td></tr>
+              <tr class="hl-warn"><td>3</td><td>04-12</td><td>1</td><td>3</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ <em>count = 2</em>: a 3ª inserção é rejeitada.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Regra 1 · Folio 18</div>
+  </div>
+</section>
+
+<section class="proc-observacao" data-screen-label="19 Observação — Regra 2">
+  
+  <div class="slide-top-rule"></div>
+  <div class="slide-corner">v</div>
+  <div class="slide-header">
+    <div>
+      <div class="eyebrow-row">
+        <span class="badge-processo"><svg><use href="#ic-telescope"/></svg>Processo · Observação</span>
+      </div>
+      <h1>Implementação da <em>Regra 2</em> · Versão automática</h1>
+    </div>
+  </div>
+  <div class="slide-body">
+    <p class="event-excerpt"><strong>Regra 2.</strong> Calcula a próxima versão como <em>MAX(versaoObservacao) + 1</em> dentro do escopo (projeto, constelação). O Sequelize gera <span class="hl hl-tx-neutral">SELECT MAX(...)</span> e o serviço sobrepõe o valor que iria ao banco.</p>
+    <div class="grid-layout">
+      <div class="col-left">
+        <div class="data-box no-pad">
+          <h3 style="padding-left:22px"><span class="glyph">§</span>ObservacaoService.js · Regra 2</h3>
+          <pre class="no-border-top"><code><span class="cmt">// Regra 2: versão é sequencial por (projeto, constelação).</span>
+<span class="kw">async function</span> calcularProximaVersao(dados, excludeId, transaction) {
+  <span class="kw">const</span> max = Number(<span class="kw">await</span> <span class="hl hl-rule-2">Observacao.max</span>(
+    <span class="str">'versaoObservacao'</span>, {
+      where: <span class="hl hl-tx-neutral">escopoVinculo</span>(dados, excludeId),
+      transaction,
+    }));
+  <span class="kw">return</span> Number.isFinite(max) ? max + <span class="hl hl-rule-2">1</span> : <span class="hl hl-rule-2">1</span>;
+}
+
+<span class="cmt">// No update: só recalcula se o vínculo mudou.</span>
+<span class="kw">const</span> mudouVinculo =
+  dados.projetoId    !== observacao.projetoId ||
+  dados.constelacaoId !== observacao.constelacaoId;
+<span class="kw">const</span> versaoObservacao = mudouVinculo
+  ? <span class="kw">await</span> calcularProximaVersao(dados, id, transaction)
+  : observacao.versaoObservacao;</code></pre>
+        </div>
+      </div>
+      <div class="col-right">
+        <div class="sql-resultante">
+          <h4><span class="glyph">⚙</span>SQL Resultante (SQL tradicional)</h4>
+          <p class="note">O método <em>Model.max</em> emite <em>SELECT MAX(coluna) AS max</em> com o where do escopo:</p>
+          <pre><code>SELECT MAX(versao_observacao) AS max
+FROM   observacoes
+WHERE  projeto_id     = $projetoId
+  AND  constelacao_id = $constelacaoId
+  AND  id            != $excludeId;   -- ausente em create</code></pre>
+        </div>
+        <div class="data-box">
+          <h3><span class="glyph">§</span>Cenário · novo registro Órion/Projeto 1</h3>
+          <table class="data-table">
+            <thead><tr><th>id</th><th>projeto</th><th>constel.</th><th>versao</th></tr></thead>
+            <tbody>
+              <tr class="hl-warn"><td>1</td><td>1</td><td>3</td><td>1</td></tr>
+              <tr class="hl-warn"><td>2</td><td>1</td><td>3</td><td>2</td></tr>
+              <tr class="hl-ok"><td>?</td><td>1</td><td>3</td><td>3 (calc.)</td></tr>
+            </tbody>
+          </table>
+          <p class="data-note">→ <em>MAX = 2</em> + 1 = 3: novo registro nasce com <em>versao = 3</em>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="slide-foot">
+    <div class="seal">
+      <span class="mini-mark"><svg class="mark-mini-svg"><use href="#mark-seal"/></svg></span>
+      <span>SIGSN · Observação</span>
+    </div>
+    <div>Regra 2 · Folio 19</div>
+  </div>
+</section>
+<section class="cover slide-fin" data-screen-label="20 Encerramento">
+  <svg class="seal-bg" aria-hidden="true"><use href="#constellation-orn"/></svg>
+  <div class="cover-inner" style="padding:60px 130px;grid-template-columns:1.5fr 1fr;align-items:center;gap:80px;">
+    <div class="fin-lede">
+      <div class="deck-num">Fim · SIGSN · v 2.0</div>
+      <h1 class="cover-title" style="font-size:96px;margin-bottom:10px;">Três <em>serviços,</em><br>um observatório.</h1>
+      <p class="cover-sub" style="font-size:24px;margin-bottom:0;line-height:1.45;">Agendamento, Projeto e Observação — cada processo protegido por transações atômicas e regras de negócio verificadas antes de qualquer gravação.</p>
+      <div class="fin-summary">
+        <div class="fin-proc" style="--c:var(--verdigris)">
+          <div class="fin-num">I</div>
+          <div class="fin-body">
+            <div class="fin-name">Agendamento</div>
+            <div class="fin-detail">Disponibilidade do guia · Limite por turno</div>
+            <div class="fin-author">Larissa Paganini</div>
+          </div>
+        </div>
+        <div class="fin-proc" style="--c:var(--gold)">
+          <div class="fin-num">II</div>
+          <div class="fin-body">
+            <div class="fin-name">Projeto</div>
+            <div class="fin-detail">Limite global · Limite por coordenador</div>
+            <div class="fin-author">Matheus Gimenes</div>
+          </div>
+        </div>
+        <div class="fin-proc" style="--c:var(--ember)">
+          <div class="fin-num">III</div>
+          <div class="fin-body">
+            <div class="fin-name">Observação</div>
+            <div class="fin-detail">Limite diário · Versão automática</div>
+            <div class="fin-author">Emanuelly Borges</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="colophon" style="height:auto;justify-content:space-between;gap:32px;">
+      <div><svg class="stamp" style="width:140px;height:140px;" aria-hidden="true"><use href="#mark-primary"/></svg></div>
+      <div>
+        <p class="latin" style="font-size:22px;margin-bottom:14px;">"Finis coronat opus."</p>
+        <div class="meta" style="font-size:18px;line-height:1.8;">
+          <div><strong>Observatório Sidereus Nuncius</strong></div>
+          <div>SIGSN · Back-End · Atividade 09</div>
+          <div>Larissa · Matheus · Emanuelly</div>
+          <div>MMXXVI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</deck-stage>
+
+</body>
+</html>
