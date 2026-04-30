@@ -400,7 +400,60 @@ body {
   padding: 1px 7px; border-radius: 999px; margin-left: 6px;
   vertical-align: middle;
 }
+
+/* ─── dark theme ─── */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --ink:        #ede5d4;
+  --ink-soft:   #c5bba8;
+  --ink-mute:   #8a94b8;
+  --paper:      #0f1530;
+  --paper-deep: #1a2547;
+  --paper-warm: #1e2c56;
+  --rule:       #ffffff11;
+  --rule-bold:  #ffffff22;
+}
+
+[data-theme="dark"] body {
+  background-image:
+    radial-gradient(circle at 15% 25%, #ffffff0b 0 1.5px, transparent 2px),
+    radial-gradient(circle at 75% 15%, #ffffff09 0 1px, transparent 2px),
+    radial-gradient(circle at 88% 62%, #ffffff0d 0 2px, transparent 3px),
+    radial-gradient(circle at 32% 75%, #ffffff08 0 1px, transparent 2px),
+    radial-gradient(circle at 55% 42%, #ffffff07 0 1px, transparent 2px),
+    radial-gradient(circle at 10% 88%, #ffffff0a 0 1px, transparent 2px),
+    radial-gradient(circle at 65% 80%, #ffffff09 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 10%, #ffffff0c 0 1px, transparent 2px),
+    radial-gradient(ellipse at 20% 30%, #1a2d6633, transparent 55%),
+    radial-gradient(ellipse at 85% 75%, #0f1a4422, transparent 50%);
+}
+
+[data-theme="dark"] .nav-link:hover  { background: rgba(255,255,255,.06); }
+[data-theme="dark"] .nav-link.active { background: rgba(255,255,255,.08); }
+
+[data-theme="dark"] .data-table { background: rgba(15,21,48,.5); }
+[data-theme="dark"] .data-table tr:hover td { background: rgba(255,255,255,.04); }
+
+[data-theme="dark"] .welcome-card       { background: rgba(255,255,255,.04); }
+[data-theme="dark"] .welcome-card:hover { background: rgba(255,255,255,.08); }
+
+[data-theme="dark"] .modal-backdrop { background: rgba(4,6,20,.88); }
+[data-theme="dark"] .modal {
+  background: var(--paper-deep);
+  background-image: radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.04), transparent 50%);
+}
+
+[data-theme="dark"] .btn-primary { color: #f0e8d8; }
+[data-theme="dark"] .btn-danger  { color: #f0e8d8; }
+
+[data-theme="dark"] .field select { background: var(--paper-deep); }
+
+[data-theme="dark"] #toast       { background: var(--paper-warm); color: var(--ink); border: 1px solid var(--rule-bold); }
+[data-theme="dark"] #toast.error { background: var(--ember); color: #f0e8d8; border: none; }
+
+[data-theme="dark"] .confirm-id { background: rgba(184,84,43,.2); }
 </style>
+<script>(function(){var t=localStorage.getItem('sigsn-theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.dataset.theme='dark';})();</script>
 </head>
 <body>
 
@@ -456,6 +509,12 @@ body {
   </symbol>
   <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
     <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+  </symbol>
+  <symbol id="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </symbol>
+  <symbol id="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
   </symbol>
 </defs>
 </svg>
@@ -541,6 +600,10 @@ body {
         Observatório <span>·</span> Início
       </div>
       <div class="topbar-actions">
+        <button class="btn-ghost" id="btn-theme" title="Alternar tema">
+          <svg width="13" height="13"><use href="#ic-moon"/></svg>
+          <span>Escuro</span>
+        </button>
         <button class="btn-ghost" id="btn-refresh" title="Recarregar">
           <svg width="12" height="12"><use href="#ic-refresh"/></svg>
           Recarregar
@@ -594,6 +657,29 @@ body {
 </div>
 
 <script>
+// ─── theme ───────────────────────────────────────────────────────────────
+
+const THEME_KEY = 'sigsn-theme';
+let isDark = document.documentElement.dataset.theme === 'dark';
+
+function syncThemeButton() {
+  const btn = document.getElementById('btn-theme');
+  if (!btn) return;
+  btn.querySelector('use').setAttribute('href', isDark ? '#ic-sun' : '#ic-moon');
+  btn.querySelector('span').textContent = isDark ? 'Claro' : 'Escuro';
+}
+
+document.getElementById('btn-theme').addEventListener('click', () => {
+  isDark = !isDark;
+  document.documentElement.dataset.theme = isDark ? 'dark' : '';
+  syncThemeButton();
+  localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+});
+
+syncThemeButton();
+
+// ─── api base ────────────────────────────────────────────────────────────
+
 const API = 'http://localhost:3333';
 
 // ─── entity definitions ───────────────────────────────────────────────────
