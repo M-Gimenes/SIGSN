@@ -17,6 +17,7 @@ class Agendamento extends Model {
           allowNull: true,
           validate: {
             isFloat: { msg: 'Valor da visita deve ser numérico.' },
+            min: { args: [0], msg: 'Valor da visita não pode ser negativo.' },
           },
         },
         observacoes: {

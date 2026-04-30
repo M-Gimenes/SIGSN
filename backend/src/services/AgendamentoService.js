@@ -1,4 +1,3 @@
-import { Op } from 'sequelize';
 import sequelize from '../config/database-connection.js';
 import { Agendamento } from '../models/Agendamento.js';
 import { Guia } from '../models/Guia.js';
@@ -16,33 +15,19 @@ const include = [
   { model: Caravana, as: 'caravana' },
 ];
 
-// ─── Validação ────────────────────────────────────────────────────────────────
+// ─── Regras ───────────────────────────────────────────────────────────────────
 
-async function assertValido(dados, excludeId, transaction) {
-  const [campoErros, regraErros] = await Promise.all([
-    validarCampos(Agendamento, dados),
-    verificarRegrasDeNegocio(dados, excludeId, transaction),
-  ]);
-
-  const todos = [...campoErros, ...regraErros];
-  if (todos.length > 0) throw new ValidationError(todos);
-}
-
-async function verificarDisponibilidadeGuia(guiaId, turno, transaction) {
-  const erros = [];
-  // Regra de negócio: guia deve existir e ter disponibilidade compatível com o turno da visita
-  const guia = await Guia.findByPk(guiaId, { transaction });
-  if (!guia) {
-    erros.push('Guia não encontrado.');
-  } else if (guia.disponibilidade !== turno) {
-    erros.push(`O guia "${guia.nome}" não tem disponibilidade compatível com o horário selecionado.`);
+//Regra 1
+async function validarDisponibilidadeGuia(guia, turno) {
+  if (guia.disponibilidade !== turno) {
+    throw new ValidationError(
+      `O guia "${guia.nome}" não tem disponibilidade compatível com o horário selecionado.`
+    );
   }
-  return erros;
 }
 
-async function verificarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction) {
-  const erros = [];
-  // Regra de negócio: limite máximo de agendamentos por turno por dia
+//Regra 2
+async function validarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction) {
   const dayStr = formatLocalDateYYYYMMDD(visitDate);
   const agendamentosNoDia = await Agendamento.findAll({
     attributes: ['id', 'dataVisita'],
@@ -54,21 +39,25 @@ async function verificarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, 
     return getTurnoFromDate(row.dataVisita) === turno;
   }).length;
   if (totalNoTurno >= MAX_AGENDAMENTOS_POR_TURNO) {
-    erros.push(`Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`);
+    throw new ValidationError(
+      `Não é permitido mais de ${MAX_AGENDAMENTOS_POR_TURNO} agendamentos para a mesma data no mesmo turno.`
+    );
   }
-  return erros;
 }
 
-async function verificarRegrasDeNegocio({ dataVisita, guiaId }, excludeId, transaction) {
-  const visitDate = new Date(dataVisita);
+async function validarRegrasDeNegocio(dados, excludeId, transaction) {
+  const erros = await validarCampos(Agendamento, dados);
+
+  const guia = await Guia.findByPk(dados.guiaId, { transaction });
+  if (!guia) erros.push('Guia não encontrado.');
+
+  if (erros.length) throw new ValidationError(erros);
+
+  const visitDate = new Date(dados.dataVisita);
   const turno = getTurnoFromDate(visitDate);
 
-  const [errosGuia, errosLimite] = await Promise.all([
-    verificarDisponibilidadeGuia(guiaId, turno, transaction),
-    verificarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction),
-  ]);
-
-  return [...errosGuia, ...errosLimite];
+  await validarDisponibilidadeGuia(guia, turno);
+  await validarLimiteAgendamentosPorTurno(visitDate, turno, excludeId, transaction);
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -79,55 +68,44 @@ class AgendamentoService {
   }
 
   static async findByPk(req) {
-    const { id } = req.params;
-    return Agendamento.findByPk(id, { include });
+    return Agendamento.findByPk(req.params.id, { include });
   }
 
   static async create(req) {
     const { dataVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
+    const dados = { dataVisita, valorVisita, observacoes, guiaId, caravanaId };
 
     return sequelize.transaction(async (transaction) => {
-      await assertValido(
-        { dataVisita, valorVisita, observacoes, guiaId, caravanaId },
-        null,
-        transaction
-      );
-
-      const agendamento = await Agendamento.create(
-        { dataVisita, valorVisita, observacoes, guiaId, caravanaId },
-        { transaction }
-      );
-      return Agendamento.findByPk(agendamento.id, { include, transaction });
+      await validarRegrasDeNegocio(dados, null, transaction);
+      const { id } = await Agendamento.create(dados, { transaction });
+      return Agendamento.findByPk(id, { include, transaction });
     });
   }
 
   static async update(req) {
-    const { id } = req.params;
-    const { dataVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
+    const id = Number(req.params.id);
 
     return sequelize.transaction(async (transaction) => {
       const agendamento = await Agendamento.findByPk(id, { transaction });
       if (!agendamento) throw new ValidationError('Agendamento não encontrado.');
 
       const dados = {
-        dataVisita:  dataVisita  ?? agendamento.dataVisita,
-        valorVisita: valorVisita ?? agendamento.valorVisita,
-        observacoes: observacoes ?? agendamento.observacoes,
-        guiaId:      guiaId      ?? agendamento.guiaId,
-        caravanaId:  caravanaId  ?? agendamento.caravanaId,
+        dataVisita:  req.body.dataVisita  ?? agendamento.dataVisita,
+        valorVisita: req.body.valorVisita ?? agendamento.valorVisita,
+        observacoes: req.body.observacoes ?? agendamento.observacoes,
+        guiaId:      req.body.guiaId      ?? agendamento.guiaId,
+        caravanaId:  req.body.caravanaId  ?? agendamento.caravanaId,
       };
 
-      await assertValido(dados, Number(id), transaction);
+      await validarRegrasDeNegocio(dados, id, transaction);
 
-      Object.assign(agendamento, dados);
-      await agendamento.save({ transaction });
-      return Agendamento.findByPk(agendamento.id, { include, transaction });
+      await agendamento.update(dados, { transaction });
+      return Agendamento.findByPk(id, { include, transaction });
     });
   }
 
   static async delete(req) {
-    const { id } = req.params;
-    const agendamento = await Agendamento.findByPk(id);
+    const agendamento = await Agendamento.findByPk(req.params.id);
     if (!agendamento) throw new ValidationError('Agendamento não encontrado.');
     await agendamento.destroy();
     return agendamento;

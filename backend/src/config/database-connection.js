@@ -82,6 +82,26 @@ async function seedDatabase() {
       login: 'coord4',
       senha: '123456',
     },
+    {
+      nome: 'Coordenador 5',
+      cpf: '10000000005',
+      telefone: '(28) 99995-0005',
+      email: 'coord5@sigsn.com',
+      status: true,
+      especialidade: 'Astrofísica Estelar',
+      login: 'coord5',
+      senha: '123456',
+    },
+    {
+      nome: 'Coordenador 6',
+      cpf: '10000000006',
+      telefone: '(28) 99996-0006',
+      email: 'coord6@sigsn.com',
+      status: true,
+      especialidade: 'Radioastronomia',
+      login: 'coord6',
+      senha: '123456',
+    },
   ]);
 
   const pesquisadores = await Pesquisador.bulkCreate([
@@ -208,8 +228,16 @@ async function seedDatabase() {
     { pesquisadorId: pesquisadores[3].id, grupoDePesquisaId: grupos[3].id },
   ]);
 
+  // Distribuição planejada (10 ativos no total — limite global):
+  //   Coord 1: 2 ativos (Aster, Vega)        → no quota → alvo do teste RN 2
+  //   Coord 2: 2 ativos (Helios, Altair)     → no quota
+  //   Coord 3: 1 ativo  (Atlas)              → folga (pode receber mais 1 sem quebrar RN 2)
+  //   Coord 4: 2 ativos (Selene, Rigel)      → no quota
+  //   Coord 5: 2 ativos (Sirius, Canopus)    → no quota
+  //   Coord 6: 1 ativo  (Arcturus)           → folga → alvo do teste RN 1
+  // Com a regra invertida (RN 2 antes de RN 1), os dois cenários ficam testáveis
+  // a partir de qualquer ordem de execução, sem que o seed precise ser recarregado.
   const projetos = await Projeto.bulkCreate([
-    // ── 4 projetos base ──────────────────────────────────────────────────────
     {
       titulo: 'Projeto Aster',
       dataInicio: '2025-05-01',
@@ -220,12 +248,30 @@ async function seedDatabase() {
       coordenadorId: coordenadores[0].id,
     },
     {
+      titulo: 'Projeto Vega',
+      dataInicio: '2025-09-01',
+      dataTermino: '2026-02-28',
+      status: 'ativo',
+      areaDePesquisa: 'Espectroscopia estelar',
+      grupoDePesquisaId: grupos[1].id,
+      coordenadorId: coordenadores[0].id,
+    },
+    {
       titulo: 'Projeto Helios',
       dataInicio: '2025-06-01',
       dataTermino: '2025-11-30',
       status: 'ativo',
       areaDePesquisa: 'Atividade solar',
       grupoDePesquisaId: grupos[1].id,
+      coordenadorId: coordenadores[1].id,
+    },
+    {
+      titulo: 'Projeto Altair',
+      dataInicio: '2025-09-15',
+      dataTermino: '2026-03-15',
+      status: 'ativo',
+      areaDePesquisa: 'Fotometria diferencial',
+      grupoDePesquisaId: grupos[2].id,
       coordenadorId: coordenadores[1].id,
     },
     {
@@ -246,26 +292,6 @@ async function seedDatabase() {
       grupoDePesquisaId: grupos[3].id,
       coordenadorId: coordenadores[3].id,
     },
-    // ── 6 projetos extras para atingir o limite de 10 ────────────────────────
-    // RN2 (Projeto): coordenador 1 terá 2 projetos ativos após este item
-    {
-      titulo: 'Projeto Vega',
-      dataInicio: '2025-09-01',
-      dataTermino: '2026-02-28',
-      status: 'ativo',
-      areaDePesquisa: 'Espectroscopia estelar',
-      grupoDePesquisaId: grupos[1].id,
-      coordenadorId: coordenadores[0].id,
-    },
-    {
-      titulo: 'Projeto Altair',
-      dataInicio: '2025-09-15',
-      dataTermino: '2026-03-15',
-      status: 'ativo',
-      areaDePesquisa: 'Fotometria diferencial',
-      grupoDePesquisaId: grupos[2].id,
-      coordenadorId: coordenadores[1].id,
-    },
     {
       titulo: 'Projeto Rigel',
       dataInicio: '2025-10-01',
@@ -282,7 +308,7 @@ async function seedDatabase() {
       status: 'ativo',
       areaDePesquisa: 'Astrometria',
       grupoDePesquisaId: grupos[1].id,
-      coordenadorId: coordenadores[3].id,
+      coordenadorId: coordenadores[4].id,
     },
     {
       titulo: 'Projeto Canopus',
@@ -291,7 +317,7 @@ async function seedDatabase() {
       status: 'ativo',
       areaDePesquisa: 'Astronomia de raios-X',
       grupoDePesquisaId: grupos[2].id,
-      coordenadorId: coordenadores[3].id,
+      coordenadorId: coordenadores[4].id,
     },
     {
       titulo: 'Projeto Arcturus',
@@ -300,7 +326,7 @@ async function seedDatabase() {
       status: 'ativo',
       areaDePesquisa: 'Astrofísica de alta energia',
       grupoDePesquisaId: grupos[3].id,
-      coordenadorId: coordenadores[3].id,
+      coordenadorId: coordenadores[5].id,
     },
   ]);
 

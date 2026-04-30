@@ -8,90 +8,58 @@ import { validarCampos } from '../utils/validate.js';
 
 // Emanuelly - Processo
 
-const MAX_OBSERVACOES_POR_DIA = 2;
-
+const MAX_POR_DIA = 2;
 const include = [
   { model: Projeto, as: 'projeto' },
   { model: Constelacao, as: 'constelacao' },
 ];
 
-// ─── Validação ────────────────────────────────────────────────────────────────
+const escopoVinculo = ({ projetoId, constelacaoId }, excludeId) => ({
+  projetoId,
+  constelacaoId,
+  ...(excludeId != null && { id: { [Op.ne]: excludeId } }),
+});
 
-async function assertValido(dados, excludeId, transaction) {
-  const [campoErros, regraErros] = await Promise.all([
-    validarCampos(Observacao, dados),
-    verificarRegrasDeNegocio(dados, excludeId, transaction),
-  ]);
+// ─── Regras ───────────────────────────────────────────────────────────────────
 
-  const todos = [...campoErros, ...regraErros];
-  if (todos.length > 0) throw new ValidationError(todos);
-}
-
-async function verificarConstelacaoInformada(constelacaoId) {
-  const erros = [];
-  // Regra de negócio: constelação deve ser informada
-  if (!constelacaoId) erros.push('Constelação observada deve ser informada.');
-  return erros;
-}
-
-async function verificarExistenciaProjetoEConstelacao(projetoId, constelacaoId, transaction) {
-  const erros = [];
-  // Regra de negócio: projeto e constelação informados devem existir
-  const [projeto, constelacao] = await Promise.all([
-    Projeto.findByPk(projetoId, { transaction }),
-    constelacaoId ? Constelacao.findByPk(constelacaoId, { transaction }) : Promise.resolve(null),
-  ]);
-  if (!projeto) erros.push('Projeto não encontrado.');
-  if (constelacaoId && !constelacao) erros.push('Constelação não encontrada.');
-  return erros;
-}
-
-async function verificarLimiteObservacoesDiarias(projetoId, constelacaoId, dataObservacao, excludeId, transaction) {
-  const erros = [];
-  // Regra de negócio: limite de observações da mesma constelação pelo mesmo projeto no mesmo dia
-  const totalNoDia = await Observacao.count({
-    where: {
-      projetoId,
-      constelacaoId,
-      dataObservacao,
-      ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
-    },
+//Regra 1
+async function validarLimiteDiario(dados, excludeId, transaction) {
+  const total = await Observacao.count({
+    where: { ...escopoVinculo(dados, excludeId), dataObservacao: dados.dataObservacao },
     transaction,
   });
-  if (totalNoDia >= MAX_OBSERVACOES_POR_DIA) {
-    erros.push(
-      `Não é permitido registrar mais de ${MAX_OBSERVACOES_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
+  if (total >= MAX_POR_DIA) {
+    throw new ValidationError(
+      `Não é permitido registrar mais de ${MAX_POR_DIA} observações da mesma constelação no mesmo dia associadas ao mesmo projeto.`
     );
   }
-  return erros;
 }
 
-async function verificarRegrasDeNegocio({ dataObservacao, projetoId, constelacaoId }, excludeId, transaction) {
-  const [errosConstelacao, errosExistencia] = await Promise.all([
-    verificarConstelacaoInformada(constelacaoId),
-    verificarExistenciaProjetoEConstelacao(projetoId, constelacaoId, transaction),
-  ]);
+// ─── Versionamento ────────────────────────────────────────────────────────────
 
-  const errosLimite = errosConstelacao.length === 0 && errosExistencia.length === 0
-    ? await verificarLimiteObservacoesDiarias(projetoId, constelacaoId, dataObservacao, excludeId, transaction)
-    : [];
-
-  return [...errosConstelacao, ...errosExistencia, ...errosLimite];
-}
-
-// ─── Versão ───────────────────────────────────────────────────────────────────
-
-async function proximaVersao(projetoId, constelacaoId, excludeId, transaction) {
-  const max = await Observacao.max('versaoObservacao', {
-    where: {
-      projetoId,
-      constelacaoId,
-      ...(excludeId != null ? { id: { [Op.ne]: excludeId } } : {}),
-    },
+// Regra 2: versão é sequencial por (projeto, constelação).
+async function calcularProximaVersao(dados, excludeId, transaction) {
+  const max = Number(await Observacao.max('versaoObservacao', {
+    where: escopoVinculo(dados, excludeId),
     transaction,
-  });
-  const maxVersao = max == null ? 0 : Number(max);
-  return Number.isFinite(maxVersao) ? maxVersao + 1 : 1;
+  }));
+  return Number.isFinite(max) ? max + 1 : 1;
+}
+
+async function validarRegrasDeNegocio(dados, excludeId, transaction) {
+  const erros = await validarCampos(Observacao, dados);
+  if (!dados.constelacaoId) erros.push('Constelação observada deve ser informada.');
+
+  const [projeto, constelacao] = await Promise.all([
+    Projeto.findByPk(dados.projetoId, { transaction }),
+    dados.constelacaoId && Constelacao.findByPk(dados.constelacaoId, { transaction }),
+  ]);
+  if (!projeto) erros.push('Projeto não encontrado.');
+  if (dados.constelacaoId && !constelacao) erros.push('Constelação não encontrada.');
+
+  if (erros.length) throw new ValidationError(erros);
+
+  await validarLimiteDiario(dados, excludeId, transaction);
 }
 
 // ─── Service ──────────────────────────────────────────────────────────────────
@@ -102,63 +70,51 @@ class ObservacaoService {
   }
 
   static async findByPk(req) {
-    const { id } = req.params;
-    return Observacao.findByPk(id, { include });
+    return Observacao.findByPk(req.params.id, { include });
   }
 
   static async create(req) {
     const { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId } = req.body;
+    const dados = { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId };
 
     return sequelize.transaction(async (transaction) => {
-      await assertValido(
-        { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId },
-        null,
-        transaction
-      );
-
-      const versaoObservacao = await proximaVersao(projetoId, constelacaoId, null, transaction);
-      const observacao = await Observacao.create(
-        { dataObservacao, descricao, instrumentoUtilizado, versaoObservacao, projetoId, constelacaoId },
-        { transaction }
-      );
-      return Observacao.findByPk(observacao.id, { include, transaction });
+      await validarRegrasDeNegocio(dados, null, transaction);
+      const versaoObservacao = await calcularProximaVersao(dados, null, transaction);
+      const { id } = await Observacao.create({ ...dados, versaoObservacao }, { transaction });
+      return Observacao.findByPk(id, { include, transaction });
     });
   }
 
   static async update(req) {
-    const { id } = req.params;
-    const { dataObservacao, descricao, instrumentoUtilizado, projetoId, constelacaoId } = req.body;
+    const id = Number(req.params.id);
 
     return sequelize.transaction(async (transaction) => {
       const observacao = await Observacao.findByPk(id, { transaction });
       if (!observacao) throw new ValidationError('Observação não encontrada.');
 
       const dados = {
-        dataObservacao:       dataObservacao       ?? observacao.dataObservacao,
-        descricao:            descricao            ?? observacao.descricao,
-        instrumentoUtilizado: instrumentoUtilizado ?? observacao.instrumentoUtilizado,
-        projetoId:            projetoId            ?? observacao.projetoId,
-        constelacaoId:        constelacaoId        ?? observacao.constelacaoId,
+        dataObservacao:       req.body.dataObservacao       ?? observacao.dataObservacao,
+        descricao:            req.body.descricao            ?? observacao.descricao,
+        instrumentoUtilizado: req.body.instrumentoUtilizado ?? observacao.instrumentoUtilizado,
+        projetoId:            req.body.projetoId            ?? observacao.projetoId,
+        constelacaoId:        req.body.constelacaoId        ?? observacao.constelacaoId,
       };
 
-      await assertValido(dados, Number(id), transaction);
+      await validarRegrasDeNegocio(dados, id, transaction);
 
       const mudouVinculo = dados.projetoId !== observacao.projetoId
         || dados.constelacaoId !== observacao.constelacaoId;
-
       const versaoObservacao = mudouVinculo
-        ? await proximaVersao(dados.projetoId, dados.constelacaoId, Number(id), transaction)
+        ? await calcularProximaVersao(dados, id, transaction)
         : observacao.versaoObservacao;
 
-      Object.assign(observacao, { ...dados, versaoObservacao });
-      await observacao.save({ transaction });
-      return Observacao.findByPk(observacao.id, { include, transaction });
+      await observacao.update({ ...dados, versaoObservacao }, { transaction });
+      return Observacao.findByPk(id, { include, transaction });
     });
   }
 
   static async delete(req) {
-    const { id } = req.params;
-    const observacao = await Observacao.findByPk(id);
+    const observacao = await Observacao.findByPk(req.params.id);
     if (!observacao) throw new ValidationError('Observação não encontrada.');
     await observacao.destroy();
     return observacao;
