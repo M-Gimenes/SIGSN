@@ -130,7 +130,7 @@
     <div class="pd-text">
       <div class="pd-eyebrow">Capítulo Primeiro · Larissa Paganini</div>
       <h1>De <em>Agendamento</em></h1>
-      <div class="pd-author">Caravanas, guias e a janela do céu.</div>
+      <div class="pd-author">Caravanas, guias e horário da visita.</div>
       <p class="pd-desc">Registrar visitas ao observatório envolve casar a disponibilidade do guia com a data e horário escolhidos, respeitando o limite de três agendamentos por turno.</p>
       <dl class="pd-meta">
         <div><dt>Service</dt><dd>AgendamentoService.js</dd></div>
@@ -520,9 +520,9 @@ WHERE  date(data_visita) = '2026-05-12';</code></pre>
               <tr class="hl-warn"><td>1</td><td>19:30</td><td>NOITE</td><td>conta</td></tr>
               <tr class="hl-warn"><td>2</td><td>20:00</td><td>NOITE</td><td>conta</td></tr>
               <tr class="hl-warn"><td>9</td><td>22:15</td><td>NOITE</td><td>conta · 3</td></tr>
+              <tr class="hl-warn"><td>Nova</td><td>23:00</td><td>NOITE</td><td>4º do turno → rejeitado</td></tr>
             </tbody>
           </table>
-          <p class="data-note">→ a 4ª inserção NOITE viola a regra e é rejeitada.</p>
         </div>
       </div>
     </div>
