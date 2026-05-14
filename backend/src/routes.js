@@ -489,22 +489,27 @@ routes.get('/relatorios/agendamentos', (req, res, next) => {
     #swagger.description = 'Lista agendamentos com filtros opcionais e agregações COUNT(*) + SUM(visitantes, valor).'
     #swagger.parameters['dataInicial'] = { in: 'query', description: 'Data inicial (YYYY-MM-DD).', schema: { type: 'string', example: '2026-04-01' } }
     #swagger.parameters['dataFinal']   = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string', example: '2026-04-30' } }
-    #swagger.parameters['tipoVisita']  = { in: 'query', description: 'Diurna, Noturna, Sessão Especial...', schema: { type: 'string', example: 'Diurna' } }
+    #swagger.parameters['tipoVisita']  = { in: 'query', description: 'Tipo da Caravana: Escolar, Universitária, Turística, Institucional.', schema: { type: 'string', example: 'Escolar' } }
     #swagger.parameters['guiaId']      = { in: 'query', description: 'ID do guia responsável.',     schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['page']        = { in: 'query', description: 'Página (default 1).',         schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['pageSize']    = { in: 'query', description: 'Tamanho da página (default 50, máx 500).', schema: { type: 'integer', example: 50 } }
     #swagger.responses[200] = {
       description: 'Relatório gerado.',
       content: {
         "application/json": {
           example: {
             filtros: { dataInicial: "2026-04-01", dataFinal: "2026-04-30" },
+            paginacao: { page: 1, pageSize: 50, totalLinhas: 4, totalPaginas: 1 },
             linhas: [
-              { id: 1, dataVisita: "2026-04-01T12:00:00.000Z", horario: "09:00", nomeCaravana: "Caravana Aurora", instituicao: "Escola Estadual A", quantidadeVisitantes: 30, guiaResponsavel: "Guia 1", tipoVisita: "Diurna", valorVisita: 300 }
+              { id: 1, dataVisita: "2026-04-01T12:00:00.000Z", horario: "09:00", nomeCaravana: "Caravana Aurora", instituicao: "Escola Estadual A", quantidadeVisitantes: 30, guiaResponsavel: "Guia 1", tipoVisita: "Escolar", valorVisita: 300 }
             ],
             totais: { totalAgendamentos: 4, totalVisitantes: 115, totalValor: 1530 }
           }
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.', content: { "application/json": { example: { erros: ['dataInicial: formato esperado YYYY-MM-DD.'] } } } }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.agendamentos(req, res, next);
 });
@@ -526,11 +531,14 @@ routes.get('/relatorios/visitantes-por-mes', (req, res, next) => {
               { mesAno: "2026-04", totalAgendamentos: 4, totalVisitantes: 115, mediaVisitantes: 28.75 },
               { mesAno: "2026-06", totalAgendamentos: 3, totalVisitantes: 95,  mediaVisitantes: 31.67 }
             ],
-            totais: { totalAgendamentos: 7, totalVisitantes: 210, mediaGeral: 30 }
+            totais: { totalAgendamentos: 7, totalVisitantes: 210, mediaGeral: 30 },
+            meta: { cache: "MISS" }
           }
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.' }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.visitantesPorMes(req, res, next);
 });
@@ -558,6 +566,8 @@ routes.get('/relatorios/projetos', (req, res, next) => {
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.' }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.projetos(req, res, next);
 });
@@ -570,12 +580,15 @@ routes.get('/relatorios/pesquisadores-por-projeto', (req, res, next) => {
     #swagger.parameters['projetoId']   = { in: 'query', description: 'ID do projeto.',           schema: { type: 'integer', example: 1 } }
     #swagger.parameters['dataInicial'] = { in: 'query', description: 'Filtra ingresso >= valor.', schema: { type: 'string',  example: '2025-01-01' } }
     #swagger.parameters['dataFinal']   = { in: 'query', description: 'Filtra ingresso <= valor.', schema: { type: 'string',  example: '2026-12-31' } }
+    #swagger.parameters['page']        = { in: 'query', description: 'Página (default 1).',      schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['pageSize']    = { in: 'query', description: 'Tamanho da página (default 50, máx 500).', schema: { type: 'integer', example: 50 } }
     #swagger.responses[200] = {
       description: 'Relatório gerado.',
       content: {
         "application/json": {
           example: {
             filtros: {},
+            paginacao: { page: 1, pageSize: 50, totalLinhas: 9, totalPaginas: 1 },
             linhas: [
               { nomeGrupo: "Grupo Draco", projetoVinculado: "Projeto Altair", nomePesquisador: "Pesquisador 3", curso: "Mecânica Celeste", dataIngresso: "2026-05-14T17:00:09.715Z", status: true }
             ],
@@ -590,6 +603,8 @@ routes.get('/relatorios/pesquisadores-por-projeto', (req, res, next) => {
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.' }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.pesquisadoresPorProjeto(req, res, next);
 });
@@ -603,12 +618,15 @@ routes.get('/relatorios/observacoes', (req, res, next) => {
     #swagger.parameters['dataFinal']     = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string',  example: '2025-09-30' } }
     #swagger.parameters['projetoId']     = { in: 'query', description: 'ID do projeto.',             schema: { type: 'integer', example: 1 } }
     #swagger.parameters['constelacaoId'] = { in: 'query', description: 'ID da constelação.',         schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['page']          = { in: 'query', description: 'Página (default 1).',       schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['pageSize']      = { in: 'query', description: 'Tamanho da página (default 50, máx 500).', schema: { type: 'integer', example: 50 } }
     #swagger.responses[200] = {
       description: 'Relatório gerado.',
       content: {
         "application/json": {
           example: {
             filtros: {},
+            paginacao: { page: 1, pageSize: 50, totalLinhas: 5, totalPaginas: 1 },
             linhas: [
               { dataObservacao: "2025-09-10", projetoVinculado: "Projeto Aster", coordenadorResponsavel: "Coordenador 1", constelacao: "Orion", instrumento: "Telescópio refrator 120mm", versao: 1, tipoRegistro: "Descoberta" },
               { dataObservacao: "2025-09-10", projetoVinculado: "Projeto Aster", coordenadorResponsavel: "Coordenador 1", constelacao: "Orion", instrumento: "Câmera CCD",               versao: 2, tipoRegistro: "Atualização" }
@@ -618,6 +636,8 @@ routes.get('/relatorios/observacoes', (req, res, next) => {
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.' }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.observacoes(req, res, next);
 });
@@ -641,11 +661,14 @@ routes.get('/relatorios/estatisticas-observacoes', (req, res, next) => {
               { dataPrimeiraObs: "2025-09-10", dataUltimaObs: "2025-09-10", projeto: "Projeto Aster", constelacao: "Orion", totalDescobertas: 1, totalAtualizacoes: 1, totalObservacoes: 2 },
               { dataPrimeiraObs: "2025-09-11", dataUltimaObs: "2025-09-11", projeto: "Projeto Vega",  constelacao: "Cassiopeia", totalDescobertas: 1, totalAtualizacoes: 0, totalObservacoes: 1 }
             ],
-            totais: { totalProjetos: 4, totalConstelacoes: 4, totalObservacoes: 5 }
+            totais: { totalProjetos: 4, totalConstelacoes: 4, totalObservacoes: 5 },
+            meta: { cache: "MISS" }
           }
         }
       }
     }
+    #swagger.responses[400] = { description: 'Filtros inválidos.' }
+    #swagger.responses[503] = { description: 'Banco de dados indisponível.' }
   */
   ReportController.estatisticasObservacoes(req, res, next);
 });

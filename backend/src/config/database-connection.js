@@ -452,7 +452,6 @@ async function seedDatabase() {
   await Agendamento.bulkCreate([
     {
       dataVisita: '2026-04-01 09:00:00',
-      tipoVisita: 'Diurna',
       valorVisita: 300.0,
       observacoes: 'Primeiro horário da manhã.',
       guiaId: guias[0].id,
@@ -460,7 +459,6 @@ async function seedDatabase() {
     },
     {
       dataVisita: '2026-04-02 14:00:00',
-      tipoVisita: 'Diurna',
       valorVisita: 280.0,
       observacoes: 'Visita acadêmica.',
       guiaId: guias[1].id,
@@ -468,7 +466,6 @@ async function seedDatabase() {
     },
     {
       dataVisita: '2026-04-03 19:30:00',
-      tipoVisita: 'Noturna',
       valorVisita: 450.0,
       observacoes: 'Observação a olho nu e telescópio.',
       guiaId: guias[2].id,
@@ -476,7 +473,6 @@ async function seedDatabase() {
     },
     {
       dataVisita: '2026-04-04 20:00:00',
-      tipoVisita: 'Sessão Especial',
       valorVisita: 500.0,
       observacoes: 'Sessão com conteúdo exclusivo.',
       guiaId: guias[3].id,
