@@ -72,8 +72,8 @@ class AgendamentoService {
   }
 
   static async create(req) {
-    const { dataVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
-    const dados = { dataVisita, valorVisita, observacoes, guiaId, caravanaId };
+    const { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId } = req.body;
+    const dados = { dataVisita, tipoVisita, valorVisita, observacoes, guiaId, caravanaId };
 
     return sequelize.transaction(async (transaction) => {
       await validarRegrasDeNegocio(dados, null, transaction);
@@ -91,6 +91,7 @@ class AgendamentoService {
 
       const dados = {
         dataVisita:  req.body.dataVisita  ?? agendamento.dataVisita,
+        tipoVisita:  req.body.tipoVisita  ?? agendamento.tipoVisita,
         valorVisita: req.body.valorVisita ?? agendamento.valorVisita,
         observacoes: req.body.observacoes ?? agendamento.observacoes,
         guiaId:      req.body.guiaId      ?? agendamento.guiaId,

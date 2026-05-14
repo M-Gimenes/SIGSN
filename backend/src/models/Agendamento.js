@@ -12,6 +12,10 @@ class Agendamento extends Model {
             isDate: { msg: 'Data da visita deve ser válida.' },
           },
         },
+        tipoVisita: {
+          type: DataTypes.STRING,
+          allowNull: true,
+        },
         valorVisita: {
           type: DataTypes.DOUBLE,
           allowNull: true,
