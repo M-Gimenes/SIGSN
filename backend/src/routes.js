@@ -9,6 +9,7 @@ import { GuiaController } from './controllers/GuiaController.js';
 import { ObservacaoController } from './controllers/ObservacaoController.js';
 import { PesquisadorController } from './controllers/PesquisadorController.js';
 import { ProjetoController } from './controllers/ProjetoController.js';
+import { ReportController } from './controllers/ReportController.js';
 
 const routes = express.Router();
 
@@ -471,5 +472,182 @@ routes.post('/projetos', (req, res, next) => {
 
 routes.put('/projetos/:id', ProjetoController.update);
 routes.delete('/projetos/:id', ProjetoController.delete);
+
+// ─── Relatórios ───────────────────────────────────────────────────────────────
+//
+// RF39 — Listar Agendamentos (Período, Tipo de Visita, Guia)
+// RF40 — Totais de Visitantes por Mês (Período)
+// RF41 — Listar Projeto (Grupo, Status, Data)
+// RF42 — Pesquisadores por Projeto
+// RF43 — Listar Observações (Período, Projeto, Constelação)
+// RF44 — Estatísticas de Observações por Projeto e Constelação
+
+routes.get('/relatorios/agendamentos', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF39 — Listar Agendamentos'
+    #swagger.description = 'Lista agendamentos com filtros opcionais e agregações COUNT(*) + SUM(visitantes, valor).'
+    #swagger.parameters['dataInicial'] = { in: 'query', description: 'Data inicial (YYYY-MM-DD).', schema: { type: 'string', example: '2026-04-01' } }
+    #swagger.parameters['dataFinal']   = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string', example: '2026-04-30' } }
+    #swagger.parameters['tipoVisita']  = { in: 'query', description: 'Diurna, Noturna, Sessão Especial...', schema: { type: 'string', example: 'Diurna' } }
+    #swagger.parameters['guiaId']      = { in: 'query', description: 'ID do guia responsável.',     schema: { type: 'integer', example: 1 } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: { dataInicial: "2026-04-01", dataFinal: "2026-04-30" },
+            linhas: [
+              { id: 1, dataVisita: "2026-04-01T12:00:00.000Z", horario: "09:00", nomeCaravana: "Caravana Aurora", instituicao: "Escola Estadual A", quantidadeVisitantes: 30, guiaResponsavel: "Guia 1", tipoVisita: "Diurna", valorVisita: 300 }
+            ],
+            totais: { totalAgendamentos: 4, totalVisitantes: 115, totalValor: 1530 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.agendamentos(req, res, next);
+});
+
+routes.get('/relatorios/visitantes-por-mes', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF40 — Totais de Visitantes por Mês'
+    #swagger.description = 'Agrupa por Mês/Ano e aplica COUNT(*), SUM(visitantes) e AVG(visitantes).'
+    #swagger.parameters['dataInicial'] = { in: 'query', description: 'Data inicial (YYYY-MM-DD).', schema: { type: 'string', example: '2026-01-01' } }
+    #swagger.parameters['dataFinal']   = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string', example: '2026-12-31' } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: { dataInicial: "2026-01-01", dataFinal: "2026-12-31" },
+            linhas: [
+              { mesAno: "2026-04", totalAgendamentos: 4, totalVisitantes: 115, mediaVisitantes: 28.75 },
+              { mesAno: "2026-06", totalAgendamentos: 3, totalVisitantes: 95,  mediaVisitantes: 31.67 }
+            ],
+            totais: { totalAgendamentos: 7, totalVisitantes: 210, mediaGeral: 30 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.visitantesPorMes(req, res, next);
+});
+
+routes.get('/relatorios/projetos', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF41 — Listar Projetos por Grupo, Status e Data'
+    #swagger.description = 'Lista projetos com totalização COUNT(projetos) e SUM(qtdPesquisadores), ordenados alfabeticamente por grupo.'
+    #swagger.parameters['dataInicial']        = { in: 'query', description: 'Filtra projetos com dataInicio >= valor.', schema: { type: 'string', example: '2025-01-01' } }
+    #swagger.parameters['dataFinal']          = { in: 'query', description: 'Filtra projetos com dataInicio <= valor.', schema: { type: 'string', example: '2025-12-31' } }
+    #swagger.parameters['grupoDePesquisaId']  = { in: 'query', description: 'ID do grupo de pesquisa.',                  schema: { type: 'integer', example: 2 } }
+    #swagger.parameters['status']             = { in: 'query', description: 'ativo | concluido | suspenso',              schema: { type: 'string', example: 'ativo' } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: { status: "ativo" },
+            linhas: [
+              { dataInicio: "2025-09-15", projeto: "Projeto Altair", responsavel: "Coordenador 2", nomeGrupo: "Grupo Draco", area: "Fotometria diferencial", qtdPesquisadores: 1, status: "ativo" }
+            ],
+            totais: { totalProjetos: 10, totalPesquisadores: 10 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.projetos(req, res, next);
+});
+
+routes.get('/relatorios/pesquisadores-por-projeto', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF42 — Pesquisadores por Projeto'
+    #swagger.description = 'Lista pesquisadores envolvidos em projetos, agrupados por Grupo de Pesquisa (COUNT por grupo).'
+    #swagger.parameters['projetoId']   = { in: 'query', description: 'ID do projeto.',           schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['dataInicial'] = { in: 'query', description: 'Filtra ingresso >= valor.', schema: { type: 'string',  example: '2025-01-01' } }
+    #swagger.parameters['dataFinal']   = { in: 'query', description: 'Filtra ingresso <= valor.', schema: { type: 'string',  example: '2026-12-31' } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: {},
+            linhas: [
+              { nomeGrupo: "Grupo Draco", projetoVinculado: "Projeto Altair", nomePesquisador: "Pesquisador 3", curso: "Mecânica Celeste", dataIngresso: "2026-05-14T17:00:09.715Z", status: true }
+            ],
+            totaisPorGrupo: [
+              { grupo: "Grupo Draco",   totalPesquisadores: 3 },
+              { grupo: "Grupo Lyra",    totalPesquisadores: 3 },
+              { grupo: "Grupo Orion",   totalPesquisadores: 2 },
+              { grupo: "Grupo Pegasus", totalPesquisadores: 1 }
+            ],
+            totais: { totalPesquisadores: 9, totalGrupos: 4 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.pesquisadoresPorProjeto(req, res, next);
+});
+
+routes.get('/relatorios/observacoes', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF43 — Listar Observações'
+    #swagger.description = 'Lista observações com classificação Descoberta (versão=1) vs Atualização (versão>1) e totais via SUM(CASE).'
+    #swagger.parameters['dataInicial']   = { in: 'query', description: 'Data inicial (YYYY-MM-DD).', schema: { type: 'string',  example: '2025-09-01' } }
+    #swagger.parameters['dataFinal']     = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string',  example: '2025-09-30' } }
+    #swagger.parameters['projetoId']     = { in: 'query', description: 'ID do projeto.',             schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['constelacaoId'] = { in: 'query', description: 'ID da constelação.',         schema: { type: 'integer', example: 1 } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: {},
+            linhas: [
+              { dataObservacao: "2025-09-10", projetoVinculado: "Projeto Aster", coordenadorResponsavel: "Coordenador 1", constelacao: "Orion", instrumento: "Telescópio refrator 120mm", versao: 1, tipoRegistro: "Descoberta" },
+              { dataObservacao: "2025-09-10", projetoVinculado: "Projeto Aster", coordenadorResponsavel: "Coordenador 1", constelacao: "Orion", instrumento: "Câmera CCD",               versao: 2, tipoRegistro: "Atualização" }
+            ],
+            totais: { totalObservacoes: 5, totalDescobertas: 4, totalAtualizacoes: 1 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.observacoes(req, res, next);
+});
+
+routes.get('/relatorios/estatisticas-observacoes', (req, res, next) => {
+  /*
+    #swagger.tags = ['Relatórios']
+    #swagger.summary = 'RF44 — Estatísticas de Observações por Projeto e Constelação'
+    #swagger.description = 'GROUP BY (projeto, constelacao) com COUNT, MIN(data) e MAX(data). Ordenado por total decrescente.'
+    #swagger.parameters['dataInicial']   = { in: 'query', description: 'Data inicial (YYYY-MM-DD).', schema: { type: 'string',  example: '2025-01-01' } }
+    #swagger.parameters['dataFinal']     = { in: 'query', description: 'Data final (YYYY-MM-DD).',   schema: { type: 'string',  example: '2025-12-31' } }
+    #swagger.parameters['projetoId']     = { in: 'query', description: 'ID do projeto.',             schema: { type: 'integer', example: 1 } }
+    #swagger.parameters['constelacaoId'] = { in: 'query', description: 'ID da constelação.',         schema: { type: 'integer', example: 1 } }
+    #swagger.responses[200] = {
+      description: 'Relatório gerado.',
+      content: {
+        "application/json": {
+          example: {
+            filtros: {},
+            linhas: [
+              { dataPrimeiraObs: "2025-09-10", dataUltimaObs: "2025-09-10", projeto: "Projeto Aster", constelacao: "Orion", totalDescobertas: 1, totalAtualizacoes: 1, totalObservacoes: 2 },
+              { dataPrimeiraObs: "2025-09-11", dataUltimaObs: "2025-09-11", projeto: "Projeto Vega",  constelacao: "Cassiopeia", totalDescobertas: 1, totalAtualizacoes: 0, totalObservacoes: 1 }
+            ],
+            totais: { totalProjetos: 4, totalConstelacoes: 4, totalObservacoes: 5 }
+          }
+        }
+      }
+    }
+  */
+  ReportController.estatisticasObservacoes(req, res, next);
+});
 
 export default routes;

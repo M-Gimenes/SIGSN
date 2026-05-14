@@ -401,6 +401,131 @@ body {
   vertical-align: middle;
 }
 
+/* ─── reports ─── */
+.report-intro {
+  font-family: var(--serif-text); font-style: italic;
+  color: var(--ink-soft); font-size: 14.5px;
+  max-width: 70ch; margin-bottom: 20px;
+}
+.filter-card {
+  border: 1px solid var(--rule-bold);
+  background: #fffdf7cc;
+  margin-bottom: 18px;
+  position: relative;
+}
+.filter-card::before {
+  content: ''; position: absolute; top: -1px; left: -1px;
+  width: 14px; height: 14px;
+  border-left: 1px solid var(--rule-bold);
+  border-top: 1px solid var(--rule-bold);
+}
+.filter-card::after {
+  content: ''; position: absolute; bottom: -1px; right: -1px;
+  width: 14px; height: 14px;
+  border-right: 1px solid var(--rule-bold);
+  border-bottom: 1px solid var(--rule-bold);
+}
+.filter-eyebrow {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 18px;
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--ink-mute);
+  border-bottom: 1px solid var(--rule);
+}
+.filter-eyebrow svg { width: 12px; height: 12px; }
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px 22px;
+  padding: 18px 20px;
+}
+.filter-grid .field { margin: 0; }
+.filter-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--rule);
+  background: var(--paper-deep);
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; color: var(--ink);
+  border: 1px solid var(--ink); padding: 6px 14px; cursor: pointer;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: background .12s, color .12s;
+}
+.btn-secondary:hover { background: var(--ink); color: var(--paper); }
+
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  border: 1px solid var(--rule-bold);
+  background: #fffdf7cc;
+  margin-top: 18px;
+  position: relative;
+}
+.stats-strip::before, .stats-strip::after {
+  content: ''; position: absolute; width: 12px; height: 12px;
+  border: 1px solid var(--rule-bold);
+}
+.stats-strip::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.stats-strip::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+.stat-block {
+  padding: 16px 20px;
+  border-right: 1px dashed var(--rule);
+}
+.stat-block:last-child { border-right: none; }
+.stat-label {
+  font-family: var(--mono); font-size: 8.5px;
+  letter-spacing: .24em; text-transform: uppercase;
+  color: var(--ink-mute); margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--serif-display); font-size: 30px;
+  color: var(--ember); font-weight: 500; line-height: 1;
+  letter-spacing: -.005em;
+}
+.stat-value.muted { color: var(--ink-soft); }
+.stat-sub {
+  font-family: var(--mono); font-size: 9px;
+  color: var(--ink-mute); letter-spacing: .18em;
+  text-transform: uppercase; margin-top: 6px;
+}
+
+.report-section-title {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .26em;
+  text-transform: uppercase; color: var(--ink-mute);
+  margin: 26px 0 10px; display: flex; align-items: center; gap: 10px;
+}
+.report-section-title::before, .report-section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--rule);
+}
+
+.subtotal-table {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--mono); font-size: 11.5px;
+  background: #fffdf7cc;
+  border: 1px solid var(--rule-bold);
+}
+.subtotal-table th, .subtotal-table td {
+  padding: 8px 14px; text-align: left;
+  border-bottom: 1px dashed var(--rule);
+}
+.subtotal-table th {
+  font-size: 8.5px; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-mute); background: var(--paper-deep);
+  border-bottom: 1px solid var(--rule-bold);
+}
+.subtotal-table td:last-child { color: var(--ember); font-weight: 500; }
+.subtotal-table tr:last-child td { border-bottom: none; }
+
+.empty-thin {
+  text-align: center; padding: 40px 20px;
+  font-family: var(--serif-display); font-style: italic;
+  font-size: 18px; color: var(--ink-mute);
+  border: 1px dashed var(--rule-bold); background: #fffdf755;
+}
+
 /* ─── dark theme ─── */
 [data-theme="dark"] {
   color-scheme: dark;
@@ -447,6 +572,14 @@ body {
 [data-theme="dark"] .btn-danger  { color: #f0e8d8; }
 
 [data-theme="dark"] .field select { background: var(--paper-deep); }
+
+[data-theme="dark"] .filter-card,
+[data-theme="dark"] .stats-strip,
+[data-theme="dark"] .subtotal-table { background: rgba(15,21,48,.5); }
+[data-theme="dark"] .filter-actions   { background: rgba(255,255,255,.04); }
+[data-theme="dark"] .btn-secondary    { border-color: var(--ink); color: var(--ink); }
+[data-theme="dark"] .btn-secondary:hover { background: var(--ink); color: var(--paper-deep); }
+[data-theme="dark"] .empty-thin       { background: rgba(255,255,255,.02); }
 
 [data-theme="dark"] #toast       { background: var(--paper-warm); color: var(--ink); border: 1px solid var(--rule-bold); }
 [data-theme="dark"] #toast.error { background: var(--ember); color: #f0e8d8; border: none; }
@@ -516,6 +649,12 @@ body {
   <symbol id="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
   </symbol>
+  <symbol id="ic-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="20" x2="21" y2="20"/><rect x="5" y="12" width="3" height="7"/><rect x="10.5" y="8" width="3" height="11"/><rect x="16" y="4" width="3" height="15"/>
+  </symbol>
+  <symbol id="ic-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="3 4 21 4 14 13 14 20 10 18 10 13"/>
+  </symbol>
 </defs>
 </svg>
 
@@ -583,6 +722,32 @@ body {
       <div class="nav-link" data-entity="constelacoes">
         <svg><use href="#ic-constellation"/></svg>
         <span>Constelações</span>
+      </div>
+
+      <div class="nav-section">Relatórios</div>
+      <div class="nav-link" data-entity="rel-agendamentos">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Agendamentos</span>
+      </div>
+      <div class="nav-link" data-entity="rel-visitantes">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Visitantes por Mês</span>
+      </div>
+      <div class="nav-link" data-entity="rel-projetos">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Projetos</span>
+      </div>
+      <div class="nav-link" data-entity="rel-pesquisadores">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Pesquisadores por Projeto</span>
+      </div>
+      <div class="nav-link" data-entity="rel-observacoes">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Observações</span>
+      </div>
+      <div class="nav-link" data-entity="rel-estatisticas">
+        <svg><use href="#ic-chart"/></svg>
+        <span>Estatísticas de Obs.</span>
       </div>
     </div>
 
@@ -993,6 +1158,198 @@ function projetoBody(data) {
   };
 }
 
+// ─── reports config ──────────────────────────────────────────────────────
+
+const REPORTS = {
+  'rel-agendamentos': {
+    label: 'Agendamentos',
+    subtitle: 'Por Período, Tipo de Visita e Guia · RF39',
+    intro: 'Lista os agendamentos no intervalo selecionado, com totalizações de visitantes e arrecadação.',
+    endpoint: '/relatorios/agendamentos',
+    filters: [
+      { name: 'dataInicial', label: 'Data Inicial', type: 'date' },
+      { name: 'dataFinal',   label: 'Data Final',   type: 'date' },
+      { name: 'tipoVisita',  label: 'Tipo de Visita', type: 'select',
+        options: ['Diurna','Noturna','Sessão Especial'] },
+      { name: 'guiaId',      label: 'Guia Responsável', type: 'fk', endpoint: '/guias',
+        labelFn: g => `${g.nome} (${g.disponibilidade})` },
+    ],
+    columns: [
+      { key: 'dataVisita', label: 'Data', fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'horario',    label: 'Horário' },
+      { key: 'nomeCaravana', label: 'Caravana' },
+      { key: 'instituicao',  label: 'Instituição' },
+      { key: 'quantidadeVisitantes', label: 'Qtd.' },
+      { key: 'guiaResponsavel', label: 'Guia' },
+      { key: 'tipoVisita', label: 'Tipo', fmt: v => v ? `<span class="pill">${escHtml(v)}</span>` : '—' },
+      { key: 'valorVisita', label: 'Valor', fmt: v => v != null ? `R$ ${Number(v).toFixed(2)}` : '—' },
+    ],
+    stats: [
+      { key: 'totalAgendamentos', label: 'Total de Agendamentos', sub: 'COUNT' },
+      { key: 'totalVisitantes',   label: 'Total de Visitantes',   sub: 'SUM' },
+      { key: 'totalValor',        label: 'Total Arrecadado',      sub: 'SUM (R$)',
+        fmt: v => `R$ ${Number(v||0).toFixed(2)}` },
+    ],
+  },
+
+  'rel-visitantes': {
+    label: 'Visitantes por Mês',
+    subtitle: 'Por Período · RF40',
+    intro: 'Agrupa agendamentos e visitantes por Mês/Ano, com média de visitantes por agendamento.',
+    endpoint: '/relatorios/visitantes-por-mes',
+    filters: [
+      { name: 'dataInicial', label: 'Data Inicial', type: 'date' },
+      { name: 'dataFinal',   label: 'Data Final',   type: 'date' },
+    ],
+    columns: [
+      { key: 'mesAno', label: 'Mês/Ano' },
+      { key: 'totalAgendamentos', label: 'Total Agendamentos' },
+      { key: 'totalVisitantes',   label: 'Total Visitantes' },
+      { key: 'mediaVisitantes',   label: 'Média / Agendamento',
+        fmt: v => Number(v||0).toFixed(2) },
+    ],
+    stats: [
+      { key: 'totalAgendamentos', label: 'Total de Agendamentos', sub: 'COUNT' },
+      { key: 'totalVisitantes',   label: 'Total de Visitantes',   sub: 'SUM' },
+      { key: 'mediaGeral',        label: 'Média Geral',           sub: 'AVG',
+        fmt: v => Number(v||0).toFixed(2) },
+    ],
+  },
+
+  'rel-projetos': {
+    label: 'Projetos',
+    subtitle: 'Por Grupo de Pesquisa, Status e Data · RF41',
+    intro: 'Projetos filtrados por grupo, status e período de início, agrupados em ordem alfabética por grupo.',
+    endpoint: '/relatorios/projetos',
+    filters: [
+      { name: 'dataInicial', label: 'Início ≥', type: 'date' },
+      { name: 'dataFinal',   label: 'Início ≤', type: 'date' },
+      { name: 'grupoDePesquisaId', label: 'Grupo de Pesquisa', type: 'fk',
+        endpoint: '/grupos-de-pesquisa', labelFn: g => g.nome },
+      { name: 'status', label: 'Status', type: 'select',
+        options: ['ativo','concluido','suspenso'] },
+    ],
+    columns: [
+      { key: 'dataInicio', label: 'Data Início', fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'projeto',    label: 'Projeto' },
+      { key: 'responsavel', label: 'Responsável' },
+      { key: 'nomeGrupo',  label: 'Grupo' },
+      { key: 'area',       label: 'Área' },
+      { key: 'qtdPesquisadores', label: 'Qtd. Pesq.' },
+      { key: 'status', label: 'Status', fmt: pill },
+    ],
+    stats: [
+      { key: 'totalProjetos',      label: 'Total de Projetos',      sub: 'COUNT' },
+      { key: 'totalPesquisadores', label: 'Total de Pesquisadores', sub: 'SUM' },
+    ],
+  },
+
+  'rel-pesquisadores': {
+    label: 'Pesquisadores por Projeto',
+    subtitle: 'Agrupado por Grupo · RF42',
+    intro: 'Lista todos os pesquisadores envolvidos em projetos, agrupados por Grupo de Pesquisa.',
+    endpoint: '/relatorios/pesquisadores-por-projeto',
+    filters: [
+      { name: 'projetoId', label: 'Projeto', type: 'fk',
+        endpoint: '/projetos', labelFn: p => p.titulo },
+      { name: 'dataInicial', label: 'Ingresso ≥', type: 'date' },
+      { name: 'dataFinal',   label: 'Ingresso ≤', type: 'date' },
+    ],
+    columns: [
+      { key: 'nomeGrupo',        label: 'Grupo' },
+      { key: 'projetoVinculado', label: 'Projeto Vinculado' },
+      { key: 'nomePesquisador',  label: 'Pesquisador' },
+      { key: 'curso',            label: 'Curso / Especialidade' },
+      { key: 'dataIngresso',     label: 'Data Ingresso',
+        fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'status', label: 'Status', fmt: v => v ? pill('Ativo') : pill('Inativo') },
+    ],
+    stats: [
+      { key: 'totalPesquisadores', label: 'Total de Pesquisadores', sub: 'COUNT' },
+      { key: 'totalGrupos',        label: 'Total de Grupos',        sub: 'COUNT DISTINCT' },
+    ],
+    subgroup: {
+      title: 'Pesquisadores por Grupo',
+      from: 'totaisPorGrupo',
+      columns: [
+        { key: 'grupo', label: 'Grupo' },
+        { key: 'totalPesquisadores', label: 'Total' },
+      ],
+    },
+  },
+
+  'rel-observacoes': {
+    label: 'Observações',
+    subtitle: 'Por Período, Projeto e Constelação · RF43',
+    intro: 'Lista observações em ordem cronológica, com totalização por Tipo de Registro (Descoberta vs Atualização).',
+    endpoint: '/relatorios/observacoes',
+    filters: [
+      { name: 'dataInicial', label: 'Data Inicial', type: 'date' },
+      { name: 'dataFinal',   label: 'Data Final',   type: 'date' },
+      { name: 'projetoId',   label: 'Projeto', type: 'fk',
+        endpoint: '/projetos', labelFn: p => p.titulo },
+      { name: 'constelacaoId', label: 'Constelação', type: 'fk',
+        endpoint: '/constelacoes', labelFn: c => c.nome },
+    ],
+    columns: [
+      { key: 'dataObservacao', label: 'Data',
+        fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'projetoVinculado', label: 'Projeto' },
+      { key: 'coordenadorResponsavel', label: 'Coordenador' },
+      { key: 'constelacao', label: 'Constelação' },
+      { key: 'instrumento', label: 'Instrumento' },
+      { key: 'versao', label: 'Versão' },
+      { key: 'tipoRegistro', label: 'Tipo',
+        fmt: v => `<span class="pill ${v==='Descoberta'?'pill-ativo':'pill-suspenso'}">${escHtml(v)}</span>` },
+    ],
+    stats: [
+      { key: 'totalObservacoes',  label: 'Total de Observações', sub: 'COUNT' },
+      { key: 'totalDescobertas',  label: 'Descobertas',          sub: 'SUM(versão=1)' },
+      { key: 'totalAtualizacoes', label: 'Atualizações',         sub: 'SUM(versão>1)' },
+    ],
+  },
+
+  'rel-estatisticas': {
+    label: 'Estatísticas de Observações',
+    subtitle: 'Por Projeto e Constelação · RF44',
+    intro: 'Estatísticas agrupadas por Projeto + Constelação, ordenadas pelo total de observações.',
+    endpoint: '/relatorios/estatisticas-observacoes',
+    filters: [
+      { name: 'dataInicial', label: 'Data Inicial', type: 'date' },
+      { name: 'dataFinal',   label: 'Data Final',   type: 'date' },
+      { name: 'projetoId',   label: 'Projeto', type: 'fk',
+        endpoint: '/projetos', labelFn: p => p.titulo },
+      { name: 'constelacaoId', label: 'Constelação', type: 'fk',
+        endpoint: '/constelacoes', labelFn: c => c.nome },
+    ],
+    columns: [
+      { key: 'dataPrimeiraObs', label: '1ª Observação',
+        fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'dataUltimaObs', label: 'Última Observação',
+        fmt: v => v ? String(v).slice(0,10) : '—' },
+      { key: 'projeto', label: 'Projeto' },
+      { key: 'constelacao', label: 'Constelação' },
+      { key: 'totalDescobertas', label: 'Descobertas' },
+      { key: 'totalAtualizacoes', label: 'Atualizações' },
+      { key: 'totalObservacoes', label: 'Total' },
+    ],
+    stats: [
+      { key: 'totalProjetos',     label: 'Projetos no relatório', sub: 'COUNT DISTINCT' },
+      { key: 'totalConstelacoes', label: 'Constelações',          sub: 'COUNT DISTINCT' },
+      { key: 'totalObservacoes',  label: 'Total de Observações',  sub: 'SUM' },
+    ],
+  },
+};
+
+// cache de FK options
+const fkCache = {};
+async function loadFkOptions(endpoint) {
+  if (fkCache[endpoint]) return fkCache[endpoint];
+  const data = await apiFetch(endpoint);
+  fkCache[endpoint] = data || [];
+  return fkCache[endpoint];
+}
+
 // ─── pill helper ─────────────────────────────────────────────────────────
 
 function pill(v) {
@@ -1026,11 +1383,14 @@ function navigate(entity) {
   document.querySelectorAll('.nav-link').forEach(l =>
     l.classList.toggle('active', l.dataset.entity === entity)
   );
-  const def = ENTITIES[entity];
+  const isReport = REPORTS[entity] !== undefined;
+  const def = isReport ? REPORTS[entity] : ENTITIES[entity];
   const bc = document.getElementById('breadcrumb');
-  bc.innerHTML = `Observatório <span>·</span> ${def.label}`;
+  bc.innerHTML = isReport
+    ? `Observatório <span>·</span> Relatórios <span>·</span> ${def.label}`
+    : `Observatório <span>·</span> ${def.label}`;
   const btnNew = document.getElementById('btn-new');
-  btnNew.style.display = entity === 'home' ? 'none' : '';
+  btnNew.style.display = (entity === 'home' || isReport) ? 'none' : '';
   render();
 }
 
@@ -1041,6 +1401,7 @@ document.getElementById('btn-new').addEventListener('click', () => openModal(nul
 
 async function render() {
   if (currentEntity === 'home') { renderHome(); return; }
+  if (REPORTS[currentEntity]) { renderReport(); return; }
   const content = document.getElementById('content');
   content.innerHTML = `<div class="loading">Carregando...</div>`;
   const data = await apiFetch('/' + currentEntity);
@@ -1132,6 +1493,147 @@ function renderHome() {
   content.querySelectorAll('[data-nav]').forEach(card => {
     card.addEventListener('click', () => navigate(card.dataset.nav));
   });
+}
+
+// ─── reports ─────────────────────────────────────────────────────────────
+
+let currentReportFilters = {};
+
+async function renderReport() {
+  const def = REPORTS[currentEntity];
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="entity-header">
+      <div>
+        <h1>Relatório · <em>${escHtml(def.label)}</em></h1>
+        <div class="meta">${escHtml(def.subtitle)}</div>
+      </div>
+    </div>
+    <div class="report-intro">${escHtml(def.intro)}</div>
+    <div class="filter-card">
+      <div class="filter-eyebrow">
+        <svg><use href="#ic-filter"/></svg>
+        <span>Filtros</span>
+      </div>
+      <div class="filter-grid" id="filter-grid">
+        <div class="loading">Carregando filtros…</div>
+      </div>
+      <div class="filter-actions">
+        <button class="btn-cancel" id="btn-filter-clear">Limpar</button>
+        <button class="btn-secondary" id="btn-filter-apply">
+          <svg width="11" height="11"><use href="#ic-filter"/></svg>
+          Gerar
+        </button>
+      </div>
+    </div>
+    <div id="report-output">
+      <div class="empty-thin">Preencha os filtros e clique em <strong>Gerar</strong>.</div>
+    </div>
+  `;
+
+  // build filter inputs (fk options carregadas em paralelo)
+  const filterParts = await Promise.all(def.filters.map(async (f) => {
+    if (f.type === 'fk') {
+      const opts = await loadFkOptions(f.endpoint);
+      const cur = currentReportFilters[f.name] ?? '';
+      const optHtml = opts.map(o =>
+        `<option value="${o.id}" ${String(cur)==String(o.id)?'selected':''}>${escHtml(f.labelFn(o))}</option>`
+      ).join('');
+      return `<div class="field"><label>${f.label}</label>
+        <select name="${f.name}"><option value="">— qualquer —</option>${optHtml}</select></div>`;
+    }
+    if (f.type === 'select') {
+      const cur = currentReportFilters[f.name] ?? '';
+      const optHtml = f.options.map(o =>
+        `<option value="${o}" ${cur===o?'selected':''}>${escHtml(o)}</option>`
+      ).join('');
+      return `<div class="field"><label>${f.label}</label>
+        <select name="${f.name}"><option value="">— qualquer —</option>${optHtml}</select></div>`;
+    }
+    const cur = currentReportFilters[f.name] ?? '';
+    return `<div class="field"><label>${f.label}</label>
+      <input type="${f.type||'text'}" name="${f.name}" value="${escAttr(cur)}"></div>`;
+  }));
+  document.getElementById('filter-grid').innerHTML = filterParts.join('');
+
+  document.getElementById('btn-filter-apply').addEventListener('click', generateReport);
+  document.getElementById('btn-filter-clear').addEventListener('click', () => {
+    currentReportFilters = {};
+    renderReport();
+  });
+}
+
+async function generateReport() {
+  const def = REPORTS[currentEntity];
+  const grid = document.getElementById('filter-grid');
+  const filters = {};
+  grid.querySelectorAll('[name]').forEach(el => {
+    if (el.value !== '') filters[el.name] = el.value;
+  });
+  currentReportFilters = filters;
+
+  const qs = new URLSearchParams(filters).toString();
+  const out = document.getElementById('report-output');
+  out.innerHTML = `<div class="loading">Gerando relatório…</div>`;
+
+  const data = await apiFetch(def.endpoint + (qs ? `?${qs}` : ''));
+  if (!data) { out.innerHTML = `<div class="empty-thin">Não foi possível obter dados.</div>`; return; }
+
+  const linhas = data.linhas || [];
+  let html = '';
+
+  if (!linhas.length) {
+    html += `<div class="empty-thin">Nenhum registro encontrado para os filtros aplicados.</div>`;
+  } else {
+    html += `<div class="table-wrap"><table class="data-table"><thead><tr>`;
+    def.columns.forEach(c => html += `<th>${escHtml(c.label)}</th>`);
+    html += `</tr></thead><tbody>`;
+    linhas.forEach(row => {
+      html += `<tr>`;
+      def.columns.forEach(col => {
+        const raw = row[col.key];
+        const display = col.fmt ? col.fmt(raw) : (raw != null ? escHtml(String(raw)) : '—');
+        html += `<td>${display}</td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+  }
+
+  // sub-tabela (RF42)
+  if (def.subgroup && Array.isArray(data[def.subgroup.from]) && data[def.subgroup.from].length) {
+    html += `<div class="report-section-title">${escHtml(def.subgroup.title)}</div>`;
+    html += `<table class="subtotal-table"><thead><tr>`;
+    def.subgroup.columns.forEach(c => html += `<th>${escHtml(c.label)}</th>`);
+    html += `</tr></thead><tbody>`;
+    data[def.subgroup.from].forEach(row => {
+      html += `<tr>`;
+      def.subgroup.columns.forEach(c => {
+        const v = row[c.key];
+        html += `<td>${v != null ? escHtml(String(v)) : '—'}</td>`;
+      });
+      html += `</tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // tira de totais (agregações)
+  if (def.stats && data.totais) {
+    html += `<div class="stats-strip">`;
+    def.stats.forEach(s => {
+      const raw = data.totais[s.key];
+      const display = s.fmt ? s.fmt(raw) : (raw != null ? raw : '0');
+      html += `
+        <div class="stat-block">
+          <div class="stat-label">${escHtml(s.label)}</div>
+          <div class="stat-value">${display}</div>
+          ${s.sub ? `<div class="stat-sub">${escHtml(s.sub)}</div>` : ''}
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  out.innerHTML = html;
 }
 
 // ─── modal ───────────────────────────────────────────────────────────────
