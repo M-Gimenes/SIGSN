@@ -673,6 +673,144 @@
           }
         }
       ]
+    },
+    {
+      "name": "Relatórios",
+      "item": [
+        {
+          "name": "RF39 — Agendamentos (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/agendamentos"
+          }
+        },
+        {
+          "name": "RF39 — Agendamentos (período + tipoVisita + guiaId + paginação)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/agendamentos?dataInicial=2026-04-01&dataFinal=2026-04-30&tipoVisita=Escolar&guiaId=1&page=1&pageSize=50"
+          }
+        },
+        {
+          "name": "RF39 — Agendamentos (erro: dataInicial inválida)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/agendamentos?dataInicial=01-04-2026"
+          }
+        },
+        {
+          "name": "RF40 — Visitantes por Mês (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/visitantes-por-mes"
+          }
+        },
+        {
+          "name": "RF40 — Visitantes por Mês (período)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/visitantes-por-mes?dataInicial=2026-01-01&dataFinal=2026-12-31"
+          }
+        },
+        {
+          "name": "RF40 — Visitantes por Mês (erro: dataInicial > dataFinal)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/visitantes-por-mes?dataInicial=2026-12-31&dataFinal=2026-01-01"
+          }
+        },
+        {
+          "name": "RF41 — Projetos (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/projetos"
+          }
+        },
+        {
+          "name": "RF41 — Projetos (status=ativo)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/projetos?status=ativo"
+          }
+        },
+        {
+          "name": "RF41 — Projetos (grupo + status + período)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/projetos?grupoDePesquisaId=2&status=ativo&dataInicial=2025-01-01&dataFinal=2025-12-31"
+          }
+        },
+        {
+          "name": "RF41 — Projetos (erro: status inválido)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/projetos?status=arquivado"
+          }
+        },
+        {
+          "name": "RF42 — Pesquisadores por Projeto (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto"
+          }
+        },
+        {
+          "name": "RF42 — Pesquisadores por Projeto (projetoId + período + paginação)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto?projetoId=1&dataInicial=2025-01-01&dataFinal=2026-12-31&page=1&pageSize=50"
+          }
+        },
+        {
+          "name": "RF42 — Pesquisadores por Projeto (erro: projetoId não-inteiro)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto?projetoId=abc"
+          }
+        },
+        {
+          "name": "RF43 — Observações (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/observacoes"
+          }
+        },
+        {
+          "name": "RF43 — Observações (período + projeto + constelação + paginação)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/observacoes?dataInicial=2025-09-01&dataFinal=2025-09-30&projetoId=1&constelacaoId=1&page=1&pageSize=50"
+          }
+        },
+        {
+          "name": "RF43 — Observações (erro: pageSize acima do limite)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/observacoes?pageSize=10000"
+          }
+        },
+        {
+          "name": "RF44 — Estatísticas de Observações (sem filtros)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes"
+          }
+        },
+        {
+          "name": "RF44 — Estatísticas de Observações (período + projeto + constelação)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes?dataInicial=2025-01-01&dataFinal=2025-12-31&projetoId=1&constelacaoId=1"
+          }
+        },
+        {
+          "name": "RF44 — Estatísticas de Observações (erro: constelacaoId negativo)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes?constelacaoId=-3"
+          }
+        }
+      ]
     }
   ]
 }
