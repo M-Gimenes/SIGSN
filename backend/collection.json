@@ -678,136 +678,81 @@
       "name": "Relatórios",
       "item": [
         {
-          "name": "RF39 — Agendamentos (sem filtros)",
+          "name": "RF39 — Agendamentos",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/agendamentos"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/agendamentos?dataInicial=2026-04-01&dataFinal=2026-04-30&tipoVisita=Escolar&guiaId=1&page=1&pageSize=50",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"dataInicial\": \"2026-04-01\", \"dataFinal\": \"2026-04-30\", \"tipoVisita\": \"Escolar\", \"guiaId\": 1 },\n  \"paginacao\": { \"page\": 1, \"pageSize\": 50, \"totalLinhas\": 1, \"totalPaginas\": 1 },\n  \"linhas\": [\n    {\n      \"id\": 1,\n      \"dataVisita\": \"2026-04-10T08:00:00.000Z\",\n      \"horario\": \"08:00\",\n      \"nomeCaravana\": \"Caravana do Colégio Estadual\",\n      \"instituicao\": \"Colégio Estadual Central\",\n      \"quantidadeVisitantes\": 30,\n      \"guiaResponsavel\": \"Carlos Mendes\",\n      \"tipoVisita\": \"Escolar\",\n      \"valorVisita\": 350\n    }\n  ],\n  \"totais\": { \"totalAgendamentos\": 1, \"totalVisitantes\": 30, \"totalValor\": 350 }\n}"
+            }
           }
         },
         {
-          "name": "RF39 — Agendamentos (período + tipoVisita + guiaId + paginação)",
+          "name": "RF40 — Visitantes por Mês",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/agendamentos?dataInicial=2026-04-01&dataFinal=2026-04-30&tipoVisita=Escolar&guiaId=1&page=1&pageSize=50"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/visitantes-por-mes?dataInicial=2026-01-01&dataFinal=2026-12-31",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"dataInicial\": \"2026-01-01\", \"dataFinal\": \"2026-12-31\" },\n  \"linhas\": [\n    { \"mesAno\": \"2026-04\", \"totalAgendamentos\": 3, \"totalVisitantes\": 80, \"mediaVisitantes\": 26.67 },\n    { \"mesAno\": \"2026-05\", \"totalAgendamentos\": 2, \"totalVisitantes\": 55, \"mediaVisitantes\": 27.5 }\n  ],\n  \"totais\": { \"totalAgendamentos\": 5, \"totalVisitantes\": 135, \"mediaGeral\": 27 },\n  \"meta\": { \"cache\": \"MISS\" }\n}"
+            }
           }
         },
         {
-          "name": "RF39 — Agendamentos (erro: dataInicial inválida)",
+          "name": "RF41 — Projetos",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/agendamentos?dataInicial=01-04-2026"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/projetos?grupoDePesquisaId=2&status=ativo&dataInicial=2025-01-01&dataFinal=2025-12-31",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"grupoDePesquisaId\": 2, \"status\": \"ativo\", \"dataInicial\": \"2025-01-01\", \"dataFinal\": \"2025-12-31\" },\n  \"linhas\": [\n    {\n      \"dataInicio\": \"2025-03-01\",\n      \"projeto\": \"Mapeamento Estelar\",\n      \"responsavel\": \"Dra. Ana Paula\",\n      \"nomeGrupo\": \"Grupo Astrofísica\",\n      \"area\": \"Astrometria\",\n      \"qtdPesquisadores\": 4,\n      \"status\": \"ativo\"\n    }\n  ],\n  \"totais\": { \"totalProjetos\": 1, \"totalPesquisadores\": 4 }\n}"
+            }
           }
         },
         {
-          "name": "RF40 — Visitantes por Mês (sem filtros)",
+          "name": "RF42 — Pesquisadores por Projeto",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/visitantes-por-mes"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto?projetoId=1&dataInicial=2025-01-01&dataFinal=2026-12-31&page=1&pageSize=50",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"projetoId\": 1, \"dataInicial\": \"2025-01-01\", \"dataFinal\": \"2026-12-31\" },\n  \"paginacao\": { \"page\": 1, \"pageSize\": 50, \"totalLinhas\": 2, \"totalPaginas\": 1 },\n  \"linhas\": [\n    {\n      \"nomeGrupo\": \"Grupo Astrofísica\",\n      \"projetoVinculado\": \"Mapeamento Estelar\",\n      \"nomePesquisador\": \"Dr. Marcos Lima\",\n      \"curso\": \"Cosmologia\",\n      \"dataIngresso\": \"2025-04-01T12:00:00.000Z\",\n      \"status\": true\n    }\n  ],\n  \"totaisPorGrupo\": [ { \"grupo\": \"Grupo Astrofísica\", \"totalPesquisadores\": 2 } ],\n  \"totais\": { \"totalPesquisadores\": 2, \"totalGrupos\": 1 }\n}"
+            }
           }
         },
         {
-          "name": "RF40 — Visitantes por Mês (período)",
+          "name": "RF43 — Observações",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/visitantes-por-mes?dataInicial=2026-01-01&dataFinal=2026-12-31"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/observacoes?dataInicial=2025-09-01&dataFinal=2025-09-30&projetoId=1&constelacaoId=1&page=1&pageSize=50",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"dataInicial\": \"2025-09-01\", \"dataFinal\": \"2025-09-30\", \"projetoId\": 1, \"constelacaoId\": 1 },\n  \"paginacao\": { \"page\": 1, \"pageSize\": 50, \"totalLinhas\": 2, \"totalPaginas\": 1 },\n  \"linhas\": [\n    {\n      \"dataObservacao\": \"2025-09-10\",\n      \"projetoVinculado\": \"Mapeamento Estelar\",\n      \"coordenadorResponsavel\": \"Dra. Ana Paula\",\n      \"constelacao\": \"Órion\",\n      \"instrumento\": \"Telescópio refletor 200mm\",\n      \"versao\": 1,\n      \"tipoRegistro\": \"Descoberta\"\n    }\n  ],\n  \"totais\": { \"totalObservacoes\": 2, \"totalDescobertas\": 1, \"totalAtualizacoes\": 1 }\n}"
+            }
           }
         },
         {
-          "name": "RF40 — Visitantes por Mês (erro: dataInicial > dataFinal)",
+          "name": "RF44 — Estatísticas de Observações",
           "request": {
             "method": "GET",
-            "url": "{{baseUrl}}/relatorios/visitantes-por-mes?dataInicial=2026-12-31&dataFinal=2026-01-01"
-          }
-        },
-        {
-          "name": "RF41 — Projetos (sem filtros)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/projetos"
-          }
-        },
-        {
-          "name": "RF41 — Projetos (status=ativo)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/projetos?status=ativo"
-          }
-        },
-        {
-          "name": "RF41 — Projetos (grupo + status + período)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/projetos?grupoDePesquisaId=2&status=ativo&dataInicial=2025-01-01&dataFinal=2025-12-31"
-          }
-        },
-        {
-          "name": "RF41 — Projetos (erro: status inválido)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/projetos?status=arquivado"
-          }
-        },
-        {
-          "name": "RF42 — Pesquisadores por Projeto (sem filtros)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto"
-          }
-        },
-        {
-          "name": "RF42 — Pesquisadores por Projeto (projetoId + período + paginação)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto?projetoId=1&dataInicial=2025-01-01&dataFinal=2026-12-31&page=1&pageSize=50"
-          }
-        },
-        {
-          "name": "RF42 — Pesquisadores por Projeto (erro: projetoId não-inteiro)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/pesquisadores-por-projeto?projetoId=abc"
-          }
-        },
-        {
-          "name": "RF43 — Observações (sem filtros)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/observacoes"
-          }
-        },
-        {
-          "name": "RF43 — Observações (período + projeto + constelação + paginação)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/observacoes?dataInicial=2025-09-01&dataFinal=2025-09-30&projetoId=1&constelacaoId=1&page=1&pageSize=50"
-          }
-        },
-        {
-          "name": "RF43 — Observações (erro: pageSize acima do limite)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/observacoes?pageSize=10000"
-          }
-        },
-        {
-          "name": "RF44 — Estatísticas de Observações (sem filtros)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes"
-          }
-        },
-        {
-          "name": "RF44 — Estatísticas de Observações (período + projeto + constelação)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes?dataInicial=2025-01-01&dataFinal=2025-12-31&projetoId=1&constelacaoId=1"
-          }
-        },
-        {
-          "name": "RF44 — Estatísticas de Observações (erro: constelacaoId negativo)",
-          "request": {
-            "method": "GET",
-            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes?constelacaoId=-3"
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/relatorios/estatisticas-observacoes?dataInicial=2025-01-01&dataFinal=2025-12-31&projetoId=1&constelacaoId=1",
+            "body": {
+              "mode": "raw",
+              "options": { "raw": { "language": "json" } },
+              "raw": "{\n  \"filtros\": { \"dataInicial\": \"2025-01-01\", \"dataFinal\": \"2025-12-31\", \"projetoId\": 1, \"constelacaoId\": 1 },\n  \"linhas\": [\n    {\n      \"dataPrimeiraObs\": \"2025-09-10\",\n      \"dataUltimaObs\": \"2025-09-10\",\n      \"projeto\": \"Mapeamento Estelar\",\n      \"constelacao\": \"Órion\",\n      \"totalDescobertas\": 1,\n      \"totalAtualizacoes\": 1,\n      \"totalObservacoes\": 2\n    }\n  ],\n  \"totais\": { \"totalProjetos\": 1, \"totalConstelacoes\": 1, \"totalObservacoes\": 2 },\n  \"meta\": { \"cache\": \"MISS\" }\n}"
+            }
           }
         }
       ]
