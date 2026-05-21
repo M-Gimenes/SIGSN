@@ -348,6 +348,7 @@ class ReportService {
       return {
         filtros: { dataInicial, dataFinal, projetoId, constelacaoId },
         paginacao: paginar(totalLinhasUniverso, page, pageSize),
+        
         linhas: linhas.map((o) => ({
           dataObservacao: o.dataObservacao,
           projetoVinculado: o.projeto?.titulo ?? null,
