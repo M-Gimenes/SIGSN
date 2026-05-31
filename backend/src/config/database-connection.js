@@ -36,8 +36,8 @@ Agendamento.associate(sequelize.models);
 syncDatabase();
 
 async function syncDatabase() {
-  await sequelize.sync({ force: true });
-  await seedDatabase();
+  await sequelize.sync();
+  // await seedDatabase();
 }
 
 async function seedDatabase() {
