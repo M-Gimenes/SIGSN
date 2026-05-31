@@ -11,7 +11,9 @@ import { Observacao } from '../models/Observacao.js';
 import { Caravana } from '../models/Caravana.js';
 import { Agendamento } from '../models/Agendamento.js';
 
-const sequelize = new Sequelize(databaseConfig);
+const sequelize = databaseConfig.url
+  ? new Sequelize(databaseConfig.url, databaseConfig)
+  : new Sequelize(databaseConfig);
 
 Pesquisador.init(sequelize);
 Coordenador.init(sequelize);
