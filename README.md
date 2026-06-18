@@ -8,7 +8,7 @@ Sistema de gestão para um observatório astronômico — controla grupos de pes
 |------------|--------|
 | Backend (API REST) | Em produção — hospedado no Render |
 | Banco de dados | PostgreSQL gerenciado no Render |
-| Frontend web | Em construção — este README será atualizado quando a interface avançar |
+| Frontend web | SPA em React 18 + Vite (`frontend/`); roda em `:5173` |
 | Documentação interativa (Swagger) | Disponível em `/docs` |
 | Coleção Postman | `backend/collection.json` |
 
@@ -123,11 +123,41 @@ Para desenvolvimento local, copie `backend/.env.example` para `backend/.env` e p
 - **Swagger**: navegue até `/docs`. Cada endpoint `POST` expõe exemplos válidos e exemplos que disparam cada regra de negócio.
 - **Postman**: importe `backend/collection.json` para uma coleção pronta com as rotas principais.
 
+## Frontend
+
+SPA em React 18 + Vite (`frontend/`) que consome a API REST. Estrutura:
+
+- `api/` — cliente HTTP + serviços por entidade/relatório.
+- `config/entities.jsx` + `config/reports.jsx` — descrição declarativa (colunas, filtros, formulários) que alimenta o `EntityPage` e o `ReportPage` genéricos.
+- `components/{layout,ui,forms,reports}` — modulares e reutilizáveis.
+- `context/{Theme,Toast}` — tema claro/escuro persistido e notificações globais.
+- `hooks/useFkOptions.js` — cache de opções de chave estrangeira para selects.
+
+Cobre CRUD completo das 9 entidades e os 6 relatórios (RF39–RF44). Identidade visual preservada da versão HTML original (paleta indigo + parchment, tipografia Cormorant/Newsreader/JetBrains Mono).
+
+Para rodar localmente:
+
+```bash
+cd frontend
+npm install
+npm run dev        # :5173
+```
+
+A URL da API é configurada por `VITE_API_URL` (default `http://localhost:3333`). Veja `frontend/README.md` para detalhes.
+
+## Como rodar tudo via Docker
+
+A partir da raiz, sobe backend (`:3333`) + frontend (`:5173`) juntos:
+
+```bash
+docker compose up --build
+```
+
 ## Estrutura do repositório
 
 ```
 backend/         Código do servidor (Express + Sequelize)
-frontend/        Frontend (em construção)
+frontend/        Frontend React (Vite + Nginx)
 assets/          Documento de requisitos, diagramas e docs dos relatórios
 docker-compose.yml
 ```

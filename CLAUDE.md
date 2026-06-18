@@ -33,7 +33,7 @@ The API listens on port **3333**. Use `backend/collection.json` (Postman) to tes
 
 SIGSN is an astronomy observatory management system. It manages research groups, researchers, projects, star observations, guide-led caravan visits, and visit scheduling.
 
-**Stack:** Node.js ESM (`"type": "module"`), Express, Sequelize ORM, SQLite (dev/test) or PostgreSQL (prod/staging). The database dialect is switched by editing the exported config in `backend/src/config/database-config.js`.
+**Stack:** Node.js ESM (`"type": "module"`), Express, Sequelize ORM, SQLite (dev fallback) or PostgreSQL (prod/staging). The database dialect is resolved at runtime from environment variables in `backend/src/config/database-config.js` (priority: `DATABASE_URL` → `PG*` individual vars → SQLite fallback). Production is hosted on Render with managed Postgres. Copy `backend/.env.example` → `backend/.env` for local Postgres; leave it absent to use SQLite.
 
 **Layer structure** (`backend/src/`):
 
@@ -45,12 +45,12 @@ SIGSN is an astronomy observatory management system. It manages research groups,
 | Services | `services/` | Business logic, DB queries via Sequelize models |
 | Models | `models/` | Sequelize model definitions + associations |
 | Config | `config/database-config.js` | DB dialect config (swap to change environment) |
-| Connection | `config/database-connection.js` | Instantiates Sequelize, calls `Model.init()` + `Model.associate()`, syncs DB with `force: true` on start, and seeds initial data |
+| Connection | `config/database-connection.js` | Instantiates Sequelize, calls `Model.init()` + `Model.associate()`, runs `sequelize.sync()` (non-destructive) on start. `seedDatabase()` exists but is commented out — uncomment locally for SQLite/test data; do not run it against production. |
 | Utils | `utils/agendamentoTurno.js` | Shift (turno) logic used by `AgendamentoService` |
 | Utils | `utils/errors.js` + `utils/validate.js` | `ValidationError` class and `validarCampos(Model, dados)` helper |
 | Middleware | `_middleware/errorHandler.js` | Maps `ValidationError`, Sequelize errors → HTTP 400; others → 500 |
 
-**Important: `sync({ force: true })` drops and recreates all tables on every server start.** The seed data in `database-connection.js` repopulates them each time.
+**Important: `sequelize.sync()` is non-destructive** — tables are created if missing but existing data is preserved across restarts. The seed in `database-connection.js` is **opt-in** (commented out).
 
 **Domain model relationships:**
 
@@ -91,14 +91,16 @@ SIGSN is an astronomy observatory management system. It manages research groups,
 - `Caravana.quantidadeVisitantes` is capped at 50.
 - All service write operations (create/update) wrap logic in `sequelize.transaction(async (transaction) => { ... })` — pass `{ transaction }` to every Sequelize call inside.
 - `underscored: true` is set globally: DB columns are `snake_case`, JS model attributes are `camelCase`. Sequelize maps them automatically; use camelCase in code.
-- Active DB dialect is **SQLite** (`database.sqlite` file, dev default). To switch to PostgreSQL, uncomment the second block in `backend/src/config/database-config.js`.
+- DB dialect is **resolved by env vars**, not by editing code. Production (Render) sets `DATABASE_URL`. Local with Postgres uses `PG*` vars. No env vars → SQLite at `backend/database.sqlite`.
+- `docker-compose.yml` mounts `backend/.env` via `env_file` (marked `required: false`, so missing file is fine).
 - CORS is open (`cors()` with no restrictions) — the frontend can call the API from any local origin/port.
 
-**Frontend** (all paths relative to `backend/`):
-- `../frontend/SIGSN.html` — main CRUD frontend; serves all 9 entity routes against the API on port 3333.
-- `../frontend/Identidade Visual SIGSN.html` — brand identity guide (standalone, no backend needed).
-- `../frontend/deck-stage.js` — `<deck-stage>` web component for HTML presentation decks (keyboard nav, print-to-PDF).
-- `../frontend/apresentacao/` — 20-slide presentation deck (`index.html` + `styles.css`); references `../deck-stage.js`.
+**Frontend** (React SPA at `frontend/`):
+- Stack: React 18 + Vite + React Router 6, served by Nginx in production. CSS preserves the parchment/indigo identity from the original HTML.
+- Entry: `frontend/index.html` → `src/main.jsx` → `App.jsx` (router shell).
+- Layers: `api/` (HTTP client + service functions), `config/` (declarative `entities.jsx` + `reports.jsx` driving the generic CRUD/report pages), `components/{layout,ui,forms,reports}`, `context/` (Theme + Toast), `hooks/useFkOptions.js` (cached FK dropdowns), `pages/{HomePage,EntityPage,ReportPage}`.
+- API base URL is configurable via `VITE_API_URL` (default `http://localhost:3333`).
+- Dev: `cd frontend && npm install && npm run dev` (port 5173). Production: `docker compose up --build` serves frontend on `:5173` (Nginx) + backend on `:3333`.
 
 **Visual identity tokens** (use for any new UI work):
 - Colors: `--ink #1a2547` · `--paper #f4efe4` · `--ember #b8542b` · `--gold #c9a04a` · `--verdigris #516b5d`
