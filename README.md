@@ -6,18 +6,19 @@ Sistema de gestão para um observatório astronômico — controla grupos de pes
 
 | Componente | Estado |
 |------------|--------|
-| Backend (API REST) | Em produção — hospedado no Render |
+| Frontend web | Em produção — *static site* no Render (SPA React 18 + Vite) |
+| Backend (API REST) | Em produção — *web service* no Render |
 | Banco de dados | PostgreSQL gerenciado no Render |
-| Frontend web | SPA em React 18 + Vite (`frontend/`); roda em `:5173` |
 | Documentação interativa (Swagger) | Disponível em `/docs` |
 | Coleção Postman | `backend/collection.json` |
 
 ## Acesso
 
+- **Aplicação web**: <https://sigsn-frontend.onrender.com>
 - **API**: <https://sigsn.onrender.com>
 - **Swagger UI**: <https://sigsn.onrender.com/docs>
 
-Por se tratar do plano gratuito do Render, a primeira requisição após um período de ociosidade pode demorar alguns segundos enquanto o serviço sobe (*cold start*).
+Por se tratar do plano gratuito do Render, a primeira requisição à API após um período de ociosidade pode demorar alguns segundos enquanto o *web service* sobe (*cold start*). A aplicação web carrega normalmente, mas as primeiras consultas podem refletir essa espera.
 
 ## Stack
 
@@ -26,7 +27,8 @@ Por se tratar do plano gratuito do Render, a primeira requisição após um per�
 - **Banco**: PostgreSQL em produção; SQLite suportado para desenvolvimento local
 - **Documentação**: `swagger-autogen` + `swagger-ui-express`
 - **Containerização**: Docker / Docker Compose
-- **Deploy**: Render (Web Service + Postgres)
+- **Frontend**: React 18 + Vite + React Router 6
+- **Deploy**: Render (frontend como *static site*, backend como *web service* + Postgres gerenciado)
 
 ## Domínio
 
@@ -145,6 +147,8 @@ npm run dev        # :5173
 
 A URL da API é configurada por `VITE_API_URL` (default `http://localhost:3333`). Veja `frontend/README.md` para detalhes.
 
+Em produção, o frontend é publicado como *static site* no Render (`render.yaml`), com fallback de SPA para `index.html` e `VITE_API_URL` apontando para a API hospedada. No caminho Docker, o mesmo build é servido por Nginx.
+
 ## Como rodar tudo via Docker
 
 A partir da raiz, sobe backend (`:3333`) + frontend (`:5173`) juntos:
@@ -157,9 +161,10 @@ docker compose up --build
 
 ```
 backend/         Código do servidor (Express + Sequelize)
-frontend/        Frontend React (Vite + Nginx)
+frontend/        Frontend React (Vite); Nginx no build Docker
 assets/          Documento de requisitos, diagramas e docs dos relatórios
 docker-compose.yml
+render.yaml      Blueprint do static site do frontend no Render
 ```
 
 ## Equipe
