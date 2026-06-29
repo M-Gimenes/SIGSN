@@ -39,7 +39,7 @@ syncDatabase();
 
 async function syncDatabase() {
   await sequelize.sync();
-  await seedDatabase();
+  // await seedDatabase();
 }
 
 async function seedDatabase() {
