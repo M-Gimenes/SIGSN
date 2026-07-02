@@ -405,7 +405,7 @@ class ReportService {
           JOIN projetos p ON p.id = o.projeto_id
           JOIN constelacoes c ON c.id = o.constelacao_id
           WHERE ${conds.join(' AND ')}
-          GROUP BY o.projeto_id, o.constelacao_id
+          GROUP BY o.projeto_id, o.constelacao_id, p.titulo, c.nome
           ORDER BY totalObservacoes DESC, projeto ASC, constelacao ASC
         `,
         { replacements: params, type: QueryTypes.SELECT }

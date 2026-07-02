@@ -20,8 +20,8 @@ class Constelacao extends Model {
           validate: {
             notEmpty: { msg: 'Hemisfério da Constelação deve ser preenchido.' },
             isIn: {
-              args: [['Norte', 'Sul']],
-              msg: 'Hemisfério deve ser Norte ou Sul.',
+              args: [['Norte', 'Sul', 'Equatorial']],
+              msg: 'Hemisfério deve ser Norte, Sul ou Equatorial.',
             },
           },
         },

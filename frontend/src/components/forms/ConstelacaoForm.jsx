@@ -1,6 +1,6 @@
 import { SelectField, TextAreaField, TextField } from '../ui/Field.jsx';
 
-const HEMISFERIOS = ['Norte', 'Sul'];
+const HEMISFERIOS = ['Norte', 'Sul', 'Equatorial'];
 
 export const constelacaoEmpty = {
   nome: '', hemisferio: '', periodoVisibilidade: '',
