@@ -7,7 +7,7 @@ import { dirname, join } from 'path';
 import swaggerUi from 'swagger-ui-express';
 import routes from './routes.js';
 import errorHandler from './_middleware/errorHandler.js';
-import './config/database-connection.js';
+import { databaseReady } from './config/database-connection.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -23,4 +23,5 @@ app.use(cors());
 app.use(express.json());
 app.use(routes);
 app.use(errorHandler);
+await databaseReady;
 app.listen(3333, () => console.log('Servidor rodando na porta 3333'));

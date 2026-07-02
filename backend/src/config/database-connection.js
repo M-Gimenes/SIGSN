@@ -35,11 +35,38 @@ Observacao.associate(sequelize.models);
 Caravana.associate(sequelize.models);
 Agendamento.associate(sequelize.models);
 
-syncDatabase();
+export const databaseReady = syncDatabase();
 
 async function syncDatabase() {
   await sequelize.sync();
+  await ensureLegacyPessoaColumns();
   // await seedDatabase();
+}
+
+async function ensureLegacyPessoaColumns() {
+  const queryInterface = sequelize.getQueryInterface();
+  const pessoaColumns = {
+    pesquisadores: {
+      funcao: { type: Sequelize.STRING, allowNull: false, defaultValue: 'pesquisador' },
+    },
+    coordenadores: {
+      funcao: { type: Sequelize.STRING, allowNull: false, defaultValue: 'coordenador' },
+    },
+    guias: {
+      funcao: { type: Sequelize.STRING, allowNull: false, defaultValue: 'guia' },
+      login: { type: Sequelize.STRING, allowNull: false, defaultValue: 'guia_legacy' },
+      senha: { type: Sequelize.STRING, allowNull: false, defaultValue: 'senha_legacy' },
+    },
+  };
+
+  for (const [tableName, columns] of Object.entries(pessoaColumns)) {
+    const tableDescription = await queryInterface.describeTable(tableName);
+    for (const [columnName, definition] of Object.entries(columns)) {
+      if (!tableDescription[columnName]) {
+        await queryInterface.addColumn(tableName, columnName, definition);
+      }
+    }
+  }
 }
 
 async function seedDatabase() {
