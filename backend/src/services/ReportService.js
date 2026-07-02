@@ -137,18 +137,25 @@ class ReportService {
         params.dataFinal = `${dataFinal} 23:59:59`;
       }
 
+      // strftime só existe no SQLite; no Postgres usa-se to_char. Aliases em
+      // camelCase precisam de aspas duplas, senão o Postgres os rebaixa para
+      // minúsculas e o mapeamento no JS retorna undefined.
+      const mesAnoExpr = sequelize.getDialect() === 'postgres'
+        ? `to_char(a.data_visita, 'YYYY-MM')`
+        : `strftime('%Y-%m', a.data_visita)`;
+
       const linhas = await sequelize.query(
         `
           SELECT
-            strftime('%Y-%m', a.data_visita) AS mesAno,
-            COUNT(a.id) AS totalAgendamentos,
-            SUM(c.quantidade_visitantes) AS totalVisitantes,
-            AVG(c.quantidade_visitantes) AS mediaVisitantes
+            ${mesAnoExpr} AS "mesAno",
+            COUNT(a.id) AS "totalAgendamentos",
+            SUM(c.quantidade_visitantes) AS "totalVisitantes",
+            AVG(c.quantidade_visitantes) AS "mediaVisitantes"
           FROM agendamentos a
           JOIN caravanas c ON c.id = a.caravana_id
           WHERE 1=1 ${dateFilter}
-          GROUP BY strftime('%Y-%m', a.data_visita)
-          ORDER BY mesAno ASC
+          GROUP BY ${mesAnoExpr}
+          ORDER BY ${mesAnoExpr} ASC
         `,
         { replacements: params, type: QueryTypes.SELECT }
       );
@@ -156,9 +163,9 @@ class ReportService {
       const [totais] = await sequelize.query(
         `
           SELECT
-            COUNT(a.id) AS totalAgendamentos,
-            SUM(c.quantidade_visitantes) AS totalVisitantes,
-            AVG(c.quantidade_visitantes) AS mediaGeral
+            COUNT(a.id) AS "totalAgendamentos",
+            SUM(c.quantidade_visitantes) AS "totalVisitantes",
+            AVG(c.quantidade_visitantes) AS "mediaGeral"
           FROM agendamentos a
           JOIN caravanas c ON c.id = a.caravana_id
           WHERE 1=1 ${dateFilter}
@@ -387,13 +394,13 @@ class ReportService {
       const linhas = await sequelize.query(
         `
           SELECT
-            MIN(o.data_observacao) AS dataPrimeiraObs,
-            MAX(o.data_observacao) AS dataUltimaObs,
-            p.titulo AS projeto,
-            c.nome AS constelacao,
-            SUM(CASE WHEN o.versao_observacao = 1 THEN 1 ELSE 0 END) AS totalDescobertas,
-            SUM(CASE WHEN o.versao_observacao > 1 THEN 1 ELSE 0 END) AS totalAtualizacoes,
-            COUNT(o.id) AS totalObservacoes
+            MIN(o.data_observacao) AS "dataPrimeiraObs",
+            MAX(o.data_observacao) AS "dataUltimaObs",
+            p.titulo AS "projeto",
+            c.nome AS "constelacao",
+            SUM(CASE WHEN o.versao_observacao = 1 THEN 1 ELSE 0 END) AS "totalDescobertas",
+            SUM(CASE WHEN o.versao_observacao > 1 THEN 1 ELSE 0 END) AS "totalAtualizacoes",
+            COUNT(o.id) AS "totalObservacoes"
           FROM observacoes o
           JOIN projetos p ON p.id = o.projeto_id
           JOIN constelacoes c ON c.id = o.constelacao_id
